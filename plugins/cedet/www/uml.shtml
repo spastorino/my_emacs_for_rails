@@ -1,0 +1,53 @@
+<title>CEDET: UML Diagrams</title>
+
+<!--#include file="pagestart.php"-->
+
+<table width=100% class=BAR>
+<tr><td><h2><font color=black>UML Diagrams</font></h2></td></tr>
+</table>
+
+<p><img src="img-gen/cogre-quick-class.jpg" border=1 align=right>
+
+   <b>CEDET</b> lets you create UML diagrams either by hand, or
+   automatically generate simple 3-tier class diagrams from your
+   sources.  The diagrams are linked to your source-code, so you can
+   browse quickly through you code from the convenience of UML.
+
+<p>The image to the right shows <b>CEDET</b>'s UML tool's source code,
+   called <a href="cogre.shtml">COGRE</a>, diagramming and browsing
+   itself.  Optional unicode character support is enabled for the
+   special characters.
+
+<p>You can create your own connected graph with COGRE using the
+   command:</p>
+
+<tt></pre>
+M-x cogre RET
+</pre></tt>
+
+<p>You can insert nodes and link them together.
+
+<p>To create a diagram from source code
+   using <a href="semantic.shtml">Semantic</a> generated tags, you can
+   use the command:</p>
+
+<tt></pre>
+M-x cogre-uml-quick-class RET
+</pre></tt>
+
+<p>This will generate a diagram with 3 tiers.  The class you select
+   will be in the middle.  You can then browse through your code by
+   selecting items in the class diagram.
+
+<p>If you use a recent version of Emacs, you can enable unicode
+   character support for line-drawing by adding this to
+   your <tt>.emacs</tt> file.</p>
+
+<tt></pre>
+(cogre-uml-enable-unicode)
+</pre></tt>
+
+    
+<br clear=all>
+<p>
+<!--#include file="footer.fsf.shtml"-->

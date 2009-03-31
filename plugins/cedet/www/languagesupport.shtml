@@ -1,0 +1,217 @@
+<title>CEDET: Language Support</title>
+
+<!--#include file="pagestart.php"-->
+
+<table width=100% class=BAR>
+<tr><td><h2><font color=black>CEDET Supported Language</font></h2></td></tr>
+</table>
+
+<p>There are many levels of "support" that <b>CEDET</b> can give a
+   language, detailed on the <a href="addlang.shtml">Add language
+   support</a> page.  This table describes the current level of
+   editing support for each of the languages.
+</p>
+<table cellspacing=1 border=1 class=DATA><tr class=DATA>
+    <th>Langauge</th>
+    <th>Grammar</th>
+    <th>Basic<br>Overrides</th>
+    <th>EDE Support</th>
+    <th>Context Parsing</th>
+    <th>Smart completion</th>
+    <th>Symbol References</th>
+    <th>Code Generation</th>
+</tr><tr>
+    <td>C/C++</td>
+    <td>LL - Excellent<br>&amp; CTags</td>
+    <td>Complete</td>
+    <td>Make/ Automake/ Makefile.am<br>ede-cpp-root</td>
+    <td>Yes</td>
+    <td>Yes</td>
+    <td>Yes</td>
+    <td>With Tests</td>
+</tr><tr class=EVEN>
+    <td>Java</td>
+    <td>LALR - Excellent</td>
+    <td>Formatting</td>
+    <td>-</td>
+    <td>C-like</td>
+    <td>Local Structs Only</td>
+    <td>Not Tested</td>
+    <td>Some</td>
+</tr><tr>
+    <td>Emacs Lisp</td>
+    <td>LL & `read'</td>
+    <td>Yes</td>
+    <td>Make</td>
+    <td>Yes</td>
+    <td>No</td>
+    <td>Grep only</td>
+    <td>With Tests</td>
+</tr><tr class=EVEN>
+    <td>Make</td>
+    <td>LL</td>
+    <td>Basic</td>
+    <td>N/A</td>
+    <td>-</td>
+    <td>Custom/Simple</td>
+    <td>?</td>
+    <td>EDE Generates makefiles</td>
+</tr><tr>
+    <td>Scheme</td>
+    <td>LL</td>
+    <td>Basic</td>
+    <td>Automake</td>
+    <td>-</td>
+    <td>-</td>
+    <td>?</td>
+    <td>-</td>
+</tr><tr class=EVEN>
+    <td>Erlang</td>
+    <td>LL</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>?</td>
+    <td>-</td>
+</tr><tr>
+    <td>Texinfo</td>
+    <td>Regexp/Custom</td>
+    <td>Yes</td>
+    <td>Make/ Automake/ Makefile.am</td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>?</td>
+    <td>With Tests</td>
+</tr><tr class=EVEN>
+    <td>HTML</td>
+    <td>Regexp/Custom</td>
+    <td>No</td>
+    <td>-</td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>?</td>
+    <td>-</td>
+</tr><tr>
+    <td>CEDET/Semantic Grammars</td>
+    <td>LALR - Excellent</td>
+    <td>Yes</td>
+    <td>Make</td>
+    <td>Yes</td>
+    <td>Custom/Simple</td>
+    <td>?</td>
+    <td>Some</td>
+</tr><tr class=EVEN>
+    <td>Awk</td>
+    <td>LALR</td>
+    <td>-</td>
+    <td>No</td>
+    <td>-</td>
+    <td>-</td>
+    <td>?</td>
+    <td>-</td>
+</tr><tr>
+    <td>Simula</td>
+    <td>LALR</td>
+    <td>No Mode Integration</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+</tr><tr class=EVEN>
+    <td>Javascript</td>
+    <td>LALR</td>
+    <td>-</td>
+    <td>No</td>
+    <td>-</td>
+    <td>Local structs Only</td>
+    <td>?</td>
+    <td>-</td>
+</tr><tr>
+    <td>Python</td>
+    <td>LALR</td>
+    <td>-</td>
+    <td>No</td>
+    <td>-</td>
+    <td>?</td>
+    <td>?</td>
+    <td>-</td>
+</tr><tr class=EVEN>
+    <td>C#</td>
+    <td>LALR</td>
+    <td>Yes</td>
+    <td>No</td>
+    <td>-</td>
+    <td>Local Structs Only</td>
+    <td>?</td>
+    <td>-</td>
+</tr><tr>
+    <td>PHP</td>
+    <td>LALR</td>
+    <td>-</td>
+    <td>No</td>
+    <td>Some</td>
+    <td>?</td>
+    <td>?</td>
+    <td>-</td>
+</tr><tr class=EVEN>
+    <td>Ruby</td>
+    <td>LALR</td>
+    <td>-</td>
+    <td>No</td>
+    <td>-</td>
+    <td>?</td>
+    <td>?</td>
+    <td>-</td>
+</tr><tr>
+    <td>SRecode Templates</td>
+    <td>LALR</td>
+    <td>Yes</td>
+    <td>-</td>
+    <td>Yes</td>
+    <td>-</td>
+    <td>-</td>
+    <td>Yes</td>
+</tr><tr class=EVEN>
+    <td>Born Shell</td>
+    <td>CTags</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+</tr><tr>
+    <td>dot</td>
+    <td>LALR</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+<!--/tr><tr class=EVEN>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr><tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td -->
+</tr></table>
+
+
+
+<p>
+<!--#include file="footer.fsf.shtml"-->

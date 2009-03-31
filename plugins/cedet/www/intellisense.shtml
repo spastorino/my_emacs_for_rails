@@ -1,0 +1,176 @@
+<title>CEDET: Smart Completion</title>
+
+<!--#include file="pagestart.php"-->
+
+<table width=100% class=BAR>
+<tr><td><h2><font color=black>Smart Completion</font></h2></td></tr>
+</table>
+
+<img src="img-gen/semantic-ia-complete-menu.png" border=1 align=right>
+<p>  CEDET's <a href="intellisense.shtml">smart code completion</a>, is
+  sometimes known as "Intellisense".  The CEDET infrastructure for
+  parsing and tagging files, and analyzing source code is one of the
+  most accurate completion tools for C++ anywhere.  It will correctly
+  handle inheritance scoping rules, templates, smart-pointers, and
+  automatically filters based on what the value will be assigned into.
+
+<p>Code completion is not restricted to just C or C++.  The completion
+   engine is generic and works for any language that has a robust
+   tagging parser written for CEDET, and a thin adaptation layer for
+   the language.
+
+<p>In addition, the same engine used for smart completion enables
+   smart function prototype help which will correctly display a
+   prototype for the method of the correct class you are working
+   with.  It also enables you to jump to the correct declaration of
+   what is referenced under point.
+
+<p>The image to the right shows smart completion configured to use
+   tooltips in a CEDET unit test source file going through a templated
+   smart pointer.
+<br clear=all>
+<p>
+<table width=100% class=BAR><tr><td>
+<h3>What makes it Smart?</h3>
+</td></tr></table>
+
+<p>Emacs has many pre-existing completion systems.  One of the most
+  popular kinds is sometimes known as "dabbrev", or Dynamic
+  Abbreviations.  This works by looking at the text prefix, and then
+  snooping around for similar text to guess what you might be typing.
+  Dabbrevs might be considered "clever", but not smart.
+
+<p>For <b>CEDET</b>, the smart completion engine is in a subsystem
+  called <a href="semantic.shtml">Semantic</a>.  Semantic is a tool
+  that starts with lexical and syntactic analysis and builds up to a
+  code analyzer that can resolve completions from a an incomplete code
+  fragment.
+
+<p>The smart completion in Semantic looks up your prefix in a database
+  of all the variables, functions, and data types available to to
+  semantic System.  The scope of the code lookups is done with
+  the <a href="projects.shtml">EDE Project manager</a>.
+
+<p>By way of example, if you start with a code snippet like this:
+
+<tt><pre>
+#include "moose.h"
+
+int main() {
+  struct Moose M;
+
+  int q = M->
+</pre></tt>
+
+<p>If the cursor is just after the <tt>M-></tt>, the first thing
+  Semantic does is identify <tt>M</tt> as the variable of
+  type <tt>struct Moose</tt>.  The datatype <tt>Moose</tt> is then
+  looked up in any databases available to this file.  Logically, it
+  would examine and find the <tt>Moose</tt> in the
+  file <tt>moose.h</tt>.
+
+<p>Once found, all the members of <tt>Moose</tt> are examined.  Since
+  the result is being passed into <tt>q</tt> which is of
+  type <tt>int</tt>, only things that can resolve to the same datatype
+  are offered.  That could be fields of type <tt>int</tt>, or other
+  structures or classes that might also have ints in them.
+
+<p>The image below shows the smart completion engine working with Qt.
+
+<center>
+<img src="img-gen/semantic-ia-complete-menu-qt4.png" border=1>
+</center>
+<p>
+
+<table width=100% class=BAR><tr><td>
+<h3>Setup</h3>
+</td></tr></table>
+
+<p>Start with the general <b>CEDET</b> setup.  Be sure to enable
+  both EDE, and Semantic's basic code helpers.
+
+<pre>
+(load-file "~/cedet-1.0pre6/common/cedet.el")
+(global-ede-mode 1)                      ; Enable the Project management system
+(semantic-load-enable-code-helpers)      ; Enable prototype help and smart completion 
+</pre>
+
+<p>Next, you can configure one of the many smart completion tools.
+  The engine that generates the completions list is used in a wide
+  variety of tools within Semantic, and also externally authored.
+
+<P>Alex Ott has written a great article
+  called <a href="http://xtalk.msk.su/~ott/en/writings/emacs-devenv/EmacsCedet.html">
+  A Gentle Introduction to CEDET</a> that shows many different ways of
+  enabling smart code completion.
+
+<p>
+<table width=100% class=BAR><tr><td>
+<h3>Different completion Interfaces</h3>
+</td></tr></table>
+
+<p>Here are a few tools available in CEDET/Semantic for performing
+  completion.
+
+<h4>Start inline completion</h4>
+
+<pre>
+   M-x semantic-complete-analyze-inline
+</pre>
+
+This is a command that does completion inline (underlining the
+target symbol) and allows TAB to be used for completion purposes.
+</p>
+
+<h4>Automatically starting inline completion in idle time</h4>
+
+<pre>
+   M-x global-semantic-idle-completions-mode
+</pre>
+
+<p>This is a minor mode which
+  runs <tt>semantic-complete-analyze-inline-idle</tt> during idle
+  time.  Instead of trying to complete the symbol immediately, it will
+  just display the possible completions, and underline the current
+  symbol the cursor is on.
+</p>
+
+<h4>Starting for inline completion when "." is pressed</h4>
+
+<pre>
+  (define-key your-mode-map-here "." 'semantic-complete-self-insert)
+</pre>
+
+<p>Binding <tt>semantic-complete-self-insert</tt> to a key will insert
+  that key's text, as per <tt>self-insert-command</tt>, and then run
+  the inline completion engine if there is appropriate context
+  nearby.</p>
+
+<h4>Speedbar completion mode</h4>
+
+<pre>
+   M-x semantic-speedbar-analysis
+</pre>
+
+<p>This will start <a href="speedbar.shtml">Speedbar</a> in a special
+  mode.  In this mode it will analyze the cursor location, and provide
+  intelligent references.  Unlike inline completion, a raw list of
+  options is provided and you just need to click on the one you want.
+  Sometimes you need to press <tt>g</tt> to force an update.
+
+<h4>Command based completion</h4>
+
+<p>The commands available (for binding to a key) are:
+
+<ul>
+<li>semantic-ia-complete-symbol
+<li>semantic-ia-complete-symbol-menu
+<li>semantic-ia-complete-tip
+</ul>
+
+<p>These commands are all very simple, and are designed as examples
+  that a coder could examine to learn how to write their own
+  completion interface.
+
+<p>
+<!--#include file="footer.fsf.shtml"-->

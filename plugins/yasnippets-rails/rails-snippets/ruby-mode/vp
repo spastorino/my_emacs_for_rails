@@ -1,0 +1,3 @@
+#name : validates_presence_of : ... 
+# --
+validates_presence_of :${attr}

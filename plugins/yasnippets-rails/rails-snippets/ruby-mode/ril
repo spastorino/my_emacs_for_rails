@@ -1,0 +1,3 @@
+#name : render :inline => " ... ", :locals => {  ...  => " ... " }
+# --
+render :inline => "${<%= 'hello' %>}", :locals => { ${name} => "${value}" }

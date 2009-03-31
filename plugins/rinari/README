@@ -1,0 +1,14 @@
+Rinari Is Not A Ruby IDE.
+
+Well, ok it kind of is. Rinari is an Emacs minor mode that is aimed
+towards making Emacs into a top-notch Ruby and Rails development
+environment.
+
+For the latest version see
+http://github.com/eschulte/rinari/tree/master
+
+For instillation instruction and documentation see
+http://rinari.rubyforge.org
+
+For discussion of Ruby on Rails related Emacs development see
+http://groups.google.com/group/emacs-on-rails

@@ -1,0 +1,3 @@
+#name : render_component :action => " ... "
+# --
+render_component :action => "${index}"

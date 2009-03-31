@@ -1,0 +1,65 @@
+<title>Miscelaneous Small CEDET Tools</title>
+
+<!--#include file="pagestart.php"-->
+<table width=100% class=BAR><tr><td>
+<h3>Miscellaneous small CEDET tools:</h3>
+</td></tr></table>
+
+<p>The <b>CEDET</b> distribution contains a "common" area for small
+   tools used throughout the larger tools.  Some interesting ones are:
+</p>
+
+<ul>
+  <li>inversion - Package level versioning system.
+  <li>mode-local - Mode Local variables and functions.
+  <li>working - A busy meter.
+  <li>cedet-autogen - Autoload generators extended for eieio and semantic.
+  <li>ezimage - Simple way to declare and display images in all versions of Emacs.
+  <li>pulse - Fancy overlay color pulsing.
+  <li>pprint - Pretty printer for Emacs Lisp values.
+  <li>data-debug - Data structure browser and debugger.
+  <li>cedet-files - Directory name conversion to reversable file names.
+  <li>cedet-global - Simple GNU Global integration tool.
+  <li>cedet-idutils - Simple ID Utils integration tool.
+  <li>cedet-cscope - Simple CScope integration tool.
+</ul>
+
+<table width=100% class=BAR><tr><td>
+<h3>Other Miscellaneous Emacs Hacks at this web site:</h3>
+</td></tr></table>
+
+<p>For lack of any other home, here are several other tools that are
+   NOT a part of CEDET, but are written by me (Eric).
+</p>
+
+<P><A HREF="checkdoc.shtml"><B>Checkdoc</B></A> is a program which
+   checks the style of your documentation strings and comments.
+   Useful if you want to keep other Emacs Lisp gurus from picking on
+   you.
+</P>
+
+<P><A HREF="cparse.shtml"><B>C-Parse</B></A> is an <B>Emacs Lisp</B>
+   program which can parse a c file, and allows searching for
+   functions, variables, and types.  CParse is no longer supported.
+   It's tools will be ported to Semantic.
+</P>
+
+<P><A HREF="ftp/X-0.3a.tar.gz"><b>X11 lib calls for Emacs, V
+   0.3a</b></A> Imagine the binary network interface for X windows
+   implemented in Emacs Lisp.  Is it useful?  Silly?  I dunno, but it
+   was fun to play with.  No documentation.  Byte compile it, load
+   "xhello.el" and run the function `XX' for the simple demo.<br>
+</p>
+<P>
+   Newer versions of this X package are in CVS, and can be downloaded
+   from the very nifty XWEM project (Window manager written in Emacs Lisp).
+   You can download that from 
+   <a href="http://www.xwem.org">XWEM home page.</a>
+</p>
+
+<P><A HREF="ftp/hangman.el-0.1.gz"><b>Hangman</b></A> game for
+   Emacs.  About as simple as it gets.
+</p>
+
+<!--#include file="footer.fsf.shtml"-->
+

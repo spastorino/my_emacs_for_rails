@@ -1,0 +1,532 @@
+# -*- mode: org -*-
+# 
+#+TITLE:     TODO
+#+SEQ_TODO:  TODO WAITING | DONE CANCELLED MAYBE PARTIAL
+#+DRAWERS:   SNIP
+#+CATEGORY:  rinari
+
+List of pending/completed tasks for rinari
+
+for background see http://groups.google.com/group/emacs-on-rails
+
+* TODO full test coverage (ERT) [0/2]
+- [ ] movement tests
+  - [ ] controller
+  - [ ] view
+  - [ ] model
+  - [ ] test
+  - [ ] rspec
+- [ ] compilation tests
+  - [ ] console
+  - [ ] web-server
+  - [ ] test
+  - [ ] sql
+  - [ ] script
+
+switch from using elunit.el to ert.el for testing
+
+* TODO create a screencast
+promotion!!
+
+- [[http://www.emacswiki.org/cgi-bin/wiki/EmacsScreencasts]]
+
+* TODO Merb support [1/4]
+  :PROPERTIES:
+  :suggested-by: Jorge Calás Lozano
+  :END:
+
+** DONE new Merb Root
+
+I think it's better to rely on config/init.rb that file should be on
+every merb project, merb.thor doesn't, in fact my "library" project
+doesn't have it.
+
+** TODO pull into rinari-merb
+rinari-merb (minami? why not just rinari-merb? what if someone create a
+rinari version for sinatra? sinasi?)
+
+** TODO load automatically
+it doesn't load automatically when you visit a project file or the
+project directory (with dired). So I should call minami-minor-mode
+
+** TODO jump support
+jump: it doesn't really jump, but seems to look for the correct paths,
+at least that is what *Messages* buffer says:
+
+("app/controllers/\\1.rb" "asset")
+Searching /home/jorge/dev/jorgecalas/library/app/models/app/controllers/ ...
+("app/controllers/\\1.rb" "assets")
+("app/controllers/\\1.rb" "asset")
+Searching /home/jorge/dev/jorgecalas/library/app/models/app/controllers/
+... [2 times]
+
+When I'm on the project directory (dired) it finds files correctly,
+right now I tried minami-find-model, minami-find-controller.
+
+minami-find-rspec:
+
+In the current merb you don't don't have spec/controllers or spec/views
+(although you can, of course) but spec/requests is encourage. So
+app/controllers/assets.rb should map spec/requests/assets_spec.rb
+
+* TODO add find-by context
+  :PROPERTIES:
+  :suggested-by: vylu
+  :END:
+
+Hi Eric,
+As I understand, we are talking here about rinari-find-by-context
+function, which is used to open file by current context. For example
+if I am in <%= render :partial => "something_anything" %>, it should
+open _something_anything.html.erb partial. This functionality is still
+left in rhtml mode (although it is broken there), but I think it
+should be moved to rinari again.
+
+Follow any of the following within two lines (up or down)
+- stylesheet
+- javascript
+- link_to
+- link_to_remote
+- submit_tag
+- render
+
+* TODO improvements to finders
+  :PROPERTIES:
+  :suggested-by: vylu
+  :END:
+
+** DONE Stop suggesting files upon first found
+
+#+begin_comment vylu
+
+I see one problem probably related to latest rinari-find changes... If
+specific version of a find DO NOT fail (for example, I try to open
+controller from model and controller is found), requested file is
+opened, but find-file promt is still left -- I have to press C-g to
+close file-find or choose another file. I think, find-file promt
+should be shown only if requested file is not found.
+
+#+end_comment
+
+** default to a more general find upon failure
+When finding a view from a controller if there is no method name, then
+select from the related directory.
+
+more generally...
+
+if rinari-find-* is called with a prefix argument then just run the
+default find at the end
+
+or even better...
+
+*implemented* if no file is found with a find pair, then keep moving.
+
+** TODO complex controllers
+   :PROPERTIES:
+   :suggested-by: rejeep
+   :END:
+
+> But say I have this controller and action:
+> class Reports::Nix::UsersController < ReportsController
+>   def index
+>     # I am here
+>   end
+> end
+>
+> And now I do the same thing, trying to find the view:
+> M-x rinari-find-view
+>
+> But no view is found in this case. The corresponding view in this case
+> should have been app/views/reports/nix/users/index.html.erb.
+>
+
+Hi,
+
+I've never encountered that situation before.  It sounds like when going
+from a controller to a view splitting the controller name on :: and then
+joining the parts as directories would handle this situation.  And then
+vise-versa going from a view to a controller.  I'll try to implement
+this and let you know when it's working.
+
+Thanks for the suggestion -- Eric
+
+* DONE upodate documentation for instillation
+  :PROPERTIES:
+  :suggested-by: Antti
+  :END:
+need to add =git submodule init; git submodule update= to clone the
+submodules as well
+
+* PARTIAL windows support
+  :PROPERTIES:
+  :tested-by: Darren Syzling
+  :END:
+jumping between views, and launching servers and consoles etc... all
+seem to work, the only hurdle now is a rinari-rake issue
+
+  rinari-rake however fails with: apply: Spawning child process:
+  invalid argument. Haven't had the chance to look into and debug this
+  further.  I'm currently using cygwin as my shell within emacs so not
+  sure if this causing some issues.
+
+#+BEGIN_EXAMPLE
+Backtrace for rinari-rake error (Spawning child process:exec format error) is:
+
+  start-process("rake" #<buffer *rake*> "rake" "package")
+  apply(start-process "rake" #<buffer *rake*> "rake" "package")
+  comint-exec-1("rake" #<buffer *rake*> "rake" ("package"))
+  comint-exec(#<buffer *rake*> "rake" "rake" nil ("package"))
+  make-comint-in-buffer("rake" nil "rake" nil "package")
+  apply(make-comint-in-buffer "rake" nil "rake" nil "package")
+  make-comint("rake" "rake" nil "package")
+  apply(make-comint "rake" "rake" nil "package")
+  (let* ((buffer ...) (proc ...)) (save-excursion (set-buffer buffer)
+(set-process-sentinel proc ...) (set-process-filter proc ...) (set ...
+ruby-compilation-error-regexp-alist) (set ... ...)
+(compilation-minor-mode t) (ruby-compilation-minor-mode t)))
+  (if (comint-check-proc comp-buffer-name) nil (let* (... ...)
+(save-excursion ... ... ... ... ... ... ...)))
+  (unless (comint-check-proc comp-buffer-name) (let* (... ...)
+(save-excursion ... ... ... ... ... ... ...)))
+  (let ((comp-buffer-name ...)) (unless (comint-check-proc
+comp-buffer-name) (let* ... ...)) comp-buffer-name)
+  ruby-do-run-w/compilation("rake" ("rake" "package"))
+  (pop-to-buffer (ruby-do-run-w/compilation "rake" (cons "rake" ...)))
+  (let* ((task ...) (rake-args ...)) (pop-to-buffer
+(ruby-do-run-w/compilation "rake" ...)))
+  ad-Orig-ruby-rake-w/compilation(nil nil)
+  (setq ad-return-value (ad-Orig-ruby-rake-w/compilation edit task))
+  (let ((default-directory ...)) (setq ad-return-value
+(ad-Orig-ruby-rake-w/compilation edit task)) (rinari-launch))
+  (let (ad-return-value) (let (...) (setq ad-return-value ...)
+(rinari-launch)) ad-return-value)
+  ruby-rake-w/compilation(nil nil)
+  rinari-rake(nil)
+  call-interactively(rinari-rake)
+#+END_EXAMPLE
+
+* PARTIAL bundles
+** DONE rhtml (from original rinari)
+see
+- [[http://rinari.rubyforge.org/rhtml_002dMode.html#rhtml_002dMode]]
+- [[http://github.com/eschulte/rhtml/tree/master]]
+
+** rdebug
+- [[http://bashdb.sourceforge.net/ruby-debug.html#SEC_Top]]
+** DONE snippets
+see http://github.com/eschulte/yasnippets-rails/tree/master
+
+* MAYBE inf-ruby enhancement
+
+found an example of an error that the
+`inferior-ruby-error-regexp-alist' in inf-ruby.el doesn't match
+
+this was the error line
+
+:SNIP:
+SyntaxError: /home/eschulte/united/org/work/arf/arf/lib/cluster.rb:35: syntax error, unexpec
+:END:
+
+* MAYBE ruby-compilation enhancement
+  
+found a line which didn't match the error-regexp-alist
+
+:SNIP:
+test_create(QueriesControllerTest) [/home/eschulte/work/arf/arf/test/functional/queries_controller_test.rb:60]:
+:END:
+
+and another
+
+:SNIP:
+    /var/lib/gems/1.8/gems/mongrel-1.1.3/bin/mongrel_rails:281
+:END:
+
+* DONE rinari movement [5/5]
+
+From anywhere, get to the related model/controller/test/view
+
+where can you be?
+- view
+- controller
+- model
+- unit-test
+- functional-test
+- other
+
+pending...
+- [X] still need to work on movement from OTHER places
+- [X] look at a better keybinding setup
+- [X] rails2 style view names
+- [X] code refactor:
+- [X] regexps in method names
+
+** code refactor
+
+actually I'm thinking that when I have time it would be worthwhile to
+remove toggle, and handle all of the movement through a new
+independent toggle-like tool say "toggle-hassle" which uses an alist
+like toggle, but instead of elements like
+
+Done see http://github.com/eschulte/jump.el/tree/master
+
+* DONE add yaml,css,javascript,ruby pointers to the documentation
+
+* DONE write up some info documentation for Rinari
+
+- [X] making progress in [[file:doc/rinari.texi]]
+
+- [X] might want to add information for installing the documentation
+
+- [X] also post it up to rinari.ruby-forge.org
+
+* DONE define macro for ido completion
+since we often want to check the availability of ido for completing
+reads it would probably be worth writing a macro to do this.
+
+also, it may be worthwhile breaking utility functions out into a
+separate file...
+
+* DONE Make rinari a minor mode that doesn't activate for regular ruby-mode.
+  :PROPERTIES:
+  :assignee: eschulte
+  :END:
+
+look at [[info:elisp:Minor%20Mode%20Conventions][info:elisp:Minor Mode Conventions]]
+
+** DONE define as a minor mode
+** DONE when to enter rinari-minor-mode
+this could be done through a hook that runs every time a .rb or .rhtml
+file is loaded to check if it is inside of a rails project (using the
+`rails-root' function or a .emacs-project file) and then to load
+rinari-minor-mode appropriately
+
+done with hooks on find-file and dired-mode
+
+** DONE add key-bindings for rinari minor mode
+should follow emacs key bindings
+
+see [[info:elisp:Key%20Binding%20Conventions][info:elisp:Key Binding Conventions]]
+
+:SNIP:
+   * Sequences consisting of `C-c' followed by a control character or a
+     digit are reserved for major modes.
+
+   * Sequences consisting of `C-c' followed by `{', `}', `<', `>', `:'
+     or `;' are also reserved for major modes.
+
+   * Sequences consisting of `C-c' followed by any other punctuation
+     character are allocated for minor modes.  Using them in a major
+     mode is not absolutely prohibited, but if you do that, the major
+     mode binding may be shadowed from time to time by minor modes.
+:END:
+
+given the above, it seems like an ergonomic option would be to start
+all our rinari key-bindings with \C-c-' with \C-c-'-' running
+something similar to \C-c\C-c in org-mode
+
+* DONE change toggle for incremental search
+
+so something like search_incrementally will match search if
+incrementally isn't available
+
+also, push the "def "s into the variable in toggle.el to try to keep
+it language-agnostic
+* DONE project-wide search and search/replace
+
+I know you can do this with rgrep, but It would be nice to easily call
+it on the whole project (yml/rhtml/rb files), and it would help guide
+emacs noobs to the powers of rgrep
+
+Danger here is cluttering up Rinari with thin wrappers around existing
+emacs tools...
+
+rinari-rgrep
+
+* DONE errors / tests
+something to speed up the cycle of
+
+- code
+- test
+- review errors
+
+this should probably cash out into two different functions...
+
+** DONE rails-test-method
+
+*** DONE enhance toggle so that it can match up function names as well
+see [[file:toggle.el::if%20string%20match%20new%20name][methods in toggle-buffer]]
+
+*** DONE rinari-test-function will now try to toggle if needed
+
+see [[file:rinari.el::defun%20rinari%20test%20function][rinari-test-function]]
+
+*** CANCELLED use the same mechanism as find view
+maybe instead of using the current buffer-file change
+[[file:rinari.el::defun%20rails%20name%20components%20name][rails-name-components-name]] so it returns the last component as well,
+then change the controller usage of this function to drop the last
+list element.  That way this can be used to get model names when
+calling which-function from models/model.rb files.
+
+Also, if you don't have a test written for this particular method this
+could insert the def...end for the test into the appropriate file, and
+drop the point there.  Nothing wrong with a little bit of soft
+paternalism.
+* DONE add a function for running mysql
+this would use the information in /conf/databases.yaml to log into the
+application's database using sql-* functions from sql.el as
+appropriate
+
+* DONE make rails-find-action follow forms and link_to[_remote]
+
+see [[file:rinari.el::defun%20rinari%20alist%20from%20view][rinari-alist-from-view]]
+
+* DONE rinari-rake uses ruby-compilation
+* DONE remove rails-script add ruby-compilation
+
+it turns out most of the bulk of rails-script.el was supporting
+running ruby processes with output going to compilation buffers.  So
+rails-script.el is now removed (with two short functions in rinari.el
+[[file:rinari.el::defun%20rinari%20console%20optional%20arg][rinari-console]] and [[file:rinari.el::defun%20rinari%20server][rinari-server]]), also ruby-compilation has been
+added.
+
+** DONE move through compilation buffers
+
+redefine some keys buffers to make it easier to navigate.
+
+n will go to the next line
+p will go to the previous line
+
+C-n next error line
+C-p previous error line
+
+M-n top of the next group of errors
+M-p top of the previous group of errors [[file:rails-script.el::defun%20rails%20compilation%20previous%20error%20group][previous-group]]
+
+so if you just saw an error on a web page, you can see that error in
+three key commands
+
+1) X-b *server*
+p2) M-p
+3) enter
+
+*** old
+a function which either...
+1) goes to the error closest to point in the current compilation mode
+   buffer
+2) goes to the most recent error in the *server*, *console*, or *test*
+   buffer
+
+See this discussion below from the emacs-on-rails list...
+
+email discussion:
+:SNIP:
+> - maybe add a command which can jump to the most recent error (either
+>   in the server logs, or in the console)
+
+>  > That's a great idea. find-file-at-point is pretty good at doing this
+>  > from test failures in eshell, but you have to move your point up to the
+>  > line containing the error message. Leveraging logs and console output
+>  > would be a great addition as would looking for lines somewhere other
+>  > than just under the point.
+>
+> So there are two different possible ways to approach this...
+>
+> 1) through a function which searches in known places (eshell, logs,
+>    consoles, server buffers, in current buffer) and makes an educated
+>    guess about what to present to the user, possibly allowing quick
+>    switching to the other errors.
+
+Hmm... now that I think about it more, I'm not sure it's a good idea to
+make it really convenient to go around digging through server logs to
+find errors. The right way to go about solving that kind of problem is
+to write a test for it. If you make it easier to fix the problem without
+writing a test, really what that amounts to is short-term benefit but
+long-term problems since your fix isn't guaranteed to be caught by the
+test suite.
+
+So I would discourage integration with the dev mongrel logs. The bonus
+side of that is if we only have to help jump to errors/failures in test
+output it becomes a lot easier. There are in my mind three common ways
+of running tests:
+
+- In an emacs shell, whether that's eshell, M-x shell, or ansi-term
+- With compile-mode, as per the ruby-test-file function in rinari
+- In a shell outside Emacs
+
+So if we check console output it will work in the first two cases but
+not in the last. I think it's best to always check the test logs, since
+problems are pretty much guaranteed to be found in there. This also
+solves the integration test problem; when you're running those and you
+get an exception, the only console output you see is that you expected a
+200 response but you got a 500, which is totally useless. In those cases
+you have to check the logs anyway.
+
+We could probably base this functionality on compilation mode. It's
+already built to go over output looking for something that looks like a
+stack trace and provide jumping to the source of the error:
+
+http://www.emacswiki.org/cgi-bin/wiki/CompilationMode
+
+> 2) wrap console, and server processes in insertion-filters which could
+>    notice whenever an error passes through them, and save a pointer to
+>    the error in some global rails-errors variable which could be
+>    queried by jump-to-my-last-error type function
+>
+> I was originally leaning towards the latter, but now that you mention
+> it the former might be easier... not sure
+
+Yeah, the second one sounds a lot harder.
+:END:
+
+* DONE launch web-browser to current view
+  add a quick command to view the current page in a web-browser
+
+* DONE unified runner for rails scripts
+
+This is less a single runner, and more a single function from which
+any rails/script can be executed associating the scripts with
+appropriate buffers and modes.
+
+Currently this
+- runs console from a buffer in comint-mode
+- runs server dumping output to a compilation-minor-mode buffer
+- provides completion for generate/destroy
+- runs all other scripts using shell-command-to-string dumping the
+  output to a message
+
+** DONE if web-server doesn't start change status message
+currently there is no indication that the attempt to start the server
+has failed
+
+now has a sentinel, see [[elisp:(describe-function 'set-process-sentinel)]]
+* DONE revert and wrap find-file-in-project
+  :PROPERTIES:
+  :assignee: eschulte
+  :END:
+
+revert to the .emacs-project version of find-file-in-project so that
+the actual find-file-in-project.el file remains unchanged.  Then using
+defadvice wrap the ffip function to find the project base using
+(rails-root) as well as the .emacs-project file.
+
+* DONE Name functions consistently
+some global prefix for all of the function names, probably either
+"rails" or "rinari"
+
+going for rails for now
+- easier to remember
+- easy enough to change later
+
+switching to rinari
+
+while I'm doing this I'm going to rename rails-scripts.rl to
+rails-script.el (minor)
+
+easy enough
+
+
+ LocalWords:  elsif elseif keybinding
+* CANCELLED adjust eshell/shell environment to highlight ruby errors
+not sure this is possible, at least not easily
+
+

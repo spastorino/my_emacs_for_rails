@@ -1,0 +1,427 @@
+<title>CEDET: Adding support for a new language</title>
+
+<!--#include file="pagestart.php"-->
+
+<table width=100% class=BAR>
+<tr><td><h2><font color=black>Add support for a new language</font></h2></td></tr>
+</table>
+
+<p>If you maintain support for a language mode in Emacs, or would like
+   to be a maintainer for an unsupported language, then integrating
+   the use of your language with CEDET can be a quick way to get some
+   advanced features.
+
+<p>The tools in the CEDET Suite represent a lot of infrastructure, and
+   have been designed to provide useful and clean interfaces to
+   maintainers of different kinds of tools.  Adding support for a
+   language under CEDET can be challenging as the language will need
+   to be "made to fit" a generic tagging infrastructure so that
+   applications built on top of CEDET can work in a language agnostic
+   way.
+
+<p>This document is set up to describe at a high level how to add
+   support for a language, and is sorted so as maximize the number of
+   features provided by your efforts.
+
+<p>
+<table width=100% class=BAR>
+<tr><td><h3><font color=black>Step 0: Join the mailing list</font></h3></td></tr>
+</table>
+
+<p>The first thing to do is to join
+   the <a href="http://lists.sourceforge.net/lists/listinfo/cedet-devel">cedet-devel</a>
+   mailing list.  This is for two reasons:
+
+<ol>
+<li>There might be someone already working with your language.
+<li>The APIs for language support hooks is very wide, and the texinfo
+   documentation for the more detailed aspects of language support are
+   not very strong.
+</ol>
+
+<p>
+<table width=100% class=BAR>
+<tr><td><h3><font color=black>Step 1: Write a Grammar</font></h3></td></tr>
+</table>
+
+<p>The most critical feature to start with is to write a tagging
+   parser for <b>CEDET</b> for your language.  The tagging system used
+   by <b>CEDET</b> is in the tool
+   called <a href="semantic.shtml">Semantic</a>.
+
+<p>The very first step in this process is to make sure there is a
+   traditional Emacs major-mode for the language.  This major mode
+   must have a robust and tested syntax-table that can correctly
+   identify strings and comments, and has an accurate representation
+   of all parenthetical expressions.
+
+<p>The next step is to choose how to parse your language.  A parser
+   for you language can take one of several forms.
+
+<h4>Writing a lexer/grammar in <a href="semantic.shtml">Semantic</a></h4>
+
+<p>The most obvious tactic is to write a lexical analyzer, and a
+   syntactic analyzer using <a href="semantic.shtml">Semantic</a>.
+   Within Semantic, there is a port of Bison called Wisent.
+
+<p>You should choose to use the Semantic lexer/grammer format for your
+   language if it has a deterministic grammar.  Often times you can
+   download a pre-existing BNF grammar for a language.  These BNF
+   grammars can be converted to Wisent grammar format fairly easily.
+
+<p>Using the Semantic grammar format provides the greatest number of
+   features to the CEDET tool suite.
+
+<p>Refer to the Semantic documentation for more on how to do this.
+
+<h4>Write a regular-expression based tag generator</h4>
+
+<p>If the grammar of your file is irregular, or contains a lot of
+   free-form text, you probably want to write a regular expression
+   based tag generator.
+
+<p>Writing a regular expression based tag generator works fine with
+   the Semantic tool set.  You do not get the advantage of incremental
+   parsing, or invalid syntax highlighting with these parsers.
+
+<p>To get started, the existing tag generators for Texinfo
+   in <tt>cedet/semantic/semantic-texi.el</tt> is a good place to
+   start.  Be sure to read the Semantic guide on the TAG API to learn
+   how to create and cook your tags.
+
+<h4>Integrate an external parsing tool</h4>
+
+<p>You can also pull in an external tool
+   like <a href="http://ctags.sourceforge.net/">Exuberant CTags</a> to
+   parse your files.  This can be handy to bootstrap support for your
+   language.  External parsing tools often have issues where the
+   actual extents of the TAG in your buffer is unknown.  They also
+   have problems in that the buffer must be saved before they can
+   work.
+
+<p>Adding an external parser can also be useful in conjunction with a
+   semantic lexical analyzer/grammar.  Files not in buffers can be
+   parsed by the external tool, while in buffer files can be parsed by
+   the internal grammar.
+
+<p>Exuberant CTags is already partially supported by Semantic.
+   Extending ECtags support to new languages can be straight forward.
+   See the file <tt>cedet/semantic/ctags/semantic-ectag-lang.el</tt>
+   for an example of sh script support.
+
+<p>
+<table width=100% class=BAR>
+<tr><td><h3><font color=black>Step 2: Tune APIs with </tt>`mode-local'</tt></font></h3></td></tr>
+</table>
+
+<p>Once you have a good tagging system in place, many tools become
+   enabled for your language.  Tools such as tag decoration mode,
+   stickyfunc mode, ECB code browser, and tag jumping are all
+   enabled.  In addition, the Semantic Database system will start
+   storing and searching your tags.
+
+<p>The next step is to start tuning the infrastructure to your
+   language.  The only way to do this is dig in and start trying out
+   different Semantic tools, and find out when things either don't
+   look right, or don't behave property.
+
+<p>A simple place to start is with the
+   command: <tt>semantic-test-all-format-tag-functions</tt>.  This
+   command will execute a range of functions that will format your
+   tags in different ways.  These routines are used in hundreds of
+   places, and are a simple way to start learning about
+   the <tt>mode-local</tt> tool, and how it works.
+
+<p>For example, in C, the basic way a tag name is formatted is
+   augmented so that if it is a function pointer, the syntax for that
+   is added to the name.  The code in <tt>semantic-c.el</tt> looks
+   like this:
+
+<tt><pre>
+(define-mode-local-override semantic-format-tag-name
+  c-mode (tag &optional parent color)
+  "Convert TAG to a string that is the print name for TAG.
+Optional PARENT and COLOR are ignored."
+  (let ((name (semantic-format-tag-name-default tag parent color))
+	(fnptr (semantic-tag-get-attribute tag :functionpointer-flag))
+	)
+    (if (not fnptr)
+	name
+      (concat "(*" name ")"))
+    ))
+</pre></tt>
+
+<p>There are a wide array of functions to override for your language.
+   If you have a hard time getting your language tuned, join
+   the <a href="http://lists.sourceforge.net/lists/listinfo/cedet-devel">cedet-devel</a>
+   mailing list and find out more.
+
+<p>
+<table width=100% class=BAR>
+<tr><td><h3><font color=black>Step 3: EDE Support</font></h3></td></tr>
+</table>
+
+<p>You may want to jump in and start getting
+   the <a href="intellisense.shtml">Smart Completion</a> tool running.
+   An important step before that is to get some
+   basic <a href="ede.shtml">EDE</a> support up for your language.
+
+<p>EDE provides the infrastructure for how files relate to each other.
+   The Smart Completion tool cannot work in a system involving
+   multiple grouped directories if it cannot rely on EDE to provide
+   this infrastructure.
+
+<p>There are three possible ways to involve EDE.
+
+<h4><tt>Project.ede</tt> support</h4>
+
+<p>If your language uses Makefiles and compilers the way C does, then
+   you can extend the <tt>ede-proj-obj.el</tt> infrastructure.  It
+   would likely involve creating a few compiler declarations and
+   that's about it.
+
+<p>If your language is more complex, but still supported by AutoMake,
+   then your job is a little more complex.  There are several examples
+   in either the Emacs Lisp support, or Texinfo support that you could
+   use as examples.
+
+<h4>Autodetect support</h4>
+
+<p>If your language's build system uses a set of predictable files,
+   such as "Makefile.am", then you can write an EDE project that maps
+   th EDE project structure onto your files.  EDE's internal structure
+   happens to make to directories and files, so you will need to find
+   a way to do the same mapping.  This will allow you to associate
+   build commands to specific buffers.
+
+<p>The <tt>ede-emacs.el</tt> and <tt>ede-linux.el</tt> projects are
+   very specific examples of how something like this might work.
+
+<h4>Explicit configuration</h4>
+
+<p>You can also create EDE project wrappers that need to be explicitly
+   created in a user's <tt>.emacs</tt> file.  These are little easier
+   to create and manage for the developer, but harder for a user to
+   use.  These are helpful if there are too many unpredictable ways to
+   store and build your source code for your language, and provides an
+   explicit place for users to have project local settings.
+
+<p>The <tt>ede-cpp-root.el</tt> project is a great example of how to
+   build such a project.
+
+<p>
+<table width=100% class=BAR>
+<tr><td><h3><font color=black>Step 4: Context Parsing</font></h3></td></tr>
+</table>
+
+<p>You probably still want to jump to the Smart Completion?  Well, to
+   do that, you need to get your language's local context parsing to
+   work.  The suite of functions is in <tt>semantic-ctxt.el</tt>.  The
+   code here allows basic movement withing your code, up and down
+   nested code blocks, parsing local variables, and identifying scope
+   modifiers, such as the C++ <tt>using</tt> statement.
+
+<p>Parenthetical languages like C or Java probably don't need a lot
+   of work here.  Non-parenthetical languages that have complex
+   code constructs will need heavy customization.
+
+<p>A key function to start with
+   is <tt>semantic-get-local-variables</tt>.  Try it out with
+   something like this:
+
+<tt><pre>
+M-: (semantic-get-local-variables) RET
+</pre></tt>
+
+<p>The condensed output may be insufficient to examine the output.  If
+   so, a helpful configuration for your <tt>.emacs</tt> file is:
+
+<tt><pre>
+(global-set-key "\M-:" 'data-debug-eval-expression)
+</pre></tt>
+
+<p>Another important function suite to get right are
+   the <tt>current-symbol</tt> set of functions.  These are all core
+   to the smart completion engine having something to complete.  Try
+   them out using <tt>M-:</tt>.  The key ones are:
+
+<tt>
+<ul>
+<li>semantic-ctxt-current-symbol
+<li>semantic-ctxt-current-symbol-and-bounds
+<li>semantic-ctxt-current-assignment
+<li>semantic-ctxt-current-function
+<li>semantic-ctxt-current-argument
+</ul>
+</tt>
+
+<p>Hopefully the logic in these key functions won't need to be
+   overridden.  They will, however, lead to other smaller scoped
+   functions that you can override for your language.
+
+<p>
+<table width=100% class=BAR>
+<tr><td><h3><font color=black>Step 5: Smart Completion</font></h3></td></tr>
+</table>
+
+<p><img src="img-gen/semantic-ia-complete-menu.png" border=1 align=right>The next
+   set of commands you may need to override for you language is
+   probably for the smart completion tool.  Getting this tool to work
+   for you language is a tricky proposition, and there are no hard and
+   fast rules.  You will need to try out the different parts of the
+   analyzer framework, and tune the output results as needed.
+
+<p>The completion engine is made of two key parts.  There is
+   a <em>Context Analyzer</em>, and a </em<Possible Completions</em>
+   engine.  The first thing is to try out the context analysis with
+   the command:
+
+<tt><pre>
+M-x semantic-analyze-current-context RET
+</pre></tt>
+
+<p>It should then show a dump of what it found.  For C++, it might
+   look like this:
+
+<tt><pre>
+Context Type: #<semantic-analyze-context context>
+Bounds: (262 . 263)
+Prefix: "p"
+Prefix Classes: 'function
+                'variable
+                'type
+--------
+-> Parents: namespace Name1 {}
+            namespace Name2 {}
+            class Foo {}
+-> Scope: Mumble* pMumble
+          void sendStuff (int a,int b)
+          void publishStuff (int a,int b)
+          typedef Mumble {}
+          typedef stage1_Foo {}
+          class Foo {}
+          typedef stage2_Foo {}
+          namespace Name2 {}
+-> Local Vars: Foo this
+</pre></tt>
+
+<p>To get this information, it needs to derive <em>type cache</em> a
+   local <em>scope</em>.  The type cache collects all the datatypes
+   known for the buffer and sorts them together for fast lookups. It
+   can be queried like this:
+
+<tt><pre>
+M-x semanticdb-typecache-dump
+</pre></tt>
+
+<p>The output buffer is in 'Data Debug' mode, so use SPC to open up
+   different lines to see what else is there.
+
+<p>The local scope then can learn about the classes and <tt>using</tt>
+   type statements, and put a Scope together.  Query the scope like
+   this:
+
+<tt><pre>
+M-x semantic-calculate-scope
+</pre></tt>
+
+<p>Once these two tools are producing rational output for your
+   language, then you can move back to debugging the analyzer.  A
+   reasonable place to start is by using the command:
+
+<tt><pre>
+M-x semantic-analyze-debug-assist
+</pre></tt>
+
+<p>This command will report everything it can find out about your
+   context, with suggestions as to why it cannot identify a symbol
+   under point.
+
+<p>Each of the above tools has a wide range of over ridable
+   functions.  Some example functions that need customization for C
+   that are used by the completion engine are:
+
+<tt>
+<ul>
+<li>semantic-find-tags-by-scope-protection
+<li>semantic-tag-protection
+<li>semantic-analyze-dereference-metatype
+<li>semantic-analyze-type-constants
+<li>semantic-analyze-split-name
+<li>semantic-analyze-unsplit-name
+<li>semantic-ctxt-scoped-types
+<li>semantic-get-local-variables
+</ul>
+</tt>
+
+<p>
+<table width=100% class=BAR>
+<tr><td><h3><font color=black>Step 6: Code Generation</font></h3></td></tr>
+</table>
+
+<p>This step could also occur after your basic language parser is
+   working.  It does not need Smart Completion or EDE support, but
+   does use some local context parsing.
+
+<p>Semantic's code generation system is
+   in <a href="srecode.shtml">SRecode</a>, the Semantic Recoder.  This
+   tool uses template files to specify basic structure for recoding
+   tags generated by your language grammar.
+
+<img src="img-gen/srecode-cpp-template.jpg" align=right border=1>
+<h4>Use SRecode minor mode</h4>
+
+<p>Enable SRecode minor mode in your <tt>.emacs</tt> file.
+
+<tt><pre>
+(global-srecode-minor-mode 1)   
+</pre></tt>
+
+<h4>Create a template file</h4>
+
+<p>The first step is to create a template file for your language, and
+   add it to the SRecode template path.  You can do this by putting
+   your files in your <tt>~/.srecode</tt> directory, or modifying
+   the <tt>srecode-map-load-path</tt> to the location of your
+   templates.
+
+<p>Now create an empty template file, such
+   as <tt>srecode-LANG.srt</tt>.  Use the SRecode minor mode to fill
+   the buffer with <tt>C-c / /</tt>.  It will prompt for the template
+   to use, suggesting the empty template.  Press <tt>RET</tt> to fill
+   in the buffer.
+
+<p>A good start here is to create your own "empty" template.  Creating
+   an empty template is a great way to learn about quite a few SRecode
+   template features, as you can include the default filecomment
+   template, and learn about the :file and :user template arguments
+   that fill in template macro values.
+
+<h4>Create a custom template argument</h4>
+
+<p>The next step is to code up an argument for your language.  In the
+   image to the left, the :time and :user keywords are template
+   arguments.  They map to Emacs Lisp functions
+   called <tt>srecode-semantic-handle-:time</tt>
+   and <tt>srecode-semantic-handle-:user</tt>.  These functions fill
+   in the dictionary we values calculated from the Emacs environment.
+   Look at the argument handler <tt>srecode-semantic-handle-:cpp</tt>
+   to learn more about how the <tt>FILENAME_SYMBOL</tt> is filled in
+   as a C++ specific macro.
+
+<p>The next step is to start creating templates following the Semantic
+   tag generation naming convention.  See the SRecode info manual for
+   more on this topic.
+
+<h4>Application Templates</h4>
+
+<p>Some SRecode applications, such as
+   the <tt>srecode-document-insert-comment</tt> command also have some
+   custom templates that may need to be filled in.  Adding support for
+   any such application templates is the same as creating a generic
+   set of templates.  To do so, create a new template file, and fill
+   it in, making sure to specify an <tt>application</tt> for that
+   file.
+
+<p>
+<!--#include file="footer.fsf.shtml"-->

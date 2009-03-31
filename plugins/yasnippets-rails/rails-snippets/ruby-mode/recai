@@ -1,0 +1,3 @@
+#name : redirect_to :controller => " ... ", :action => " ... ", :id =>  ... 
+# --
+redirect_to :controller => "${items}", :action => "${show}", :id => ${@item}

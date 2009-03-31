@@ -1,0 +1,104 @@
+<title>CEDET: Projects</title>
+
+<!--#include file="pagestart.php"-->
+
+<table width=100% class=BAR>
+<tr><td><h2><font color=black>Project Management</font></h2></td></tr>
+</table>
+
+<img src="img-gen/cedet-project-menu.png" align=right>
+<p>The CEDET Project management system provides a few simple
+   keystrokes for organizing your files, building Makefiles or
+   Automake files, and compiling your sources.
+
+<p>If you don't want <b>CEDET</b> to manage your Makefiles, CEDET will
+   still be able to identify some types of projects based on
+   pre-existing build configurations, such as the Emacs sources, the
+   Linux kernel, or any project built using Automake.
+
+<p>The entire <b>CEDET</b> Makefile tree was built with <b>CEDET</b>'s
+   project management system, so when you download and build the
+   distribution package, you will be using a <b>CEDET</b> project.
+
+<p>The image to the right shows a part of the Project management menu.
+<br clear=all>
+
+<table width=100% class=BAR>
+<tr><td><h3><font color=black>Project Basics</font></h3></td></tr>
+</table>
+
+<p>The project system for CEDET is implemented in a tool
+called <a href="ede.shtml">EDE</a>, or "Emacs Development
+Environment".  The EDE tool was started in 1997 and is the backbone of
+many CEDET features.  This section will refer to EDE.
+
+<p>The key reason to enable <tt>global-ede-mode</tt> with your CEDET
+install is to enable the other tools in the CEDET suite to identify
+the boundaries of your project.  In particular,
+the <a href="intellisense.shtml">smart completion</a> system and the
+<a href="symref">Symref</a> system must be able to find all your
+sourcecode in order to provide the desired results.
+
+<h4>Use EDE to create makefiles</h4>
+
+<p>If you would like to use EDE to do all the build management of your
+sourcecode, and your project is built from C/C++ code, Emacs Lisp
+code, and texinfo documentation, then you are in luck.  Start with the
+command:
+
+<tt><pre>
+M-x ede-new RET
+</pre></tt>
+
+<p>and choose either a Makefile or Automake based project.  You can then
+use
+
+<tt><pre>
+M-x ede-new-target RET
+</pre></tt>
+
+<p>to create makefile targets and start adding source files into your
+project.  Use the project menu to create your makefiles, and build
+your sources.
+
+<h4>Use EDE to wrap a known project type</h4>
+
+<p>If you are working on the code to Emacs, Linux, or have a project
+using hand-written Automake files, then you are in luck.  All you need
+to do is enable EDE's global mode, and that's it.
+
+<p>EDE will autodetect these project types, and configure itself to help
+you use the other features that need the EDE structure.
+
+<h4>Use EDE to wrap a project with a custom build script</h4>
+
+<p>If you are working with a custom build system, or a system not yet
+supported by default by EDE, then you will need to wrap your project
+in a simple EDE wrapper.
+
+<p>For C or C++ projects, there is a custom project you can use
+called <tt>ede-cpp-root</tt>.  You can configure this project in
+your <tt>.emacs</tt> file.
+
+<p>A simple example looks like this:
+
+<tt><pre>
+ (ede-cpp-root-project "NAME" :file "FILENAME"
+     :include-path '( "/include" "../include" "/c/include" )
+     :system-include-path '( "/usr/include/c++/3.2.2/" )
+     :spp-table '( ("MOOSE" . "")
+                   ("CONST" . "const") )
+     :spp-files '( "include/config.h" )
+     ) 
+</pre></tt>
+
+<p>EDE likes to anchor its projects to files on the filesystem, so be
+   sure to set FILENAME to a real file in your project, such as a
+   Makefile.  The remaining slots are optional, but allow to to
+   specify project specific include paths, or pre-processor tables.
+   In this case <tt>"spp"</tt> stands for the "Semantic PreProcessor",
+   the tool used to parse C PreProcessor statements.
+
+<!--#include file="download.php"-->
+
+<!--#include file="footer.fsf.shtml"-->

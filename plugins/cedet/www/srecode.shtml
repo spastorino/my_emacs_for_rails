@@ -1,0 +1,62 @@
+<title>SRecode: Semantic Recoder</title>
+
+<!--#include file="pagestart.php"-->
+
+<table width=100% class=BAR>
+<tr><td><h2><font color=black>SRecode:</font></h2></td>
+<td><font color=black>"Template Manager and autormatic Code Authoring system."</font></td></tr>
+</table>
+
+<P><img src="img-gen/srecode-cpp-template.jpg" align=right border=1>
+  SRecode is an infrastructure for managing Emacs based templates
+  which, in turn, are used to write code, possibly based off
+  of <a href="semantic.shtml">Semantic</a> generated tags.
+
+<p>SRecode is not just another templating system for Emacs like
+  skeleton or tempo.  The core SRecode template system is not more
+  feature rich or capable than it's predicessors.  SRecode becomes
+  powerful when you combine the template cataloging system and naming
+  conventions which allows complex applications to be written where
+  users can override core formatting bits with ease.
+
+<p>Templates are written in special <tt>.srt</tt> files which are then
+  parsed by Emacs into a hierarchical database of context assocated
+  templates.  Simple templates are extracted by name and context to
+  fill in empty files, add functions, or comments.  The core template
+  text is based loosely on 
+  <a href="http://code.google.com/p/google-ctemplate/">Google ctemplate</a>
+  with dictionaries and fancy Emacs specific macro substitution.
+
+<p>More complex application specific templates are a mix of Emacs Lisp
+  code and templates.  Creating a template based application is a
+  breeze in SRecode where dictionaries can be created and applied to
+  the the template catalog.  A single Emacs Lisp application can
+  actually write code to do the same thing in multiple languages based
+  on a strong set core templates for each language.
+
+<p>SRecode will become the code generator for COGRE, allow users to
+  create an object system via UML and then write it out into most
+  languages that have SRecode template support.
+
+<p>If you want to use SRecode for an application, be sure to
+  susbscribe to
+  the <a href="http://lists.sourceforge.net/lists/listinfo/cedet-devel">cedet-devel</a>
+  mailing list to get help when the info manual doesn't answer your
+  questions.
+
+<p>The image on the right shows a small section of the C/C++ base
+   template.  It shows the basic format of the SRecode template
+   language.  It includes some basic variable settings, and the
+   "empty" template.  The "empty" template is activated if a file is
+   empty.  That template includes the "header_guard" template.
+   Automatic section variable HEADER includes it if the empty file is
+   a .h file.  All variables used in these templates are automatic, so
+   you do not need to answer questions when inserting these.
+
+
+</p>
+
+<!--#include file="download.php"-->
+
+<!--#include file="footer.fsf.shtml"-->
+

@@ -1,0 +1,146 @@
+<title>CEDET: Code Generation</title>
+
+<!--#include file="pagestart.php"-->
+
+<table width=100% class=BAR>
+<tr><td><h2><font color=black>Code Generation</font></h2></td></tr>
+</table>
+
+<p><img src="img-gen/srecode-fields.png" border=1 align=right>
+   The template system in <b>CEDET</b> is a framework
+   designed for code-generating application developers.  Even so, the
+   base system and templates can also be used to insert small
+   repetitive code blocks.  The template language is straight-forward,
+   and flexible.  Because it uses the same code analytics as the Smart
+   completion, it often can correctly guess a wide range of values to
+   be used in your templates, saving you typing.
+
+<p>Some pre-existing tools that use <b>CEDET</b>'s code generation
+   system will write texinfo documentation for you, create doxygen
+   style comments fully filled out from the local context, or insert
+   get/set methods for variables in a class.
+
+<p>The image to the right shows a simple class declaration inserted
+   with the experimental "fields" feature enabled.  Typing in one
+   field updates the others that match the same template dictionary
+   macro.
+
+<br clear=all>
+<p>
+<table width=100% class=BAR><tr><td>
+<h3>How it works: Users view</h3>
+</td></tr></table>
+
+<p><b>CEDET</b>'s code generate is based on a module
+   called <a href="srecode.shtml">SRecode</a>, which is the "Semantic
+   Recoder".  As the name suggests, this tool can take information
+   generated from the <a href="semantic.shtml">Semantic</a>
+   parsing/tagging tool, and convert that back into source code.
+
+<p>You can insert any of the default templates using SRecode minor
+   mode.  To always use this mode, put this in your <tt>.emacs</tt>
+   file.
+
+<tt><pre>
+(global-srecode-minor-mode 1)
+</pre></tt> 
+   
+<p>You can then use the <tt>SRecode</tt> menu to select templates to
+   insert.  The default templates include function and variable
+   frameworks.
+
+<p>SRecode is also an infrastructure for creating applications that
+   generate code.  There are a couple simple applications already
+   written for SRecode.
+
+<h4>srecode-document-insert-comment</h4>
+
+<p>This command examines the function or variable under the cursor.
+   It then will determine the most ideal comment, and insert it.  It
+   will guess on the comment location, format, and even generate
+   simple English text to describe it based on a small dictionary of
+   words.
+
+<p>If there is already a comment there, SRecode will will reverse-read
+   the comment, and recycle any text you have already typed into the
+   comment, but will reformat it as needed.
+
+<p>This supports C, C++ and Java.
+
+<h4>srecode-insert-getset</h4>
+
+<p>This command will automatically create get/set method pairs for a
+   class field.  It attempts to position the new methods in a logical
+   location.
+
+<h4>srecode-texi-add-menu</h4>
+
+<p>Place the cursor into a texinfo menu, and call this function.  It
+   will add a new menu entry.  Then it will locate the neighboring
+   menu items, find their nodes, and create a new node of the corretly
+   level at the correct location.
+
+<h4>More texinfo</h4>
+
+<p>Use semantic to "copy" a tag (like a function declaration) to the
+   tag-ring using <tt>C-c , M-w</tt>, then you can "yank" that tag
+   into a texinfo buffer as a texinfo defun using <tt>C-c , C-y</tt>.
+
+<br clear=all>
+<p>
+<table width=100% class=BAR><tr><td>
+<h3>Overriding Templates</h3>
+</td></tr></table>
+
+<p><img src="img-gen/srecode-cpp-template.jpg" align=right border=1>
+
+   Every development project is different.  The default code
+   generating templates won't fit everyone's code.  As a user, you can
+   create your own template files, and re-write the subset of
+   templates that declare functions or variables so that they fit your
+   environment.
+
+<p>By giving the user template files a higher priority, these
+   templates will override the ones that come with SRecode.  Since
+   SRecode applications should all use the same basic code generating
+   templates, they will then generate code using your preferred
+   format.
+
+<p>The image on the right shows a small section of the C/C++ base
+   template.  It shows the basic format of the SRecode template
+   language.  It includes some basic variable settings, and the
+   "empty" template.  The "empty" template is activated if a file is
+   empty.  That template includes the "header_guard" template.
+   Automatic section variable HEADER includes it if the empty file is
+   a .h file.  All variables used in these templates are automatic, so
+   you do not need to answer questions when inserting these.
+
+<p>
+<table width=100% class=BAR><tr><td>
+<h3>How it works: Developer view</h3>
+</td></tr></table>
+
+<p>SRecode starts with a template language, based loosly on Google
+   Templates.  The templates are parsed and stored in a map,
+   associating individual templates with a language, a scope, and
+   possibly an application.
+
+<p>This allows SRecode to have many templates with the same name, even
+   for the same language, but used dependent on the mode and context.
+   Templates can then be referred to by by name in applications.  This
+   allow the Lisp code of an application to work for multiple
+   languages, dependant only on each language supporting the core
+   macro set.
+
+<p>Applications can use the Semantic tag format to store and
+   manipulate the code they would like to generate, and the core
+   SRecode templates to generate code directly.
+
+<p>In theory, you can parse a file with semantic in one language (such
+   as Emacs Lisp) and the output that into a file of a different
+   language, such as Texinfo.  Since Semantic only parses language
+   construct declarations, actual code instructions are not convertable.
+
+
+<p>
+<!--#include file="footer.fsf.shtml"-->

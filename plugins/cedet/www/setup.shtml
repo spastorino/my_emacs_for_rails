@@ -1,0 +1,101 @@
+<title>CEDET: Setup</title>
+
+<!--#include file="pagestart.php"-->
+
+<table width=100% class=BAR>
+<tr><td><h2><font color=black>Setting up CEDET</font></h2></td></tr>
+</table>
+
+<img src="img-gen/setup.jpg" border=1 align=right>
+
+<p>Setting up a tool as large and
+   complex as <b>CEDET</b> can seem daunting.  Fortunately, a
+   minimal <b>CEDET</b> initialization can take up only a couple lines
+   of code in your <tt>.emacs</tt> file.  If you are brave and enjoy
+   customizing your <b>CEDET</b> past this, then you are in luck as
+   there are more options and small features to play with than anyone
+   sane person might want.
+
+<P>Alex Ott has written a great article
+   called <a href="http://xtalk.msk.su/~ott/en/writings/emacs-devenv/EmacsCedet.html">
+   A Gentle Introduction to CEDET</a> that shows both the
+   simple <b>CEDET</b> configuration process, and a wide array of
+   customizations that helps tune your Emacs for programming the smart
+   way.
+
+<p>The image to the right shows the CEDET internal package and
+   revision testing output.  Making sure all the package revisions
+   needed are accurate is important, and fully automatic.
+
+<br clear=all>
+<p>
+
+<table width=100% class=BAR>
+<tr><td><h3><font color=black>Basic Setup</font></h3></td></tr>
+</table>
+
+<h4>Step 1</h4>
+
+Download <b>CEDET</b> from the Sourceforge downloads page.  Choose the
+version from the side-bar on the left of this page.
+
+<h4>Step 2</h4>
+
+Use your favorite tool to unpack <b>CEDET</b> into your favorite place
+to install new Emacs Lisp packages.  The <tt>.tar.gz</tt> file will
+automatically create a directory called <tt>cedet-VERSION/</tt> for
+all the sources, where VERSION is the version of the package you
+downloaded.
+
+<h4>Step 3</h4>
+
+Build CEDET.  On a unix based system such as Linux, you can do it
+using <tt>make</tt>.
+
+<pre>
+  make EMACS=emacs
+</pre>
+
+If you are on Windows, and or don't have make for some reason, you can
+use <b>CEDET</b>'s built in project management system to force CEDET
+to bootstrap itself.  You can initiate the build process like this:
+
+<pre>
+  cd cedet-1.0pre6
+
+  emacs -Q -l cedet-build.el -f cedet-build
+</pre>
+
+For more on the build process, see the INSTALL file in the root of the
+CEDET distribution.
+
+<h4>Step 4</h4>
+
+Configure <b>CEDET</b> in your <tt>.emacs</tt> file by adding code
+like this:
+
+<pre>
+(load-file "~/cedet-1.0pre6/common/cedet.el")
+(global-ede-mode 1)                      ; Enable the Project management system
+(semantic-load-enable-code-helpers)      ; Enable prototype help and smart completion 
+(global-srecode-minor-mode 1)            ; Enable template insertion menu
+</pre>
+
+For more simple configuration options, see the INSTALL file in the
+root of the CEDET distribution.
+
+<h4>Step 5</h4>
+
+<p>Still confused?
+
+<P>Alex Ott has written a great article
+   called <a href="http://xtalk.msk.su/~ott/en/writings/emacs-devenv/EmacsCedet.html">
+   A Gentle Introduction to CEDET</a> that shows both the
+   simple <b>CEDET</b> configuration process, and a wide array of
+   customizations that helps tune your Emacs for programming the smart
+   way.
+
+
+<!--#include file="download.php"-->
+
+<!--#include file="footer.fsf.shtml"-->

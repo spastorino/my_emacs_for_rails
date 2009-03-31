@@ -1,0 +1,3 @@
+#name : assert_not_nil  ... 
+# --
+assert_not_nil ${object}

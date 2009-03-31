@@ -1,0 +1,66 @@
+<title>CEDET: Symbol References</title>
+
+<!--#include file="pagestart.php"-->
+
+<table width=100% class=BAR>
+<tr><td><h2><font color=black>Symbol References</font></h2></td></tr>
+</table>
+
+<p><img src="img-gen/symref.jpg" border=1 align=right> 
+   
+   <b>CEDET</b> can Analyze where symbols are referenced in your code
+   base.  The Symbol References tool in <b>CEDET</b> can use external
+   tools such as GNU Global, ID Utils, CScope, or even find/grep to
+   locate usages of your symbols.  Every location is analyzed and
+   displayed hierarchically showing you the file and function the
+   reference occurs in, instead of a flat list of locations.
+
+<p>The image to the right shows integration with GNU Global running in
+   the GNU Global source code.
+
+<br clear=all>
+<p>
+<table width=100% class=BAR><tr><td>
+<h3>How it works</h3>
+</td></tr></table>
+
+<p>The symbol reference tool is based on
+   the <a href="semantic.shtml">Semantic</a> module in <b>CEDET</b>.
+   Semantic is a tool that starts with lexical and syntactic analysis
+   and builds up to a symbol referencing engine
+   called <tt>semantic-symref</tt>.
+
+<p>Semantic does not, however, analyze all your code and build indexes
+   of every symbol used.  This is a task not appropriate for an Emacs
+   Lisp program.  Instead, external tools are utilized that can do
+   that indexing more quickly.
+
+<p>Tools supported by <tt>semantic-symref</tt> include
+   <a href="http://www.gnu.org/software/global">GNU Global</a>,
+   <a href="http://www.gnu.org/software/idutils/">ID Utils</a>,
+   <a href="http://cscope.sourceforge.net/">CScope</a>,
+   and a combination of find/grep.
+ 
+<p>Unlike the raw interface to these tools, <tt>semantic-symref</tt>
+   takes the output, and builds an output buffer that sorts the hits
+   first by file, then by tag-name.  Thus, you can quickly identify
+   where the symbols are being used without having to visit each hit
+   yourself.
+
+<p>There are two interfaces to <tt>semantic-symref</tt>.  The first is:
+
+<tt><pre>
+M-x semantic-symref RET
+</pre></tt>
+
+<p>This will search for usages of the symbol the cursor is currently
+   in.  The second interface is:
+
+<tt><pre>
+M-x semantic-symref-symbol RET
+</pre></tt>
+
+<p>This command will prompt for the symbol to search for.
+
+<p>
+<!--#include file="footer.fsf.shtml"-->

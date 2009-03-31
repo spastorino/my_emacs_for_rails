@@ -1,0 +1,2 @@
+module NewoneHelper
+end

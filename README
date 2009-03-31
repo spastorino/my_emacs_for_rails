@@ -1,0 +1,66 @@
+REQUIREMENTS
+------------
+
+The current release was tested under Emacs 23 from CVS.
+See http://blog.wyeworks.com/2009/3/23/emacs-cvs-installation
+for cvs installation instructions.
+Rcodetools for auto-complete (gem install rcodetools)
+
+
+DESCRIPTION
+-----------
+
+Emacs init file and plugins to enhance Ruby on Rails development experience.
+
+Provides the following plugins:
+anything
+auto-complete
+autotest
+cedet
+color-theme
+ecb
+find-recursive
+flymake
+javascript
+nxhtml
+rcodetools
+rdebug
+redo
+ri-emacs
+rinari
+ruby-block
+ruby-mode
+yaml-mode
+yasnippet
+yasnippets-rails
+
+
+INSTALLATION
+------------
+
+Copy all the files to ~/.emacs.d directory
+
+
+USAGE
+-----
+
+Try some autocompletion under ruby-mode with crtl+i and ctrl+o
+TODO complete ...
+
+
+TODO
+----
+
+- Fix problems with certain key combinations. Sometimes Emacs debugger appears and its a bit annoying.
+- Problems between autocompletion and tabkey2-mode when editing .html.erb files the suggestions doesn't work well
+
+Please if you find a bug or something report me. Contributions and suggestions are welcome :)
+
+
+CONTACT
+-------
+
+You can contact me: santiago@wyeworks.com
+Follow us in our blog: http://blog.wyeworks.com
+Repo: git://github.com/spastorino/my_emacs_for_rails.git
+

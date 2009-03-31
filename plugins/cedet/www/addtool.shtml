@@ -1,0 +1,68 @@
+<title>CEDET: Adding support for external tools</title>
+
+<!--#include file="pagestart.php"-->
+
+<table width=100% class=BAR>
+<tr><td><h2><font color=black>Add support for external tools</font></h2></td></tr>
+</table>
+
+<p>If you maintain or use a tool that is not Emacs specific but is
+   related to code development, you might be able to integrate the
+   features into CEDET as well.  Example tools include GNU Global
+   tagging system, or CScope.
+
+<p>There are several ways a tool might be used.  Here are some
+  examples.
+
+<h4>Parser</h4>
+
+<p>A tool that can provide tagging information by parsing a file could
+   be integrated in place of using <b>CEDET</b>'s built in parsing
+   infrastructure.  See <a href="addlang.shtml">Add a Language</a>
+   page for a little more on this.
+
+<h4>Tag Database</h4>
+
+<p>Some tools parse many files at once, and create indices for fast
+   symbol lookup.  GNU Global is one such tool.  Interpreted languages
+   often implement a form of introspection, allowing the language
+   interpreter to also by a symbol reference engine.
+
+<p>Tools such as these can be used as
+   a <a href="semantic.shtml">Semantic</a> database back end.  The
+   database engine in Semantic uses
+   the <a href="eieio.shtml">EIEIO</a> object system to created a
+   structured interface for managing tags.  Creating a new semanticdb
+   database object allows your tool to provide tags searching methods
+   that will work transparently through the rest of the <b>CEDET</b>
+   infrastructure.
+
+<p>There are several examples of this,
+   including <tt>semanticdb-ebrowse</tt>
+   and <tt>semanticdb-global</tt>.
+
+<h4>Symbol References</h4>
+
+<p>Semantic does not index files for symbol renference checking.  It
+   depends on external tools such as ID Utils or, at a more primitive
+   level, <tt>grep</tt> for this.
+
+<p>A good example of adding support is
+   in <tt>semantic-symref-global.el</tt>.  It usually involves an
+   invocation method, and a method to parse a line of output.  The
+   other support file for GNU Global is <tt>cedet-global.el</tt>,
+   which has basic invokation methods for <tt>semantic-symref</tt>,
+   and the locate function (below.)  It also handles version checking.
+
+<h4>File Location</h4>
+
+<p>Some <a href="EDE">EDE</a> project types don't index the entire
+   source tree, but depend on some basic guesses about how to find
+   files.  Adding support of a file indexing tool to locate files can
+   make EDE's file lookup more robust, and faster.  All the EDE
+   external tool support is in <tt>ede-locate.el</tt>, though new
+   types don't need to be done there.
+
+
+<p>
+<!--#include file="footer.fsf.shtml"-->

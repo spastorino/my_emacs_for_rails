@@ -4760,8 +4760,6 @@ by semantic and also killed afterwards."
             (ecb-basic-buffer-sync nil)
             (kill-buffer-hook nil)
             ;; we prevent parsing the custom-file
-            (semantic-before-toplevel-bovination-hook (lambda ()
-                                                        nil))
             (semantic--before-fetch-tags-hook (lambda ()
                                                 nil))
             (semantic-after-toplevel-cache-change-hook nil)

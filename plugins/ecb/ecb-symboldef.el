@@ -22,7 +22,7 @@
 ;; with GNU Emacs; see the file COPYING. If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-symboldef.el,v 1.2 2006/01/27 18:21:48 berndl Exp $
+;; $Id: ecb-symboldef.el,v 1.4 2009/03/20 16:35:10 berndl Exp $
 
 ;;; Commentary:
 ;;
@@ -117,14 +117,86 @@ find-function."
 ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: This option is an example how the
 ;; user could determine which backends should be used for finding a definition
 ;; and also in which order the backends should be tried...
-(defcustom ecb-symboldef-find-backends '(semanticdb etags)
-  "*Feature currently not implemented!"
+;; probbaly not necessary anymore with current cedet
+;; (defcustom ecb-symboldef-find-backends '(semanticdb etags)
+;;   "*Feature currently not implemented!"
+;;   :group 'ecb-symboldef
+;;   :type '(repeat (choice :tag "Backends"
+;;                          :menu-tag "Backends"
+;;                          (const :tag "semanticdb" :value semanticdb)
+;;                          (const :tag "etags" :value etags)
+;;                          (symbol :tag "Other"))))
+
+(defcustom ecb-symboldef-buffer-sync 'basic
+  "*Synchronize the symboldef buffer automatically with current edit buffer.
+
+If 'always then the synchronization takes place always a buffer changes in the
+edit window, if nil then never. If a list of major-modes then only if the
+`major-mode' of the new buffer belongs NOT to this list.
+
+If the special value 'basic is set then ECB uses the setting of the option
+`ecb-basic-buffer-sync'.
+
+IMPORTANT NOTE: Every time the synchronization is done the hook
+`ecb-symboldef-buffer-sync-hook' is evaluated."
   :group 'ecb-symboldef
-  :type '(repeat (choice :tag "Backends"
-                         :menu-tag "Backends"
-                         (const :tag "semanticdb" :value semanticdb)
-                         (const :tag "etags" :value etags)
-                         (symbol :tag "Other"))))
+  :type '(radio :tag "Synchronize ECBs symboldef buffer"
+                (const :tag "Use basic value" :value basic)
+                (const :tag "Always" :value always)
+                (const :tag "Never" nil)
+                (repeat :tag "Not with these modes"
+                        (symbol :tag "mode"))))
+    
+
+(defcustom ecb-symboldef-buffer-sync-delay 'basic
+  "*Time Emacs must be idle before the symboldef-buffer is synchronized.
+Synchronizing is done with the current source displayed in the edit window. If
+nil then there is no delay, means synchronization takes place immediately. A
+small value of about 0.25 seconds saves CPU resources and you get even though
+almost the same effect as if you set no delay.
+
+If the special value 'basic is set then ECB uses the setting of the option
+`ecb-basic-buffer-sync-delay'."
+  :group 'ecb-symboldef
+  :type '(radio (const :tag "Use basic value" :value basic)
+                (const :tag "No synchronizing delay" :value nil)
+                (number :tag "Idle time before synchronizing" :value 2))
+  :set (function (lambda (symbol value)
+                   (set symbol value)
+                   (if (and (boundp 'ecb-minor-mode)
+                            ecb-minor-mode)
+                       (ecb-activate-ecb-autocontrol-functions
+                        value 'ecb-analyse-buffer-sync))))
+  :initialize 'custom-initialize-default)
+  
+(defcustom ecb-symboldef-buffer-sync-hook nil
+  "Hook run at the end of the function `ecb-symboldef-buffer-sync'.
+See documentation of `ecb-symboldef-buffer-sync' for conditions when
+synchronization takes place and so in turn these hooks are evaluated.
+
+Preconditions for such a hook:
+- Current buffer is the buffer of the currently selected
+  edit-window.
+- The symboldef-buffer is displayed in a visible window of the
+  ecb-frame \(so no check for visibilty of the symboldef-buffer in
+  the ecb-frame is necessary in a hook function)
+
+Postcondition for such a hook:
+Point must stay in the same edit-window as before evaluating the hook.
+
+Important note: If the option `ecb-symboldef-buffer-sync' is not
+nil the function `ecb-symboldef-buffer-sync' is running either
+every time Emacs is idle or even after every command \(see
+`ecb-symboldef-buffer-sync-delay'). So if the symboldef-buffer is
+displayed in a window of the ecb-frame \(see preconditions above)
+these hooks can be really called very often! Therefore each
+function of this hook should/must check in an efficient way at
+beginning if its task have to be really performed and then do
+them only if really necessary! Otherwise performance of Emacs
+could slow down dramatically!"
+  :group 'ecb-symboldef
+  :type 'hook)
+
 
 ;; ---- internal variables -----------
 
@@ -306,66 +378,66 @@ with semanticdb and then - if no success - with current etags-file."
       ;; return value
       (buffer-name tag-buf))))
 
-;; buffer update function:
-(defun ecb-symboldef-update (edit-buffer symboldef-buffer symboldef-window)
-  "Runs the finder of `ecb-symboldef-find-functions' for current symbol.
-Displays the found text in the buffer SYMBOLDEF-BUFFER which is displayed in
-window SYMBOLDEF-WINDOW. EDIT-BUFFER is the current buffer of the current
-edit-window."
-  (let ((modeline-display nil)
-        (current-symbol
-         ;; check if point is not at start, since
-         ;; buggy thingatpt yields error then:
-         ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: i can not believe this
-         (if (> (point) (point-min))
-             (ecb-thing-at-point 'symbol)
-           nil))
-        ;; find tag search function according to mode:
-        (find-func (ecb-symboldef-get-find-function)))
-    ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: make an option for this
-    ;; min-length 
-    ;; only use tags with a minimal length:
-    (setq current-symbol (if (> (length current-symbol) 3)
-                             current-symbol))
-    ;; buggy thingatpt returns whole buffer if on empty line:
-    (setq current-symbol (if (< (length current-symbol) 80)
-                             current-symbol))
-    ;; research tag only if different from last and not empty: 
-    (when (and current-symbol
-               (not (equal current-symbol ecb-symboldef-last-symbol)))
-      (ecb-with-readonly-buffer symboldef-buffer
-        (setq ecb-symboldef-last-symbol current-symbol)
-        (erase-buffer)
-        (setq fill-column (1- (window-width symboldef-window)))
-        (setq modeline-display
-              (or (funcall find-func
-                           current-symbol
-                           edit-buffer)
-                  ""))
-        ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: replace this by
-        ;; a ecb-mode-line-format - if possible?!
-        (ecb-mode-line-set (buffer-name symboldef-buffer)
-                           (selected-frame)
-                           (format "* Def %s <<%s>> *"
-                                   modeline-display current-symbol)
-                           nil t)
-        ))))
+(defecb-autocontrol/sync-function ecb-symboldef-buffer-sync
+    ecb-symboldef-buffer-name ecb-symboldef-buffer-sync t
+  "Synchronizes the symbol-definition buffer with current source if changed.
+Can be called interactively but normally this should not be necessary because
+it will be called by internal idle-mechanism'.
+
+Runs the finder of `ecb-symboldef-find-functions' for current
+symbol. Displays the found text in the buffer of
+`ecb-symboldef-buffer-name' if it is displayed in a window of the ecb-frame."
+  (save-excursion
+    (let ((modeline-display nil)
+          (edit-buffer (current-buffer))
+          (current-symbol
+           ;; check if point is not at start, since
+           ;; buggy thingatpt yields error then:
+           ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: i can not believe this
+           (if (> (point) (point-min))
+               (ecb-thing-at-point 'symbol)
+             nil))
+          ;; find tag search function according to mode:
+          (find-func (ecb-symboldef-get-find-function)))
+      ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: make an option for this
+      ;; min-length 
+      ;; only use tags with a minimal length:
+      (setq current-symbol (if (> (length current-symbol) 3)
+                               current-symbol))
+      ;; buggy thingatpt returns whole buffer if on empty line:
+      (setq current-symbol (if (< (length current-symbol) 80)
+                               current-symbol))
+      ;; research tag only if different from last and not empty: 
+      (when (and current-symbol
+                 (not (equal current-symbol ecb-symboldef-last-symbol)))
+        (ecb-with-readonly-buffer visible-buffer
+          (setq ecb-symboldef-last-symbol current-symbol)
+          (erase-buffer)
+          (setq fill-column (1- (window-width visible-window)))
+          (setq modeline-display
+                (or (funcall find-func
+                             current-symbol
+                             edit-buffer)
+                    ""))
+          ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: replace this by
+          ;; a ecb-mode-line-format - if possible?!
+          (ecb-mode-line-set (buffer-name visible-buffer)
+                             (selected-frame)
+                             (format "* Def %s <<%s>> *"
+                                     modeline-display current-symbol)
+                             nil t)
+          ))))
+  (run-hooks 'ecb-symboldef-buffer-sync-hook)
+  )
+
 
 (defecb-window-dedicator ecb-set-symboldef-buffer
     (buffer-name (get-buffer-create ecb-symboldef-buffer-name))
   "Set the buffer in the current window to the tag-definition-buffer and make
 this window dedicated for this buffer."
   (switch-to-buffer (get-buffer-create ecb-symboldef-buffer-name))
-  (add-hook 'ecb-current-buffer-sync-hook 'ecb-symboldef-sync))
-
-(defun ecb-symboldef-sync ()
-  "Synchronizes the symbol-definition buffer with current source if changed.
-Can be called interactively but normally this should not be necessary because
-it will be called autom. with `ecb-current-buffer-sync-hook'."
-  (interactive)
-  (ecb-do-if-buffer-visible-in-ecb-frame 'ecb-symboldef-buffer-name
-    (save-excursion
-      (ecb-symboldef-update (current-buffer) visible-buffer visible-window))))
+  (ecb-activate-ecb-autocontrol-functions ecb-symboldef-buffer-sync-delay
+                                          'ecb-symboldef-buffer-sync))
 
 (defun ecb-maximize-window-symboldef ()
   "Maximize the ECB-symbol-defnition window.

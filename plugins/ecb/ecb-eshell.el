@@ -5,11 +5,9 @@
 ;;                           Kevin A. Burton,
 ;;                           Free Software Foundation, Inc.
 
-;; Author: Jesper Nordenberg <mayhem@home.se>
-;;         Klaus Berndl <klaus.berndl@sdm.de>
+;; Author: Klaus Berndl <klaus.berndl@sdm.de>
 ;;         Kevin A. Burton <burton@openprivacy.org>
 ;; Maintainer: Klaus Berndl <klaus.berndl@sdm.de>
-;;             Kevin A. Burton <burton@openprivacy.org>
 ;; Keywords: browser, code, programming, tools
 ;; Created: 2001
 
@@ -26,7 +24,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-eshell.el,v 1.79 2007/07/05 11:08:24 berndl Exp $
+;; $Id: ecb-eshell.el,v 1.82 2009/04/15 14:22:35 berndl Exp $
 
 ;;; Commentary:
 
@@ -116,11 +114,61 @@ If current layout does not display a compile-window \(see
 
 (defcustom ecb-eshell-synchronize t
   "*Synchronize eshell with the default-directory of current source-buffer.
-The synchronization is done by `ecb-eshell-current-buffer-sync' which can be
-called interactively but normally it is called autom. by the
-`ecb-current-buffer-sync-hook-internal'."
+The synchronization is done by `ecb-eshell-buffer-sync' which can be
+called interactively but normally it is called autom. by internal
+idle-mechanism."
   :group 'ecb-eshell
   :type 'boolean)
+
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: was ecb-eshell-synchronize -->
+;; rename in texi and also to ecb-upgrade (also with value-upgrade!)
+(defcustom ecb-eshell-buffer-sync 'basic
+  "*Synchronize eshell with the default-directory of current source-buffer.
+
+This option takes only effect if a permanant compile-window is used in the
+current layout.
+
+If 'always then the synchronization takes place always a buffer
+changes in the edit window and if after this the
+default-directory of the new edit-buffer is different from the
+default-directory of the current eshell-buffer. If value is nil
+then never a synchronization will take place. If a list of
+major-modes then only if the `major-mode' of the new buffer
+belongs NOT to this list.
+
+If the special value 'basic is set then ECB uses the setting of the option
+`ecb-basic-buffer-sync'."
+  :group 'ecb-eshell
+  :type '(radio :tag "Synchronize the eshell if in compile-window."
+                (const :tag "Use basic value" :value basic)
+                (const :tag "Always" :value always)
+                (const :tag "Never" nil)
+                (repeat :tag "Not with these modes"
+                        (symbol :tag "mode"))))
+    
+
+(defcustom ecb-eshell-buffer-sync-delay 'basic
+  "*Time Emacs must be idle before the eshell-buffer of ECB is synchronized.
+Synchronizing is done with the current source displayed in the edit window. If
+nil then there is no delay, means synchronization takes place immediately. A
+small value of about 0.25 seconds saves CPU resources and you get even though
+almost the same effect as if you set no delay.
+
+If the special value 'basic is set then ECB uses the setting of the option
+`ecb-basic-buffer-sync-delay'."
+  :group 'ecb-eshell
+  :type '(radio (const :tag "Use basic value" :value basic)
+                (const :tag "No synchronizing delay" :value nil)
+                (number :tag "Idle time before synchronizing" :value 2))
+  :set (function (lambda (symbol value)
+                   (set symbol value)
+                   (if (and (boundp 'ecb-minor-mode)
+                            ecb-minor-mode)
+                       (ecb-activate-ecb-autocontrol-functions
+                        value 'ecb-analyse-buffer-sync))))
+  :initialize 'custom-initialize-default)
+  
+
 
 (defvar ecb-eshell-pre-command-point nil
   "Point in the buffer we are at before we executed a command.")
@@ -173,9 +221,9 @@ active.")
     (ecb-layout-debug-error "eshell around-advice: comp-win will be toggled.")
     (ecb-toggle-compile-window 1))
 
+  (ecb-activate-ecb-autocontrol-functions ecb-eshell-buffer-sync-delay
+                                          'ecb-eshell-buffer-sync)
   ;; some hooks
-  (add-hook 'ecb-current-buffer-sync-hook-internal
-            'ecb-eshell-current-buffer-sync)  
   (add-hook 'eshell-post-command-hook 'ecb-eshell-recenter)
   (add-hook 'eshell-post-command-hook 'ecb-eshell-fit-window-to-output)
   (add-hook 'eshell-pre-command-hook 'ecb-eshell-precommand-hook)
@@ -201,7 +249,7 @@ active.")
   (ecb-eshell-recenter)  
   
   ;;sync to the current buffer
-  (ecb-eshell-current-buffer-sync))
+  (ecb-eshell-buffer-sync))
   
   
 
@@ -212,25 +260,20 @@ load or activate eshell - it just prepares ECB to work perfectly with eshell."
 
 (defun ecb-eshell-deactivate-integration ()
   (ecb-disable-advices 'ecb-eshell-adviced-functions)
-  (remove-hook 'ecb-current-buffer-sync-hook-internal
-               'ecb-eshell-current-buffer-sync)
+  (ecb-stop-autocontrol/sync-function 'ecb-eshell-buffer-sync)
   (remove-hook 'eshell-post-command-hook 'ecb-eshell-recenter)
   (remove-hook 'eshell-post-command-hook 'ecb-eshell-fit-window-to-output)
   (remove-hook 'eshell-pre-command-hook 'ecb-eshell-precommand-hook)
   (remove-hook 'window-size-change-functions 'ecb-eshell-window-size-change))
 
-(defun ecb-eshell-current-buffer-sync()
+(defecb-autocontrol/sync-function ecb-eshell-buffer-sync nil ecb-eshell-buffer-sync t
   "Synchronize the eshell with the directory of current source-buffer.
 This is only done if the eshell is currently visible in the compile-window of
 ECB and if either this function is called interactively or
-`ecb-eshell-synchronize' is not nil."
-  (interactive)
-
+`ecb-eshell-buffer-sync' is not nil."
   (when (and (equal (selected-frame) ecb-frame)
-             (or ecb-eshell-synchronize (interactive-p))
              (ecb-compile-window-live-p)
              (not (ecb-point-in-compile-window)))
-
     (let* ((my-eshell-buffer
             ;; nil or a living eshell-buffer in the ecb-compile-window
             (car (member (window-buffer ecb-compile-window)

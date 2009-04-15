@@ -5,11 +5,8 @@
 ;;                           Kevin A. Burton,
 ;;                           Free Software Foundation, Inc.
 
-;; Author: Jesper Nordenberg <mayhem@home.se>
-;;         Klaus Berndl <klaus.berndl@sdm.de>
-;;         Kevin A. Burton <burton@openprivacy.org>
+;; Author: Klaus Berndl <klaus.berndl@sdm.de>
 ;; Maintainer: Klaus Berndl <klaus.berndl@sdm.de>
-;;             Kevin A. Burton <burton@openprivacy.org>
 ;; Keywords: browser, code, programming, tools
 ;; Created: 2003
 
@@ -26,7 +23,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-tod.el,v 1.21 2005/04/19 15:26:22 berndl Exp $
+;; $Id: ecb-tod.el,v 1.22 2009/04/15 14:22:35 berndl Exp $
 
 ;;; Commentary:
 ;;

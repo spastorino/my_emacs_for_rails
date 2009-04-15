@@ -5,11 +5,9 @@
 ;;                           Kevin A. Burton,
 ;;                           Free Software Foundation, Inc.
 
-;; Author: Jesper Nordenberg <mayhem@home.se>
-;;         Klaus Berndl <klaus.berndl@sdm.de>
+;; Author: Klaus Berndl <klaus.berndl@sdm.de>
 ;;         Kevin A. Burton <burton@openprivacy.org>
 ;; Maintainer: Klaus Berndl <klaus.berndl@sdm.de>
-;;             Kevin A. Burton <burton@openprivacy.org>
 ;; Keywords: browser, code, programming, tools
 ;; Created: 2001
 
@@ -26,7 +24,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-mode-line.el,v 1.35 2007/07/08 16:42:04 berndl Exp $
+;; $Id: ecb-mode-line.el,v 1.36 2009/04/15 14:22:35 berndl Exp $
 
 ;;; Commentary:
 ;;
@@ -59,7 +57,7 @@
   :group 'ecb-general
   :prefix "ecb-")
 
-
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: update the texi
 (defcustom ecb-mode-line-prefixes '((ecb-directories-buffer-name . nil)
                                     (ecb-sources-buffer-name . ecb-sources-filter-modeline-prefix)
                                     (ecb-methods-buffer-name . ecb-methods-filter-modeline-prefix)
@@ -80,13 +78,15 @@ prefix for one of the builtin ECB-tree-buffers because then simply the related
 option-symbol can be used. To add a prefix for the builtin directories
 tree-buffer just set the symbol `ecb-directories-buffer-name' as car.
 
-The cdr is the prefix for a buffer and can either be a string which used as it
-is or a function-symbol which is called with three argument \(the buffer-name,
-the current selected directory and the current selected source-file) and must
-return either nil \(for no prefix) or a string which is then used a prefix.
-Such a function can add the text-property 'help-echo to the result-string.
-Then this help-string will be displayed when the user moves the mouse over
-this section of the modeline.
+The cdr is the prefix for a buffer and can either be a string
+which used as it is or a function-symbol which is called with
+three argument \(the buffer-name, the current selected directory
+and the current selected source whereas the latter one is a cons
+as returned by `ecb-path-selected-source') and must return either
+nil \(for no prefix) or a string which is then used a prefix.
+Such a function can add the text-property 'help-echo to the
+result-string. Then this help-string will be displayed when the
+user moves the mouse over this section of the modeline.
 
 If a special ECB-buffer should not have a prefix in its modeline then this
 buffer-name should either not being added to this option or added with \"No
@@ -134,8 +134,7 @@ GNU Emacs < 21 nor XEmacs can evaluate dynamically forms in the mode-line."
   :initialize 'custom-initialize-default
   :type 'boolean)
 
-
-  
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: update the texi
 (defcustom ecb-mode-line-data '((ecb-directories-buffer-name . sel-dir)
                                 (ecb-sources-buffer-name . sel-dir)
                                 (ecb-methods-buffer-name . sel-source)
@@ -152,14 +151,16 @@ The cdr is the data for ths modeline and can either be the symbol 'sel-dir or
 modeline-data and the latter one the current selected source-file \(without
 path).
 
-In addition to these two predefined values for every special ECB-buffer either
-a simple string \(which will be displayed) or a function can be specified
-which gets three args \(name of the buffer, current selected directory and
-current selected source-file) and must return a string which will be displayed
-in the modeline \(or nil if no data should be displayed). Such a function can
-add the text-property 'help-echo to the result-string. Then this help-string
-will be displayed when the user moves the mouse over this section of the
-modeline. 
+In addition to these two predefined values for every special
+ECB-buffer either a simple string \(which will be displayed) or a
+function can be specified which gets three args \(name of the
+buffer, current selected directory and current selected source
+whereas the latter one is a cons as returned by
+`ecb-path-selected-source') and must return a string which will
+be displayed in the modeline \(or nil if no data should be
+displayed). Such a function can add the text-property 'help-echo
+to the result-string. Then this help-string will be displayed
+when the user moves the mouse over this section of the modeline.
 
 If a special ECB-buffer should not display special data in its modeline then
 this buffer-name should either not being added to this option or added with
@@ -217,7 +218,7 @@ prepended by the window-number, see `ecb-mode-line-display-window-number'."
                                   (function (funcall prefix-elem
                                                      (buffer-name buffer)
                                                      ecb-path-selected-directory
-                                                     ecb-path-selected-source))))
+                                                     (ecb-path-selected-source)))))
                     (data-elem (ecb-some (function
                                           (lambda (p)
                                             (cond ((stringp (car p))
@@ -238,7 +239,7 @@ prepended by the window-number, see `ecb-mode-line-display-window-number'."
                                      ecb-path-selected-directory)
                                     ((equal data-elem 'sel-source)
                                      (and ecb-path-selected-source
-                                          (file-name-nondirectory ecb-path-selected-source)))
+                                          (ecb-path-selected-source 'buffer)))
                                     ((stringp data-elem)
                                      data-elem)
                                     ((null data-elem)
@@ -247,7 +248,7 @@ prepended by the window-number, see `ecb-mode-line-display-window-number'."
                                      (funcall data-elem
                                               (buffer-name buffer)
                                               ecb-path-selected-directory
-                                              ecb-path-selected-source)))))
+                                              (ecb-path-selected-source))))))
                ;; Display a default help-echo but only if the modeline-data is
                ;; not computed by a user-function.
                (when (and (not (functionp data-elem))

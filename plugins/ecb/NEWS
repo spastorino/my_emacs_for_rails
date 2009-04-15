@@ -41,6 +41,54 @@
    immediatelly and not interruptable (as with the idle-scheduler of
    semantic), which can be quite annoying with big source-files.
 
+** ECB is able to work with indirect buffers it the base-buffer is filebased
+
+   Now you can work with indirect-buffers as well as with normal file-buffers,
+   i.e. indirect buffers are shown in the historyÅ¥, their contents are
+   displayed in the methods-buffer, the ECB-analyse-buffer works with them,
+   autom. synchronizing the ECB-tree-buffers works for them etc...
+
+** Complete reworked history-buffer
+
+*** The history is able to deal with indirect-buffer entries.
+    See new option `ecb-history-stick-indirect-buffers-to-basebuffer'.
+
+*** The history can now be bucketized, see new `ecb-history-make-buckets'.
+    This option allows to define several criterias for building buckets in the
+    history-buffer all the history entries are sorted in (e.g. by major-mode,
+    directory, file-extension or regular expressions).
+
+    The latter one allows in combination with the indirect-buffer ability to
+    work with something like "virtual folders" (well, "virtual folders"
+    light).
+
+    For example, there is a large project with a huge number of files, and
+    there are various tasks in this project. So it could be convenient to
+    group buffers according to various tasks. It could be fulfiled through
+    using indirect buffers, for example like this
+
+       task_1-aaa.pl
+       task_1-bbb.c
+       task_1-ccc.sh
+       ...
+       task_N-xxx.java
+       task_N-ccc.sh
+
+    This means create indirect buffers with a name-part which can be used for
+    grouping together buffers with same name-part (here e.g. task_1- ...
+    task_N-). In the example above you would create two indirect buffers for
+    the filebuffer ccc.sh, one named task_1-ccc.sh, the other named
+    task_N-ccc.sh).
+
+    Then use the new option `ecb-history-make-buckets' to define regexps for
+    bucketizing all (indirect) buffers according their task-part in the
+    buffer-name.
+
+*** There are now new faces for the history entries.
+    See new options `ecb-history-bucket-node-face',
+    `ecb-history-dead-buffer-face' and `ecb-history-indirect-buffer-face' and
+    equaly named new faces.
+
 ** Much saver advice-backbone for all advices needed by ECB
 
    This is not a user-visible change but enhances the stability of ECB by
@@ -48,12 +96,24 @@
    enabled rsp. disabled correctly depending on the surrounding context.
    Introducing three new macros `defecb-advice-set', `defecb-advice' and
    `ecb-with-original-adviced-function-set'.
+
+** New support for Git and Monotone as version-control systems
+
+   If Git rsp. Monotone are supported by VC (means vc-git.el rsp. vc-mtn.el
+   are distributed with Emacs) then ECB supports now both of them out of the
+   box.
    
 ** New features rsp. commands
 
 *** New command `ecb-goto-window-edit-by-smart-selection'
 
 *** New command `ecb-goto-window-ecb-by-smart-selection'
+
+*** New option `ecb-ignore-pop-up-frames'
+    The new option is for customizing the behavior of ECB concerning
+    `pop-up-frames'. It allows three value: Always, only when a permanent
+    compile-window is used and never. This makes ECB fully compatible with the
+    option `pop-up-frames'.
       
 ** Better compatibility with Emacs 22
 
@@ -84,7 +144,16 @@
     In Emacs 22 this command ignores the settings in `same-window-*'. Now ECB
     adopts this behavior also for its adviced version so the command works
     in a smart manner optimized for ECB.
-   
+
+** Better compatibility with CEDET 1.0preX and semantic 2.0preX
+
+*** The ECB-analyse-interactor now works very well with current semantic analyzer
+
+*** Fix compatibility about some changes of semantic concerning adopting
+    external member-functions (as in C++ or eieio).
+
+*** ECB now works very well with semantic-idle-scheduler-mode (s.a.)
+    
 ** Fixed Bugs
 
 *** Fixed a bug which prevented `ecb-rebuild-methods-buffer' to work correctly
@@ -100,8 +169,19 @@
     Downloading does not work with the former one and getting a packagelist is
     not possible with the latter one. Therefore ECB now uses both URLs.
 
+    REMARK: Theres no guarantee that this feature works correctly! It is
+    deprecated and will not be supported anymore.
+
 *** Fixed context-menu for VC-operations in the sources- and history-window
     Now all vc-commands are called interactively by ECB.
+
+*** Fixed a bug with the ECB-navigation feature (C-c . p and C-c . n)
+    Now the commands `ecb-nav-goto-next' and `ecb-nav-goto-previous' work
+    saver and also for indirect buffers.
+
+*** Fixed small bugs with synchronizing current tag with highlighted tag
+    in the methods buffer. This was when the buffer was reparsed with
+    `semantic-idle-scheduler-mode' or after saving the buffer.
     
 
 

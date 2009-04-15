@@ -9,7 +9,6 @@
 ;;         Klaus Berndl <klaus.berndl@sdm.de>
 ;;         Kevin A. Burton <burton@openprivacy.org>
 ;; Maintainer: Klaus Berndl <klaus.berndl@sdm.de>
-;;             Kevin A. Burton <burton@openprivacy.org>
 ;; Keywords: browser, code, programming, tools
 ;; Created: 2000
 
@@ -26,7 +25,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-util.el,v 1.139 2007/07/08 16:42:04 berndl Exp $
+;; $Id: ecb-util.el,v 1.143 2009/04/15 14:25:30 berndl Exp $
 
 ;;; Commentary:
 ;;
@@ -587,20 +586,23 @@ The elements of the list are not copied, just the list structure itself."
           (prog1 (nreverse res) (setcdr res list)))
       (car list))))
 
-(defun ecb-set-difference (list1 list2)
+(defun ecb-set-difference (list1 list2 &optional test-fcn)
   "Combine LIST1 and LIST2 using a set-difference operation.
 The result list contains all items that appear in LIST1 but not LIST2.
 This is a non-destructive function; it makes a copy of the data if necessary
-to avoid corrupting the original LIST1 and LIST2."
+to avoid corrupting the original LIST1 and LIST2.
+If TEST-FCN is not nil then it must be a function which is used to check if an
+item of LIST1 is an element of LIST2. If TEST-FCN is nil then `memq' is used."
   (if (or (null list1) (null list2)) list1
     (let ((res nil))
       (while list1
-        (or (if (numberp (car list1))
-                (apply 'ecb-member (car list1) list2)
+        (or (if test-fcn
+                (funcall test-fcn (car list1) list2)
               (memq (car list1) list2))
             (push (car list1) res))
         (pop list1))
       res)))
+
 
 (defun ecb-member (item list &optional test-fcn)
   "Find the first occurrence of ITEM in LIST.
@@ -759,25 +761,89 @@ returned."
                    (length list))
               list))))
 
+(defun ecb-aggregate-alist (alist same-predicate sort-predicate)
+  "Return ALIST as a sorted, aggregated alist.
+
+In the result all items with the same car element (according to
+SAME-PREDICATE) are aggregated together.  The alist is first sorted by
+SORT-PREDICATE which is called with two items of the alist and has to return
+not nil if item1 should be precede item2.
+
+Please note: SAME-PREDICATE gets the car of an item as argument, whereas
+SORT-PREDICATE gets two complete items as arguments!
+
+Example:
+\(ecb-aggregate-alist
+ '((a . a1) (a . a2) (b . b1) (c . c3) (a . a4) (a . a3) (b . b3) (b . b2))
+ (function string=)
+ (lambda (item1 item2)
+   (string< (symbol-name (car item1)) (symbol-name (car item2)))))
+results in
+\((a a1 a2 a4 a3) (b b1 b3 b2) (c c3))"
+  (when (not (null alist))
+    (let (same
+	  tmp-old-car
+	  tmp-same
+	  (first-time-p t)
+	  old-car)
+      (nconc
+       (apply #'nconc
+	      (mapcar
+	       (lambda (item)
+		 (cond
+		  (first-time-p
+		   (push (cdr item) same)
+		   (setq first-time-p nil)
+		   (setq old-car (car item))
+		   nil)
+		  ((funcall same-predicate (car item) old-car)
+		   (push (cdr item) same)
+		   nil)
+		  (t
+		   (setq tmp-same same
+			 tmp-old-car old-car)
+		   (setq same (list (cdr item))
+			 old-car (car item))
+		   (list (cons tmp-old-car (nreverse tmp-same))))))
+	       (sort alist (lambda (item1 item2)
+			     (funcall sort-predicate
+                                      item1 item2)))))
+       (list (cons old-car (nreverse same)))))))
+
+;; test
+;; (ecb-aggregate-alist
+;;  '((a . a1) (a . a2) (b . b1) (c . c3) (a . a4) (a . a3) (b . b3) (b . b2))
+;;  'string=
+;;  (lambda (item1 item2)
+;;    (if (string= (car item1) (car item2))
+;;        (string< (symbol-name (cdr item1)) (symbol-name (cdr item2)))
+;;      (string< (car item1) (car item2)))))
+
 ;; Maybe we should enhance this docstring ;-)
 (defun ecb-member-of-symbol/value-list (value list &optional elem-accessor
-                                              return-accessor)
+                                              return-accessor compare-fcn)
   "Returns not nil when VALUE is a member of that list which is build from
 LIST by using the symbol-value if a list-member is a symbol and otherwise the
 list-member itself. If a member then the matching elem of LIST is returned.
-But if ELEM-ACCESSOR is a function then it is used to get that part of a elem
+
+Per default comparison between VALUE and such a list-elem is done by `equal'
+unless third optional argument COMPARE-FCN is not nil: Then this function is
+used.
+
+If ELEM-ACCESSOR is a function then it is used to get that part of an elem
 of LIST for which the rule above should be applied. If RETURN-ACCESSOR is a
 function then it is used to get that part of that list-elem which is equal
 according to the rules above."
   (let ((elem-acc (or elem-accessor 'identity))
-        (return-acc (or return-accessor 'identity)))
+        (return-acc (or return-accessor 'identity))
+        (cmp-fcn (or compare-fcn 'equal)))
     (catch 'exit
       (dolist (elem list)
         (let ((case-fold-search t)
               (e (funcall elem-acc elem)))
-          (if (equal value (if (symbolp e)
-                               (symbol-value e)
-                             e))
+          (if (funcall cmp-fcn value (if (symbolp e)
+                                         (symbol-value e)
+                                       e))
               (throw 'exit (funcall return-acc elem)))
           nil)))))
 
@@ -1418,7 +1484,9 @@ of TEXT which are not set by FACE are preserved."
                                      (otherwise nil))))
                              ;; we must add the new-face in front of
                              ;; current-face to get the right merge!
-                             (append nf cf))
+                             (if (member face cf)
+                                 cf
+                               (append nf cf)))
                            text)
       (alter-text-property 0 (length text) 'face
                            (lambda (current-face)
@@ -1434,7 +1502,9 @@ of TEXT which are not set by FACE are preserved."
                                       (otherwise nil))))
                                ;; we must add the new-face in front of
                                ;; current-face to get the right merge!
-                               (append nf cf)))
+                               (if (member face cf)
+                                   cf
+                                 (append nf cf))))
                            text))
     text))
 
@@ -1789,12 +1859,26 @@ minor-mode `tar-subfile-mode' or `archive-subfile-mode'."
       (and (boundp 'archive-subfile-mode)
            archive-subfile-mode)))
 
+(defun ecb-buffer-file-name (&optional buffer no-indirect-buffers)
+  "Return filename of file represented by BUFFER.
+BUFFER can also be an indirect buffer - if its base buffer points to a file
+then this filename is returned.
+BUFFER can be a buffer-object or a buffer-name.
+If BUFFER is nil then current buffer is used.
+If no-indirect-buffers is not nil then for indirect buffers always nil is
+returned."
+  (or (buffer-file-name buffer)
+      (and (not no-indirect-buffers)
+           (buffer-base-buffer buffer)
+           (buffer-file-name (buffer-base-buffer buffer)))))
+
+
 (defun ecb-buffer-or-file-readable-p (&optional filename)
   "Checks if a buffer or a file is a readable file in the sense of ECB which
 means either a real physical file or an auto-extracted file from an archive.
 See `ecb-current-buffer-archive-extract-p'. FILENAME is either a filename or
 nil whereas in the latter case the current-buffer is assumed."
-  (let* ((file (or filename (buffer-file-name (current-buffer)))))
+  (let* ((file (or filename (ecb-buffer-file-name (current-buffer)))))
     (or (and file (file-readable-p file))
         (and (not ecb-running-xemacs)
              (if filename
@@ -2061,7 +2145,8 @@ interrupted..
 
 Example: \(ecb-throw-on-input 'test-inner-loop \"test\") would throw a
 cons-cell \('test-inner-loop . \"test\")"
-  `(when (and ecb-current-input-throw-symbol (input-pending-p))
+  `(when (and ecb-current-input-throw-symbol
+              (or (input-pending-p) (accept-process-output)))
      (throw ecb-current-input-throw-symbol (cons ,from ,value))))
 
 
@@ -2084,6 +2169,19 @@ cons-cell \('test-inner-loop . \"test\")"
                  ;;(while t nil)
 		 (ecb-throw-on-input 'test-inner-loop "test")
                  )
+	       'exit))))
+
+(defun ecb-test-throw-on-input-new ()
+  "Test that while-no-input will work even better."
+  (interactive)
+  (message "Exit Code: %s"
+	   (while-no-input
+	     (let ((inhibit-quit nil)
+		   (message-log-max nil))
+	       (while t
+		 (message "Looping ...")
+                 (while t nil)
+		 "test")
 	       'exit))))
 
 

@@ -18,14 +18,14 @@
 
 ;; This program is distributed in the hope that it will be useful, but WITHOUT
 ;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-;; FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+;; FOR A PATICULAR PURPOSE.  See the GNU General Public License for more
 ;; details.
 
 ;; You should have received a copy of the GNU General Public License along with
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-common-browser.el,v 1.27 2008/05/08 12:03:50 berndl Exp $
+;; $Id: ecb-common-browser.el,v 1.30 2009/04/15 14:22:35 berndl Exp $
 
 
 ;;; History
@@ -44,6 +44,7 @@
 (require 'tree-buffer)
 ;; (require 'ecb-layout) ;; causes cyclic dependencies!
 (require 'ecb-mode-line)
+(require 'ecb-navigate)
 
 ;; various loads
 (require 'assoc)
@@ -76,7 +77,7 @@ special face for the bucket-node
 The default are empty prefix/suffix-strings and 'ecb-bucket-node-face'. But
 an alternative can be for example '\(\"[\" \"]\" nil) which means no special
 face and a display like \"[+] [<bucket-name>]\"."
-  :group 'ecb-general
+  :group 'ecb-tree-buffer
   :set (function (lambda (symbol value)
 		   (set symbol value)
 		   (ecb-clear-tag-tree-cache)))
@@ -110,7 +111,7 @@ displays also directories and sources in one window.
 `ecb-use-speedbar-instead-native-tree-buffer' is for people who like the
 speedbar way handling directories and source-files or methods and want it in
 conjunction with ECB."
-  :group 'ecb-general
+  :group 'ecb-tree-buffer
   :group 'ecb-directories
   :group 'ecb-sources
   :group 'ecb-methods
@@ -163,7 +164,6 @@ customizing this option, but of course not for future Emacs sessions!"
   :type '(repeat (choice :menu-tag "Buffer-name"
                         (string :tag "Buffer-name as string")
                         (symbol :tag "Symbol holding buffer-name"))))
-
 
 (defcustom ecb-tree-indent 4
   "*Indent size for tree buffer.
@@ -496,7 +496,7 @@ If the edit-window is not splitted this setting has no effect.
 Note: If the tree-buffers are used with the keyboard instead with the mouse
 then this option takes effect too because [RET] is interpreted as primary
 mouse-button and [C-RET] as secondary mouse-button!"
-  :group 'ecb-general
+  :group 'ecb-tree-buffer
   :group 'ecb-most-important
   :type '(radio (const :tag "Left/topmost edit-window"
                        :value left-top)
@@ -517,10 +517,265 @@ The following keys must not be rebind in all tree-buffers:
 - `C-t'"
   :group 'ecb-tree-buffer
   :type 'hook)
-  
+
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: was ecb-window-sync --> rename
+;; this also in the info-file
+(defcustom ecb-basic-buffer-sync '(Info-mode dired-mode)
+  "*Synchronize the basic ECB-buffers automatically with current edit buffer.
+
+The basic ECB-buffers are the buffers for directories, sources, methods and
+history.
+
+If 'always then the synchronization takes place always a buffer changes in the
+edit window, if nil then never. If a list of major-modes then only if the
+`major-mode' of the new buffer belongs NOT to this list.
+
+But in every case the synchronization takes only place if the current-buffer
+in the edit-window has a relation to files or directories. Examples for the
+former one are all programming-language-modes, `Info-mode' too, an example for
+the latter one is `dired-mode'. For all major-modes related to
+non-file/directory-buffers like `help-mode', `customize-mode' and others never
+an autom. synchronization will be done!
+
+It's recommended to exclude at least `Info-mode' because it makes no sense to
+synchronize the ECB-windows after calling the Info help. Per default also
+`dired-mode' is excluded but it can also making sense to synchronize the
+ECB-directories/sources windows with the current directory in the
+dired-buffer.
+
+IMPORTANT NOTE: Every time the synchronization is done the hook
+`ecb-basic-buffer-sync-hook' is evaluated."
+  :group 'ecb-tree-buffer
+  :type '(radio :tag "Synchronize basic ECB buffers"
+                (const :tag "Always" :value always)
+                (const :tag "Never" nil)
+                (repeat :tag "Not with these modes"
+                        (symbol :tag "mode"))))
+
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: was ecb-window-sync-delay --> rename
+;; this also in the info-file
+(defcustom ecb-basic-buffer-sync-delay 0.25
+  "*Time Emacs must be idle before the special ECB-buffers are synchronized.
+Synchronizing is done with the current source displayed in the edit window. If
+nil then there is no delay, means synchronization takes place immediately. A
+small value of about 0.25 seconds saves CPU resources and you get even though
+almost the same effect as if you set no delay."
+  :group 'ecb-tree-buffer
+  :type '(radio (const :tag "No synchronizing delay"
+                       :value nil)
+                (number :tag "Idle time before synchronizing"
+                        :value 0.25))
+  :set (function (lambda (symbol value)
+                   (set symbol value)
+                   (if ecb-minor-mode
+                       (ecb-activate-ecb-autocontrol-functions
+                        value 'ecb-basic-buffer-sync))))
+  :initialize 'custom-initialize-default)
+
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: was ecb-current-buffer-sync-hook
+;; --> rename this also in the info-file...
+(defcustom ecb-basic-buffer-sync-hook nil
+  "*Hook run at the end of `ecb-basic-buffer-sync'.
+See documentation of `ecb-basic-buffer-sync' for conditions when
+synchronization takes place and so in turn these hooks are evaluated.
+
+Precondition for such a hook:
+Current buffer is the buffer of the currently selected edit-window.
+
+Postcondition for such a hook:
+Point must stay in the same edit-window as before evaluating the hook.
+
+Important note: If the option `ecb-basic-buffer-sync' is not nil
+the function `ecb-basic-buffer-sync' is running either every time
+Emacs is idle or even after every command \(see
+`ecb-basic-buffer-sync-delay'). So these hooks can be really
+called very often! Therefore each function of this hook
+should/must check in an efficient way at beginning if its task
+have to be really performed and then do them only if really
+necessary! Otherwise performance of Emacs could slow down
+dramatically!
+
+It is strongly recommended that each function added to this hook uses the
+macro `ecb-do-if-buffer-visible-in-ecb-frame' at beginning! See
+`ecb-speedbar-buffer-sync' and `ecb-eshell-buffer-sync' for
+examples how to use this macro!"
+  :group 'ecb-tree-buffer
+  :type 'hook)
+
 ;;====================================================
 ;; Internals
 ;;====================================================
+
+(defun ecb-combine-ecb-button/edit-win-nr (ecb-button edit-window-nr)
+  "Depending on ECB-BUTTON and EDIT-WINDOW-NR return one value:
+- nil if ECB-BUTTON is 1.
+- t if ECB-BUTTON is 2 and the edit-area of ECB is splitted.
+- EDIT-WINDOW-NR if ECB-BUTTON is 3."
+  (case ecb-button
+    (1 nil)
+    (2 (ecb-edit-window-splitted))
+    (3 edit-window-nr)))
+
+(defun ecb-get-edit-window (other-edit-window)
+  "Get the correct edit-window. Which one is the correct one depends on the
+value of OTHER-EDIT-WINDOW \(which is a value returned by
+`ecb-combine-ecb-button/edit-win-nr') and `ecb-mouse-click-destination'.
+- OTHER-EDIT-WINDOW is nil: Get the edit-window according to the option
+  `ecb-mouse-click-destination'.
+- OTHER-EDIT-WINDOW is t: Get the next edit-window in the cyclic list of
+  current edit-windows starting either from the left-top-most one or from the
+  last edit-window with point (depends on
+  `ecb-mouse-click-destination').
+- OTHER-EDIT-WINDOW is an integer: Get exactly the edit-window with that
+  number > 0."
+  (let ((edit-win-list (ecb-canonical-edit-windows-list)))
+    (typecase other-edit-window
+      (null
+       (if (eq ecb-mouse-click-destination 'left-top)
+           (car edit-win-list)
+         ecb-last-edit-window-with-point))
+      (integer
+       (ecb-get-edit-window-by-number other-edit-window edit-win-list))
+      (otherwise
+       (ecb-next-listelem edit-win-list
+                          (if (eq ecb-mouse-click-destination 'left-top)
+                              (car edit-win-list)
+                            ecb-last-edit-window-with-point))))))
+
+(defun ecb-source-make (filename &optional buffer)
+  "Build a source-object from FILENAME and BUFFER.
+If optional arg BUFFER is nil then the just FILENAME is returned.
+If BUFFER is not nil then it can be either a buffer-object or a buffer-name.
+A cons is returned where car is FILENAME and cdr is the buffername of BUFFER."
+  (let ((buffername (when buffer
+                      (if (bufferp buffer)
+                          (buffer-name buffer)
+                        buffer))))
+    (if buffername
+        (cons filename buffername)
+      filename)))
+
+(defun ecb-source-get-filename (source)
+  "SOURCE is either a string, then it is a filename or a cons, then the car is
+the filename and the cdr is the buffer-name, whereas the latter one can be the
+name of an indirect-buffer."
+  (if (consp source)
+      (car source)
+    source))
+
+(defun ecb-source-get-buffername (source)
+  "SOURCE is either a string, then it is a filename or a cons, then the car is
+the filename and the cdr is the buffer-name, whereas the latter one can be the
+name of an indirect-buffer."
+  (if (consp source)
+      (cdr source)))
+
+(defun ecb-source-get-buffer (source)
+  "Return a living buffer-object for SOURCE.
+SOURCE is either a string, then it is a filename or a cons, then the car is
+the filename and the cdr is the buffer-name, whereas the latter one can be the
+name of an indirect-buffer.
+
+If SOURCE contains a living buffer then this buffer is returned. Otherwise a
+buffer for the filename-part of SOURCE is created and returned. For an
+existing ans readable file this means the file is loaded into a buffer.
+
+Note: The buffer is just returned but not displayed."
+  (let* ((my-source (if (consp source) source (cons source nil)))
+         (filename (car my-source))
+         (buffer (and (cdr my-source)
+                      (get-buffer (cdr my-source)))))
+    (or buffer
+        (find-file-noselect filename))))
+
+(defun ecb-display-source (source other-edit-window)
+  "Display SOURCE in the correct edit-window.
+What the correct window is depends on the setting in
+`ecb-mouse-click-destination' and the value of OTHER-EDIT-WINDOW
+\(for this see `ecb-combine-ecb-button/edit-win-nr').
+
+SOURCE is either a string, then it is a filename or a cons, then the car is
+the filename and the cdr is the buffer-name, whereas the latter one can be the
+name of an indirect-buffer."
+  (select-window (ecb-get-edit-window other-edit-window))
+  (ecb-nav-save-current)
+  (switch-to-buffer (ecb-source-get-buffer source))
+  (ecb-nav-add-item (ecb-nav-file-history-item-new)))
+
+(defvar ecb-path-selected-directory nil
+  "Path to currently selected directory.")
+
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>:
+;; XXXX here we have to check all usages of this var and check if this works
+;; also for indirect buffers
+(defvar ecb-path-selected-source nil
+  "Path to currently selected source.
+
+It is a cons where the cdr is a buffer-object of the current selected source
+The name of this file is the car of the cons:
+\(<filename> . <indirect-buffer-object>).
+
+This variable is only set by `ecb-path-selected-source-set' and evaluated by
+the function `ecb-path-selected-source'.
+
+Do not use it directly! Use always one of the mentioned functions!")
+
+(defun ecb-path-selected-source-set (filename buffer)
+  "Set `ecb-path-selected-source' to FILENAME and BUFFER.
+Returns in the new value. FILENAME and BUFFER must not be nil.
+For a description of FILENAME and BUFFER see `ecb-source-make'."
+  (unless (and filename buffer)
+    (error "ECB %s: Invalid setting of `ecb-path-selected-source with file %s, buffer %s"
+           ecb-version filename buffer))
+  (setq ecb-path-selected-source (ecb-source-make filename buffer)))
+  
+(defun ecb-path-selected-source (&optional type)
+  "Get the value of the internal variable `ecb-path-selected-source'.
+If optional arg TYPE is the symbol 'file then the filename-part
+is returned as string, if it is the symbol 'buffername then the
+stored buffername is returned if there is any and and if it is the
+symbol 'buffer then the buffer-object of the stored buffername is
+returned if there is any or nil.
+
+In all other cases of TYPE always that value is returned
+`ecb-path-selected-source' has been set by most recent
+`ecb-path-selected-source-set'."
+  (case type
+    (file (ecb-source-get-filename ecb-path-selected-source))
+    (buffername (ecb-source-get-buffername ecb-path-selected-source))
+    (buffer (ecb-source-get-buffer ecb-path-selected-source))
+    (otherwise ecb-path-selected-source)))
+
+
+
+(defvar ecb-basic-buffer-sync-old '(Info-mode dired-mode))
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: rename this in the info-file
+;; was ecb-window-sync
+(defun ecb-toggle-basic-buffer-sync (&optional arg)
+  "Toggle auto synchronizing of the ECB-windows.
+With prefix argument ARG, switch on if positive, otherwise switch off. If the
+effect is that auto-synchronizing is switched off then the current value of
+the option `ecb-basic-buffer-sync' is saved so it can be used for the next switch on
+by this command. See also the option `ecb-basic-buffer-sync'."
+  (interactive "P")
+  (let ((new-value (if (null arg)
+                       (if ecb-basic-buffer-sync
+                           (progn
+                             (setq ecb-basic-buffer-sync-old
+                                   ecb-basic-buffer-sync)
+                             nil)
+                         ecb-basic-buffer-sync-old)
+                     (if (<= (prefix-numeric-value arg) 0)
+                         (progn
+                           (if ecb-basic-buffer-sync
+                               (setq ecb-basic-buffer-sync-old ecb-basic-buffer-sync))
+                           nil)
+                       (or ecb-basic-buffer-sync ecb-basic-buffer-sync-old)))))
+    (setq ecb-basic-buffer-sync new-value)
+    (message "Automatic synchronizing the ECB-windows is %s \(Value: %s\)."
+             (if new-value "on" "off")
+             new-value)))
+
 
 ;; all defined tree-buffer creators
 
@@ -603,8 +858,126 @@ associated symbol which contains this name.")
 (defsubst ecb-tree-buffers-get-symbol (name)
   (ecb-find-assoc-value name ecb-tree-buffers))
 
+(defvar ecb-tree-buffer-callbacks '((expand . nil) (select . nil))
+  "All callback-functions for the tree-buffers of ECB.
+This list contains two items of the form:
+\(<callback-type> .\(<buffer-callback-alist>))
+where <callback-type> is 'select and 'expand and
+<buffer-callback-alist> is an alist where each item is a cons
+like \(<buffer-name-symbol> . <callback-symbol>)."
+  )
 
-  
+
+(defun ecb-tree-buffer-callbacks-add (type buffer-name-symbol callback)
+  (unless (member type '(select expand))
+    (error "ECB %s tries to add tree-buffer-callback of unknown type %s"
+           ecb-version type))
+  ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: maybe we should add a check if
+  ;; the buffer-name-symbol is already registered with defecb-tree-buffer-creator
+  (let ((type-elem (ecb-find-assoc type ecb-tree-buffer-callbacks)))
+    (unless (ecb-find-assoc buffer-name-symbol type-elem)
+      (setcdr type-elem (cons (cons buffer-name-symbol callback)
+                              (cdr type-elem))))))
+
+
+(defun ecb-tree-buffer-callbacks-alist-of-type (type)
+  (unless (member type '(select expand))
+    (error "ECB %s tries to get tree-buffer-callback of unknown type %s"
+           ecb-version type))
+  (cdr (assoc type ecb-tree-buffer-callbacks)))
+
+
+(defmacro defecb-tree-buffer-callback (callback
+                                       tree-buffer-name-symbol
+                                       callback-type
+                                       optional-arg-list
+                                       docstring &rest body)
+  "Define a callback-function CALLBACK for a tree-buffer which name is hold in
+the symbol TREE-BUFFER-NAME-SYMBOL. Do not quote CALLBACK and
+TREE-BUFFER-NAME-SYMBOL and CALLBACK-TYPE. DOCSTRING is the
+docstring for CALLBACK. BODY is all the program-code of CALLBACK.
+
+CALLBACK-TYPE must be either 'expand or 'select, whereas the
+former one defines a callback for handling expanding a node and
+the latter one for clicking onto a node.
+
+CALLBACK is defined as a function with at least five arguments:
+NODE, ECB-BUTTON, EDIT-WINDOW-NR, SHIFT-MODE and META-MODE.
+CALLBACK must handle clicking onto NODE in the tree-buffer for
+which the callback is defined. ECB-BUTTON can be 1, 2 or 3 \(=
+mouse-buttons). If 3 then EDIT-WINDOW-NR contains the number of
+the edit-window the NODE should be displayed or whatever should
+be done with NODE. For 1 and 2 the value of EDIT-WINDOW-NR is
+ignored. SHIFT-MODE and META-MODE are not nil if the user has
+pressed the shift- rsp. the meta-button during his click. Note:
+using the keyboard in the tree-buffer instead the mouse is
+already handled by the caller of CALLBACK, so CALLBACK has no
+need to bother with keyboard or mouse specific stuff!
+
+If OPTIONAL-ARG-LIST is not nil then it must be a list with all
+optional or rest arguments. You have to include the keywords
+&optional or/and &rest! The first item of this list must be
+either the keyword &optional or &rest! The defined CALLBACK gets
+exactly these additional arguments after the reqired 5 arguments
+described above. Do not quote OPTIONAL-ARG-LIST!
+
+The defined CALLBACK automatically hides the ecb-windows after
+selecting a node in case META-MODE is not nil and if the CALLBACK
+is of type 'select; this is a must for every tree-buffer. Do not
+do this within BODY! But: During the evaluation of BODY the local
+variable no-meta-hiding is bound and set to nil per default. If
+BODY sets it to not nil then the hiding of the ecb-windows is
+prevented even if META-MODE is not nil.
+
+The value of the last expression of BODY is returned.
+
+This macro automatically adds the appropriate description of the
+5 arguments of the defined CALLBACK to DOCSTRING. So just
+describe what the CALLBACK does!
+
+It is strongly recommended defining a callback-function for a
+tree-buffer of ECB with this macro and not with plain `defun',
+because then a lot of stuff needed to be done by every
+tree-buffer is automatically performed."
+  `(eval-and-compile
+     (ecb-tree-buffer-callbacks-add (quote ,callback-type)
+                                    (quote ,tree-buffer-name-symbol)
+                                    (quote ,callback))
+     (defun ,callback ,(append '(node ecb-button edit-window-nr shift-mode meta-mode)
+                               optional-arg-list)
+       ,(concat (if (equal callback-type 'select)
+                    (concat
+                     "Handle clicking onto NODE in the current tree-buffer.\n"
+                     "ECB-BUTTON can be 1, 2 or 3. If 3 then EDIT-WINDOW-NR contains the number\n"
+                     "of the edit-window the NODE should be displayed or whatever should be done\n"
+                     "with NODE. For 1 and 2 the value of EDIT-WINDOW-NR is ignored.\n"
+                     "SHIFT-MODE and META-MODE are self-explanatory.")
+                  (concat
+                   "Handle expanding NODE in the current tree-buffer.\n"
+                   "ECB-BUTTON can be 1, 2 or 3. If 3 then EDIT-WINDOW-NR contains the number\n"
+                   "of the edit-window the NODE should be displayed or whatever should be done\n"
+                   "with NODE. For 1 and 2 the value of EDIT-WINDOW-NR is ignored.\n"
+                   "SHIFT-MODE and META-MODE are self-explanatory."))
+                "\n\n"
+                docstring)
+       (let ((no-meta-hiding nil))
+         (prog1
+             (progn
+               ,@body)
+           ,(if (equal callback-type 'select)
+                `(when (and (not no-meta-hiding) meta-mode)
+                   (ecb-run-with-idle-timer 0.001 nil 'ecb-hide-ecb-windows))))))))
+
+;; (insert (pp (macroexpand
+;;              '(defecb-tree-buffer-callback kausi-callback ecb-history-buffer
+;;                 expand (&optional a b)
+;;                 "das ist ein Docstring"
+;;                 (message "")
+;;                 (if nil t nil)))))
+
+
+(put 'defecb-tree-buffer-callback 'lisp-indent-function 4)
+
 ;; the filename/path cache
 
 (defecb-multicache ecb-filename-cache 500 nil '(FILES-AND-SUBDIRS
@@ -699,6 +1072,268 @@ Currently there are the following subcaches managed within this cache:
 
 (defsubst ecb-directory-sep-string (&optional refdir)
   (char-to-string (ecb-directory-sep-char refdir)))   
+
+;; autocontrol/sync-stuff --------------------------------------------
+
+(defvar ecb-autotrace-autocontrol/sync-functions nil
+  "Allow autotracing the internal autocontrol/synchronisations of ECB.
+All functions defined with `defecb-autocontrol/sync-function' can
+be autotraced. The value of this variable is either nil \(then no
+autotracing will be performed) or t \(then all functions defined with
+`defecb-autocontrol/sync-function' will be traced) or a list of
+function-symbols \(then exactly these functions will be traced).
+
+Auto-tracing means that each\(!) time the function runs \(either
+by idle-timer or within pre- or post-command-hook) a trace-message on
+function-entry and a trace-message on function exit is writen.")
+
+(defvar ecb-bodytrace-autocontrol/sync-functions nil
+  "Allows a body tracing of the internal autocontrol/synchronisations of ECB.
+For allowed values for this variable see `ecb-autotrace-autocontrol/sync-functions'
+
+Body-tracing means calls to `ecb-bodytrace-autocontrol/sync-fcn-error'
+somewhere within the BODY of functions defined by
+`defecb-autocontrol/sync-function'. So by setting this variable tracing of the
+BODY of autocontrol/sync-function can be switched on or off.")
+
+;; (setq ecb-autotrace-autocontrol/sync-functions
+;;       (list 'ecb-compilation-buffer-list-changed-p))
+;; (setq ecb-bodytrace-autocontrol/sync-functions
+;;       (list 'ecb-compilation-buffer-list-changed-p))
+
+(defun ecb-autotrace-autocontrol/sync-fcn-error (autocontrol-fcn &rest args)
+  "Run ARGS through `format' and write it to the *Messages*-buffer.
+Do not use this function for own traces, but use the function
+`ecb-bodytrace-autocontrol/sync-fcn-error'!
+Entry and exit-traces are already buildin in functions defined with
+`defecb-autocontrol/sync-function' and can be switched on/off by
+`ecb-autotrace-autocontrol/sync-functions'."
+  (when (or (eq ecb-autotrace-autocontrol/sync-functions t)
+            (member autocontrol-fcn ecb-autotrace-autocontrol/sync-functions))
+    (message (concat (format "ECB %s autocontrol-fcn %s autotrace [%s] "
+                             ecb-version autocontrol-fcn
+                             (format-time-string "%H:%M:%S"))
+                     (apply 'format args)))))
+
+(defun ecb-bodytrace-autocontrol/sync-fcn-error (autocontrol-fcn &rest args)
+  "Run ARGS through `format' and write it to the *Messages*-buffer.
+
+Use this function only for traces used within the BODY of a function defined
+with `defecb-autocontrol/sync-function' and not for entry and exit-traces
+because these ones are already buildin in functions defined with
+`defecb-autocontrol/sync-function' and can be switched on/off by
+`ecb-autotrace-autocontrol/sync-functions'.
+
+Body-tracing can be switched on/off with
+`ecb-bodytrace-autocontrol/sync-function'."
+  (when (or (eq ecb-bodytrace-autocontrol/sync-functions t)
+            (member autocontrol-fcn ecb-bodytrace-autocontrol/sync-functions))
+    (message (concat (format "ECB %s autocontrol-fcn %s bodytrace [%s] "
+                             ecb-version autocontrol-fcn
+                             (format-time-string "%H:%M:%S"))
+                     (apply 'format args)))))
+
+(defvar ecb-autocontrol/sync-fcn-register nil
+  "List of autocontrol/sync-functions defined by
+`defecb-autocontrol/sync-function'. Each element is a cons where car is the
+function symbol and cdr is either the symbol of a variable containing a
+buffer-name of a special ECB-buffer or nil.")
+(defvar ecb-idle-timer-alist nil
+  "List of active idle-timers of ECB")
+(defvar ecb-post-command-hooks nil
+  "List of functions which have to be part of the value of `post-command-hook'")
+(defvar ecb-pre-command-hooks nil
+  "List of functions which have to be part of the value of `pre-command-hook'")
+
+(defun ecb-register-autocontrol/sync-function (fcn-symbol buffer-name-symbol)
+  (add-to-list 'ecb-autocontrol/sync-fcn-register (cons fcn-symbol buffer-name-symbol)))
+
+(defun ecb-stop-all-autocontrol/sync-functions ()
+  (dolist (fcn-elem ecb-autocontrol/sync-fcn-register)
+    (ecb-stop-autocontrol/sync-function (car fcn-elem))))
+
+(defun ecb-stop-autocontrol/sync-function (fcn-symbol)
+  (let* ((timer-elem (assoc fcn-symbol ecb-idle-timer-alist))
+         (timer (cdr timer-elem)))
+    (when timer-elem
+      (ecb-cancel-timer timer)
+      (setq ecb-idle-timer-alist (delq timer-elem ecb-idle-timer-alist)))
+    (remove-hook 'post-command-hook fcn-symbol)
+    (remove-hook 'pre-command-hook fcn-symbol)
+    (setq ecb-post-command-hooks (delq fcn-symbol ecb-post-command-hooks))
+    (setq ecb-pre-command-hooks (delq fcn-symbol ecb-pre-command-hooks))))
+  
+
+(defun ecb-activate-ecb-autocontrol-functions (value func)
+  "Adds function FUNC to `ecb-idle-timer-alist' and activates an idle-timer
+with idle-time VALUE if VALUE is a number. If nil or 'post the
+FUNC is added to `post-command-hook' and `ecb-post-command-hooks'
+and removed from the idle-list \(if it has been contained). If
+'pre the FUNC is added to `pre-command-hook' and
+`ecb-pre-command-hooks' and removed from the idle-list \(if it
+has been contained)."
+  (unless (assoc func ecb-autocontrol/sync-fcn-register)
+    (error "ECB %s: Try to activate unregistered %s as autocontrol/sync-function"
+           ecb-version func))
+  ;; `ecb-basic-buffer-sync-delay' can never have the value 'basic so this
+  ;; recursion is save
+  (if (equal 'basic value)
+      (ecb-activate-ecb-autocontrol-functions ecb-basic-buffer-sync-delay func)
+    (ecb-stop-autocontrol/sync-function func)
+    (case value
+      ((nil post)
+       (add-hook 'post-command-hook func)
+       (add-to-list 'ecb-post-command-hooks func))
+      (pre
+       (add-hook 'pre-command-hook func)
+       (add-to-list 'ecb-pre-command-hooks func))
+      (otherwise
+       (add-to-list 'ecb-idle-timer-alist
+                    (cons func
+                          (ecb-run-with-idle-timer value t func)))))))
+
+(defmacro defecb-autocontrol/sync-function (fcn buffer-name-symbol
+                                                buffer-sync-option-symbol
+                                                interactive-p docstring
+                                                &rest body)
+  "Define a function run either by idle-timer or before por after each command.
+Such a function is used either for automatic self-controlling certain aspects
+of ECB or for synchronizing a special window/buffer of ECB with contents of
+the active buffer in the edit-area.
+
+FCN is the name of the defined function and BUFFER-NAME-SYMBOL is either nil
+or the name of a variable containing the buffer-name of a special
+ECB-window/buffer for which the defined function is used for synchronizing it
+with the edit-area. In the latter case BODY is encapsulated with the macro
+`ecb-do-if-buffer-visible-in-ecb-frame' so BODY runs only if the buffer of
+BUFFER-NAME-SYMBOL is displayed in a window of the ECB-frame \(for details see
+the documentation of this macro).
+
+The defined function has an optional argument FORCE which can be used within
+BODY.
+
+BUFFER-SYNC-OPTION-SYMBOL is either nil or the name of an option
+which defines if and under which circumstances the
+synchronization should take place. Such an option must be of the
+same type and must offer exactly the same values as `ecb-analyse-buffer-sync'.
+If BUFFER-SYNC-OPTION-SYMBOL is not nil and a valid symbol then the generated
+function encapsulates BODY in a when-statement whereas the condition-clause is
+exactly true when either:
+- force is not nil or
+- The value of BUFFER-SYNC-OPTION-SYMBOL is t or 'always or
+- The major-mode of current buffer is not contained in the list-value of
+  BUFFER-SYNC-OPTION-SYMBOL or
+- The value of BUFFER-SYNC-OPTION-SYMBOL is 'basic and the conditions above
+  are true for `ecb-basic-buffer-sync'.
+
+If INTERACTIVE-P is not nil then FCN will be defined as an interactice
+command, i.e. it will containe the clause \(interactive \"P\").
+
+The defined function is automatically prepared for tracing its calls when
+`ecb-autotrace-autocontrol/sync-functions' is either set to t or the symbol of FCN
+is contained in the list of this variable. In this case a trace-statemant with
+time-details is reported to the message-buffer directly before and after BODY.
+
+Do not quote FCN, BUFFER-NAME-SYMBOL and BUFFER-SYNC-OPTION-SYMBOL!
+
+Example:
+
+\(defecb-autocontrol/sync-function ecb-sync-a-buffer ecb-a-special-buffer-name
+   ecb-a-special-buffer-sync nil
+  \"Synchronize the buffer of ECB-A-SPECIAL-BUFFER-NAME with...\"
+  \(let \(\(x nil))
+    \(if force
+        ;; do something
+      ;; do something else
+      )
+    ))
+
+This defines a non interactive function `ecb-sync-a-buffer' which
+should be used for synchronizing the special buffer the name is
+hold in the variable `ecb-a-special-buffer-name'.
+"
+  `(eval-and-compile
+     (ecb-register-autocontrol/sync-function (quote ,fcn) (quote ,buffer-name-symbol))
+     (defun ,fcn (&optional force)
+       ,docstring
+       ,(if interactive-p
+            '(interactive "P"))
+       (ecb-autotrace-autocontrol/sync-fcn-error (quote ,fcn)
+                                                 "Begin: Cur-buf: %s" (current-buffer))
+       (let (,(if (and buffer-sync-option-symbol (symbolp buffer-sync-option-symbol))
+                  `(,buffer-sync-option-symbol (if (equal
+                                                    ,buffer-sync-option-symbol
+                                                    'basic)
+                                                   ecb-basic-buffer-sync
+                                                 ,buffer-sync-option-symbol))
+                `(,(make-symbol "abc123xyz456efg789") nil))
+             )
+         (when ,(if (and buffer-sync-option-symbol (symbolp buffer-sync-option-symbol))
+                    `(or force
+                         (equal 'always ,buffer-sync-option-symbol)
+                         (equal t ,buffer-sync-option-symbol)
+                         (and ,buffer-sync-option-symbol
+                              (listp ,buffer-sync-option-symbol)
+                              (not (member major-mode ,buffer-sync-option-symbol))))
+                  t)
+           ,(if (and buffer-name-symbol (symbolp buffer-name-symbol))
+                `(ecb-do-if-buffer-visible-in-ecb-frame (quote ,buffer-name-symbol)
+                   (ecb-bodytrace-autocontrol/sync-fcn-error (quote ,fcn)
+                                                             "After conditions: Cur-buf: %s" (current-buffer))
+                   ,@body
+                   (ecb-autotrace-autocontrol/sync-fcn-error (quote ,fcn)
+                                                             "End:   Cur-buf: %s" (current-buffer))
+                   nil ;; we always return nil
+                   )
+              `(progn
+                 (ecb-bodytrace-autocontrol/sync-fcn-error (quote ,fcn)
+                                                           "After conditions: Cur-buf: %s" (current-buffer))
+                 ,@body
+                 (ecb-autotrace-autocontrol/sync-fcn-error (quote ,fcn)
+                                                           "End:   Cur-buf: %s"
+                                                           (current-buffer))
+                 nil ;; we always return nil
+                 )
+              ))))))
+(put 'defecb-autocontrol/sync-function 'lisp-indent-function 4)
+
+;; (insert (pp (macroexpand
+;;              '(defecb-autocontrol/sync-function ecb-analyse-buffer-sync-test 
+;;                 ecb-anaylyse-buffer-name-test ecb-basic-buffer-sync nil
+;;                 "testdoctsirng"
+;;                 (let ((analysis nil)
+;;                       (completions nil)
+;;                       (fnargs nil)
+;;                       (cnt nil)
+;;                       )
+;;                   ;; Try and get some sort of analysis
+;;                   (ignore-errors
+;;                     (save-excursion
+;;                       (setq analysis (ecb--semantic-analyze-current-context (point)))
+;;                       (setq cnt (ecb--semantic-find-tag-by-overlay))
+;;                       (when analysis
+;;                         (setq completions (ecb--semantic-analyze-possible-completions analysis))
+;;                         (setq fnargs (ecb--semantic-get-local-arguments (point)))
+;;                         )))))
+;;              )))
+
+
+(defecb-autocontrol/sync-function ecb-monitor-autocontrol-functions nil nil nil
+  "Checks if all necessary ECB-hooks are contained in `post-command-hook' rsp.
+`pre-command-hook'. If one of them has been removed by Emacs \(Emacs resets
+these hooks to nil if any of the contained functions fails!) then this
+function reads them to these hooks."
+  ;; post-command-hook
+  (dolist (hook ecb-post-command-hooks)
+    (when (not (member hook post-command-hook))
+      (add-hook 'post-command-hook hook)))
+  ;; pre-command-hook
+  (dolist (hook ecb-pre-command-hooks)
+    (when (not (member hook pre-command-hook))
+      (add-hook 'pre-command-hook hook))))
+
+;; -- end of sync stuff
+
 
 
 ;;; ----- Wrappers for file- and directory-operations ------
@@ -830,103 +1465,22 @@ not nil then in both PATH and FILENAME env-var substitution is done. If the
           (ecb-fixed-filename-cache-put path filename result)
           result))))
 
+;; (ecb-fix-filename "/berndl@ecb.sourceforge.net:~")
+
 ;; -- end of canonical filenames
 
-;; -- interactors synchronizers
-;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: Has to be done!!!
 
-(defvar ecb-interactor-synchronizers nil)
-
-;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: Only called from within
-;; `defecb-interactor-synchronizer'.
-(defun ecb-interactor-synchronizer-register (buffer-name-symbol
-                                             synchronizer-fcn)
-  ""
-  )
-
-;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: This function can only be used if
-;; a synchronizer is already registered.
-(defun ecb-interactor-synchronizer-activate (&optional arg)
-  "Activate if ARG >= 0, deactivate if ARG < 0. Toggle if ARG is nil."
-  )
-
-;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: We do not change the
-;; synchronizing of the basic-interactors! eshell and speedbar synchonizing
-;; won't be changed too. So the internal-hook still remains for this stuff! But
-;; all add-on-interactors (currently analyse and symboldef) MUST use the new
-;; macro `defecb-interactor-synchronizer' for their synchronizers! For these
-;; we introduce also a new option `ecb-add-on-interactor-sync-delay' (if a
-;; buffer is not contained it will not be synced anymore!) which allows adding
-;; delays for these interactors. In addition we rename `ecb-window-sync' to
-;; `ecb-interactor-sync' and `ecb-window-sync-delay' to
-;; `ecb-basic-interactor-sync-delay'. Maybe there are further
-;; options/functions/commands to rename!?
-
-;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: Hmmmmmmm, maybe we should ensure
-;; that the add-on synchonizers will always being called AFTER the basic ones?
-;; For this we should name the new option
-;; `ecb-add-on-interactor-sync-delay-plus' which means each add-on interactor
-;; has at elast the basic delay of `ecb-basic-interactor-sync-delay' plus
-;; eventually some delay on top (this addon-delay must be realized with
-;; `ecb-run-with-timer'). Hmm, i think i have to make some brainstorming what
-;; is the better approach!
-(defmacro defecb-interactor-synchronizer (synchronizer
-                                          buffer-name-symbol
-                                          docstring &rest body)
-  ""
-  `(eval-and-compile
-     (ecb-interactor-synchronizer-register (quote ,buffer-name-symbol)
-                                           (quote ,synchronizer))
-     (defun ,synchronizer ()
-       ,docstring
-       (interactive)
-       (ecb-do-if-buffer-visible-in-ecb-frame (quote ,buffer-name-symbol)
-         ,@body))))
-
-;; (insert (pp (macroexpand
-;;              '(defecb-interactor-synchronizer ecb-analyse-buffer-sync-test
-;;                 ecb-analyse-buffer-name
-;;                 "testdoctsirng"
-;;                 (let ((analysis nil)
-;;                       (completions nil)
-;;                       (fnargs nil)
-;;                       (cnt nil)
-;;                       )
-;;                   ;; Try and get some sort of analysis
-;;                   (ignore-errors
-;;                     (save-excursion
-;;                       (setq analysis (ecb--semantic-analyze-current-context (point)))
-;;                       (setq cnt (ecb--semantic-find-tag-by-overlay))
-;;                       (when analysis
-;;                         (setq completions (ecb--semantic-analyze-possible-completions analysis))
-;;                         (setq fnargs (ecb--semantic-get-local-arguments (point)))
-;;                         )))
-;;                   (ecb-exec-in-window ecb-analyse-buffer-name
-;;                     ;; we must remove the old nodes
-;;                     (tree-buffer-set-root (tree-node-new-root))
-;;                     (when analysis
-;;                       ;; Now insert information about the context
-;;                       (when cnt
-;;                         (ecb-analyse-add-nodes "Context" "Context"
-;;                                                cnt ecb-analyse-nodetype-context))
-;;                       (when fnargs
-;;                         (ecb-analyse-add-nodes "Arguments" "Arguments" fnargs
-;;                                                ecb-analyse-nodetype-arguments))
-;;                       ;; Let different classes draw more nodes.
-;;                       (ecb-analyse-more-nodes analysis)
-;;                       (when completions
-;;                         (ecb-analyse-add-nodes "Completions" "Completions" completions
-;;                                                ecb-analyse-nodetype-completions)))
-;;                     (tree-buffer-update)))))))
-
-;; -- end of interactors synchronizers
-
-(defun ecb-format-bucket-name (name)
-  "Format NAME as a bucket-name according to `ecb-bucket-node-display'."
-  (let ((formatted-name (concat (nth 0 ecb-bucket-node-display)
-				name
-				(nth 1 ecb-bucket-node-display))))
-    (ecb-merge-face-into-text formatted-name (nth 2 ecb-bucket-node-display))
+(defun ecb-format-bucket-name (name &optional ignore-prefix-suffix ignore-bucket-face)
+  "Format NAME as a bucket-name according to `ecb-bucket-node-display'.
+If optional arg IGNORE-PREFIX-SUFFIX rsp. IGNORE-BUCKET-FACE is not nil then
+these settings of `ecb-bucket-node-display' are ignored."
+  (let ((formatted-name (if ignore-prefix-suffix
+                            name
+                          (concat (nth 0 ecb-bucket-node-display)
+                                  name
+                                  (nth 1 ecb-bucket-node-display)))))
+    (unless ignore-bucket-face
+      (ecb-merge-face-into-text formatted-name (nth 2 ecb-bucket-node-display)))
     formatted-name))
 
 (defun ecb-toggle-do-not-leave-window-after-select ()
@@ -973,42 +1527,8 @@ The tree-buffer is the current buffer."
     (local-set-key [mode-line mouse-2]
                    'ecb-toggle-maximize-ecb-window-with-mouse)))
   
+ 
 
-(defun ecb-combine-ecb-button/edit-win-nr (ecb-button edit-window-nr)
-  "Depending on ECB-BUTTON and EDIT-WINDOW-NR return one value:
-- nil if ECB-BUTTON is 1.
-- t if ECB-BUTTON is 2 and the edit-area of ECB is splitted.
-- EDIT-WINDOW-NR if ECB-BUTTON is 3."
-  (case ecb-button
-    (1 nil)
-    (2 (ecb-edit-window-splitted))
-    (3 edit-window-nr)))
-
-(defun ecb-get-edit-window (other-edit-window)
-  "Get the correct edit-window. Which one is the correct one depends on the
-value of OTHER-EDIT-WINDOW \(which is a value returned by
-`ecb-combine-ecb-button/edit-win-nr') and `ecb-mouse-click-destination'.
-- OTHER-EDIT-WINDOW is nil: Get the edit-window according to the option
-  `ecb-mouse-click-destination'.
-- OTHER-EDIT-WINDOW is t: Get the next edit-window in the cyclic list of
-  current edit-windows starting either from the left-top-most one or from the
-  last edit-window with point (depends on
-  `ecb-mouse-click-destination').
-- OTHER-EDIT-WINDOW is an integer: Get exactly the edit-window with that
-  number > 0."
-  (let ((edit-win-list (ecb-canonical-edit-windows-list)))
-    (typecase other-edit-window
-      (null
-       (if (eq ecb-mouse-click-destination 'left-top)
-           (car edit-win-list)
-         ecb-last-edit-window-with-point))
-      (integer
-       (ecb-get-edit-window-by-number other-edit-window edit-win-list))
-      (otherwise
-       (ecb-next-listelem edit-win-list
-                          (if (eq ecb-mouse-click-destination 'left-top)
-                              (car edit-win-list)
-                            ecb-last-edit-window-with-point))))))
 
 ;;====================================================
 ;; Mouse callbacks
@@ -1032,25 +1552,24 @@ combination is invalid \(see `ecb-interpret-mouse-click'."
 	 (shift-mode (nth 1 ecb-button-list))
          (meta-mode (nth 2 ecb-button-list))
          (keyboard-p (equal (nth 3 ecb-button-list) 'keyboard))
-         (maximized-p (ecb-buffer-is-maximized-p tree-buffer-name)))
+         (maximized-p (ecb-buffer-is-maximized-p tree-buffer-name))
+         (select-callbacks (ecb-tree-buffer-callbacks-alist-of-type 'select))
+         (callback-fcn nil))
     ;; we need maybe later that something has clicked in a tree-buffer, e.g.
     ;; in `ecb-handle-major-mode-visibilty'.
     (setq ecb-item-in-tree-buffer-selected t)
     (if (not keyboard-p)
         (setq ecb-layout-prevent-handle-ecb-window-selection t))
+    
     ;; first we dispatch to the right action
     (when ecb-button-list
-      (cond ((ecb-string= tree-buffer-name ecb-directories-buffer-name)
-	     (ecb-directory-clicked node ecb-button nil shift-mode meta-mode))
-	    ((ecb-string= tree-buffer-name ecb-sources-buffer-name)
-	     (ecb-source-clicked node ecb-button nil shift-mode meta-mode))
-	    ((ecb-string= tree-buffer-name ecb-history-buffer-name)
-	     (ecb-history-clicked node ecb-button nil shift-mode meta-mode))
-	    ((ecb-string= tree-buffer-name ecb-methods-buffer-name)
-	     (ecb-method-clicked node ecb-button nil shift-mode meta-mode))
-	    ((ecb-string= tree-buffer-name ecb-analyse-buffer-name)
-	     (ecb-analyse-node-clicked node ecb-button nil shift-mode meta-mode))
-	    (t nil)))
+      (setq callback-fcn
+            (ecb-member-of-symbol/value-list tree-buffer-name
+                                             select-callbacks
+                                             'car
+                                             'cdr))
+      (when (functionp callback-fcn)
+        (funcall callback-fcn node ecb-button nil shift-mode meta-mode)))
 
     ;; now we go back to the tree-buffer but only if all of the following
     ;; conditions are true:
@@ -1113,19 +1632,20 @@ combination is invalid \(see `ecb-interpret-mouse-click')."
 	 (ecb-button (nth 0 ecb-button-list))
 	 (shift-mode (nth 1 ecb-button-list))
          (meta-mode (nth 2 ecb-button-list))
-         (keyboard-p (equal (nth 3 ecb-button-list) 'keyboard)))
+         (keyboard-p (equal (nth 3 ecb-button-list) 'keyboard))
+         (expand-callbacks (ecb-tree-buffer-callbacks-alist-of-type 'expand))
+         (callback-fcn nil))
     (if (not keyboard-p)
         (setq ecb-layout-prevent-handle-ecb-window-selection t))
+    ;; we just dispatch to the right action
     (when ecb-button-list
-      (cond ((ecb-string= tree-buffer-name ecb-directories-buffer-name)
-	     (ecb-update-directory-node node))
-	    ((ecb-string= tree-buffer-name ecb-sources-buffer-name)
-	     (ecb-source-clicked node ecb-button nil shift-mode meta-mode))
-	    ((ecb-string= tree-buffer-name ecb-history-buffer-name)
-	     (ecb-history-clicked node ecb-button nil shift-mode meta-mode))
-	    ((ecb-string= tree-buffer-name ecb-methods-buffer-name)
-	     nil)
-	    (t nil)))))
+      (setq callback-fcn
+            (ecb-member-of-symbol/value-list tree-buffer-name
+                                             expand-callbacks
+                                             'car
+                                             'cdr))
+      (when (functionp callback-fcn)
+        (funcall callback-fcn node ecb-button nil shift-mode meta-mode)))))
 
 (defun ecb-interpret-mouse-click (mouse-button
                                   shift-pressed
@@ -1264,15 +1784,13 @@ state for a stealthy function can be done by any code and must be done via
 (defvar ecb-stealthy-update-running nil
   "Recursion avoidance variable for stealthy performance.")
 
-(defun ecb-stealthy-updates ()
+(defecb-autocontrol/sync-function ecb-stealthy-updates nil nil nil
   "Run all functions in the stealthy function list.
 Each function returns 'done if it completes successfully, or something else if
 interrupted by the user \(i.e. the function has been interrupted by the
 user). If a function is interrupted then `ecb-stealthy-function-list' is
 rotated so the interrupted function is the first element so the next stealthy
 run starts with this interrupted function."
-  (ecb-debug-autocontrol-fcn-error 'ecb-stealthy-updates
-                                   "Begin: Cur-buf: %s" (current-buffer))
   (unless ecb-stealthy-update-running
     (let ((l ecb-stealthy-function-list)
           (ecb-stealthy-update-running t)
@@ -1287,11 +1805,9 @@ run starts with this interrupted function."
       ;; function.
       (when l
         (setq ecb-stealthy-function-list
-              (ecb-rotate ecb-stealthy-function-list (car l))))))
-  (ecb-debug-autocontrol-fcn-error 'ecb-stealthy-updates
-                                   "End: Cur-buf: %s" (current-buffer)))
+              (ecb-rotate ecb-stealthy-function-list (car l)))))))
 
-
+;
 ;; generation of nodes rsp. of attributes of nodes
 
 (defun ecb-generate-node-name (text-name first-chars icon-name name-of-buffer)

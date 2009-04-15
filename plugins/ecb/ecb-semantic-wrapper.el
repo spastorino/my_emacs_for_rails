@@ -6,7 +6,6 @@
 
 ;; Author: Klaus Berndl <klaus.berndl@sdm.de>
 ;; Maintainer: Klaus Berndl <klaus.berndl@sdm.de>
-;;             Kevin A. Burton <burton@openprivacy.org>
 ;; Keywords: browser, code, programming, tools
 ;; Created: 2003
 
@@ -23,7 +22,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-semantic-wrapper.el,v 1.26 2006/03/10 15:40:35 berndl Exp $
+;; $Id: ecb-semantic-wrapper.el,v 1.27 2009/04/15 14:22:35 berndl Exp $
 
 ;;; Commentary:
 
@@ -44,10 +43,10 @@
 
 (defconst ecb-semantic-2-loaded (string-match "^2" semantic-version))
 (defconst ecb-semantic-2-beta-nr (if (and ecb-semantic-2-loaded
-                                          (string-match "beta\\([1-9]\\).*"
+                                          (string-match "\\(beta\\|pre\\)\\([1-9]\\).*"
                                                         semantic-version))
                                      (string-to-number
-                                      (match-string 1 semantic-version))
+                                      (match-string 2 semantic-version))
                                    -1))
 
 (eval-when-compile
@@ -129,6 +128,7 @@
     (semantic-find-nonterminal-by-token       . semantic-find-tags-by-class)
     (semantic-find-nonterminal-by-name        . semantic-brute-find-first-tag-by-name)
     (semantic-current-nonterminal-parent      . semantic-current-tag-parent)
+    (semantic-find-nonterminal                . semantic-go-to-tag)
     (semantic-adopt-external-members          . semantic-adopt-external-members)
     (semantic-bucketize                       . semantic-bucketize)
     (semantic-clear-toplevel-cache            . semantic-clear-toplevel-cache)
@@ -246,10 +246,19 @@ unloaded buffer representation."
        (defsubst ecb--semantic-tag-abstract-p (tag &optional parent)
          nil)))
 
-(defsubst ecb--semantic-tag-prototype-p (tag)
-  (ecb--semantic-tag-get-attribute tag (if (> ecb-semantic-2-beta-nr 1)
-                                           :prototype-flag
-                                         'prototype)))
+(if (fboundp 'semantic-tag-prototype-p)
+    (defalias 'ecb--semantic-tag-prototype-p 'semantic-tag-prototype-p)
+  (defsubst ecb--semantic-tag-prototype-p (tag)
+    (ecb--semantic-tag-get-attribute tag (if (> ecb-semantic-2-beta-nr 1)
+                                             :prototype-flag
+                                           'prototype))))
+
+(if (fboundp 'semantic-tag-faux-p)
+    (defalias 'ecb--semantic-tag-faux-p 'semantic-tag-faux-p)
+  (defsubst ecb--semantic-tag-faux-p (tag)
+    (ecb--semantic-tag-get-attribute tag (if (> ecb-semantic-2-beta-nr 1)
+                                             :faux-flag
+                                           'faux))))
 
 (if (fboundp 'semantic-tag-function-constructor-p)
     (defalias 'ecb--semantic-tag-function-constructor-p
@@ -371,14 +380,15 @@ This makes it appear more like the results of a `semantic-find-' call."
             result)
       count)))
 
-(defun ecb--semanticdb-find-result-nth (result n)
-  "In RESULT, return the Nth search result.
-Like `semanticdb-find-result-nth', except that only the TAG
-is returned, and the buffer it is found it will be made current.
-If the result tag has no position information, the originating buffer
-is still made current."
-  (if (fboundp 'semanticdb-find-result-nth)
-      (apply 'semanticdb-find-result-nth (list result n))
+(if (fboundp 'semanticdb-find-result-nth)
+    (defalias 'ecb--semanticdb-find-result-nth 'semanticdb-find-result-nth)
+  (defun ecb--semanticdb-find-result-nth (result n)
+    "In result, return the nth search result.
+This is a 0 based search result, with the first match being element 0.
+
+The returned value is a cons cell: (TAG . TABLE) where TAG
+is the tag at the nth position.  TABLE is the semanticdb table where
+the TAG was found.  Sometimes TABLE can be nil."
     (let ((ans nil)
           (anstable nil))
       ;; Loop over each single table hit.
@@ -396,19 +406,6 @@ is still made current."
         (setq result (cdr result)))
       (cons ans anstable))))
 
-(defun ecb--semanticdb-find-result-nth-with-file (result n)
-  "In RESULT, return the Nth search result.
-This is a 0 based search result, with the first match being element 0. Returns
-a cons cell with car is the searched and found tag and the cdr is the
-associated full filename of this tag. If the search result is not associated
-with a file, then the cdr of the result-cons is nil."
-  (let ((result-nth (ecb--semanticdb-find-result-nth result n)))
-    (if (and (car result-nth)
-             (ecb--semantic-tag-with-position-p (car result-nth))
-             (cdr result-nth))
-        (cons (car result-nth)
-              (ecb--semanticdb-full-filename (cdr result-nth)))
-      (cons (car result-nth) nil))))
 
 (silentcomp-provide 'ecb-semantic-wrapper)
 

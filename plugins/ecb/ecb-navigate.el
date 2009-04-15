@@ -7,9 +7,7 @@
 
 ;; Author: Jesper Nordenberg <mayhem@home.se>
 ;;         Klaus Berndl <klaus.berndl@sdm.de>
-;;         Kevin A. Burton <burton@openprivacy.org>
 ;; Maintainer: Klaus Berndl <klaus.berndl@sdm.de>
-;;             Kevin A. Burton <burton@openprivacy.org>
 ;; Keywords: browser, code, programming, tools
 ;; Created: 2001
 
@@ -26,7 +24,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-navigate.el,v 1.22 2005/02/28 11:31:55 berndl Exp $
+;; $Id: ecb-navigate.el,v 1.23 2009/04/15 14:22:35 berndl Exp $
 
 ;;; Commentary:
 
@@ -42,6 +40,8 @@
   (require 'silentcomp))
 
 (require 'eieio)
+(require 'ecb-util)
+
 
 
 ;;====================================================
@@ -171,15 +171,17 @@
 (defmethod ecb-nav-goto ((item ecb-nav-tag-history-item))
   (let ((tag-buffer (ecb-nav-get-tag-buffer item))
         (tag-start (ecb-nav-get-tag-start item))
-        (tag-end (ecb-nav-get-tag-end item)))
+        (tag-end (ecb-nav-get-tag-end item))
+        (win-start (ecb-nav-get-window-start item)))
+    (select-window ecb-last-edit-window-with-point)
     (set-window-buffer (selected-window) tag-buffer)
     (widen)
     (goto-char tag-start)
     (when (ecb-nav-get-narrow item)
       (narrow-to-region (ecb-line-beginning-pos) tag-end))
     (goto-char (+ tag-start (ecb-nav-get-pos item)))
-    (set-window-start (selected-window)
-                      (+ tag-start (ecb-nav-get-window-start item)))))
+    (if win-start
+        (set-window-start (selected-window) (+ tag-start win-start)))))
 
 (defmethod ecb-nav-save ((item ecb-nav-tag-history-item))
   "Return only nil if tag-start of ITEM points into a dead buffer. In this
@@ -187,8 +189,14 @@ case no position saving is done."
   (let ((tag-start (ecb-nav-get-tag-start item)))
     (if (and tag-start (marker-buffer tag-start))
         (progn
-          (ecb-nav-set-pos item (- (point) tag-start))
-          (ecb-nav-set-window-start item (- (window-start) tag-start))
+          (save-excursion
+            (set-buffer (marker-buffer tag-start))
+            (ecb-nav-set-pos item (- (point) tag-start)))
+          (ecb-nav-set-window-start
+           item
+           (if (equal (window-buffer) (marker-buffer tag-start))
+               (- (window-start) tag-start)
+             nil))
           t)
       nil)))
 
@@ -211,15 +219,23 @@ case no position saving is done."
 
 (defclass ecb-nav-file-history-item (ecb-nav-history-item)
   ((file :initarg :file :initform ""); :protection :private)
+   ;; the following is nil if the item does not point to an indirect-buffer
+   ;; based on a file-buffer
+   (indirect-buffer-name :initarg :indirect-buffer-name :initform "") ; :protection :private)
    )
   )
 
 (defun ecb-nav-file-history-item-new ()
-  (let ((item (ecb-nav-file-history-item (buffer-file-name)
-	       :file (buffer-file-name))))
+  (let* ((file (ecb-buffer-file-name))
+         (ind-buffer-name (and file
+                               (buffer-base-buffer)
+                               (buffer-name)))
+         (item (ecb-nav-file-history-item (buffer-name)
+                                          :file file
+                                          :indirect-buffer-name ind-buffer-name)))
     (ecb-nav-set-pos item (point))
     (ecb-nav-set-window-start item
-			  (window-start (get-buffer-window (current-buffer))))
+                              (window-start (get-buffer-window (current-buffer))))
     item))
 
 (defmethod ecb-nav-get-file ((item ecb-nav-file-history-item))
@@ -228,23 +244,44 @@ case no position saving is done."
 (defmethod ecb-nav-set-file ((item ecb-nav-file-history-item) file)
   (oset item file file))
 
+(defmethod ecb-nav-get-indirect-buffer-name ((item ecb-nav-file-history-item))
+  (oref item indirect-buffer-name))
+
+(defmethod ecb-nav-set-indirect-buffer-name ((item ecb-nav-file-history-item) indirect-buffer-name)
+  (oset item indirect-buffer-name indirect-buffer-name))
+
 (defmethod ecb-nav-save ((item ecb-nav-file-history-item))
   (ecb-nav-set-pos item (point))
   (ecb-nav-set-window-start item (window-start))
-  (ecb-nav-set-file item (buffer-file-name))
+  (ecb-nav-set-file item (ecb-buffer-file-name))
+  (ecb-nav-set-indirect-buffer-name item (and (ecb-buffer-file-name)
+                                              (buffer-base-buffer)
+                                              (buffer-name)))
   t)
 
 (defmethod ecb-nav-goto ((item ecb-nav-file-history-item))
-  (find-file (ecb-nav-get-file item))
-  (widen)
-  (goto-char (ecb-nav-get-pos item))
-  (set-window-start (selected-window) (ecb-nav-get-window-start item)))
+  (when (ecb-nav-get-file item)
+    (if (ecb-nav-get-indirect-buffer-name item)
+        (switch-to-buffer (ecb-nav-get-indirect-buffer-name item))
+      (find-file (ecb-nav-get-file item)))
+    (widen)
+    (goto-char (ecb-nav-get-pos item))
+    (let ((win-start (ecb-nav-get-window-start item)))
+      (if win-start
+          (set-window-start (selected-window) win-start)))))
   
 (defmethod ecb-nav-to-string ((item ecb-nav-file-history-item))
-  (concat (ecb-nav-get-file item) ":" (call-next-method)))
+  (concat (ecb-nav-get-file item) "-"
+          (ecb-nav-get-indirect-buffer-name item)
+          ":" (call-next-method)))
 
 (defmethod ecb-nav-is-valid ((item ecb-nav-file-history-item))
-  t)
+  ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: for saveness we should test if
+  ;; file points to a readable file - but what about remote-file (can last
+  ;; long)?
+  (and (ecb-nav-get-file item)
+       (or (null (ecb-nav-get-indirect-buffer-name item))
+           (get-buffer (ecb-nav-get-indirect-buffer-name item)))))
 
 ;;====================================================
 ;; 

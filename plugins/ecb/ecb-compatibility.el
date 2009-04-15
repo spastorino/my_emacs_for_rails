@@ -7,7 +7,6 @@
 
 ;; Author: Klaus Berndl <klaus.berndl@sdm.de>
 ;; Maintainer: Klaus Berndl <klaus.berndl@sdm.de>
-;;             Kevin A. Burton <burton@openprivacy.org>
 ;; Keywords: browser, code, programming, tools
 ;; Created: 2004
 
@@ -24,7 +23,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-compatibility.el,v 1.8 2007/07/08 16:42:06 berndl Exp $
+;; $Id: ecb-compatibility.el,v 1.9 2009/04/15 14:22:35 berndl Exp $
 
 ;;; Commentary:
 ;;

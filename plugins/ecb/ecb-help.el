@@ -5,11 +5,9 @@
 ;;                           Kevin A. Burton,
 ;;                           Free Software Foundation, Inc.
 
-;; Author: Jesper Nordenberg <mayhem@home.se>
-;;         Klaus Berndl <klaus.berndl@sdm.de>
+;; Author: Klaus Berndl <klaus.berndl@sdm.de>
 ;;         Kevin A. Burton <burton@openprivacy.org>
 ;; Maintainer: Klaus Berndl <klaus.berndl@sdm.de>
-;;             Kevin A. Burton <burton@openprivacy.org>
 ;; Keywords: browser, code, programming, tools
 ;; Created: 2001
 
@@ -26,7 +24,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-help.el,v 1.112 2007/07/05 11:08:24 berndl Exp $
+;; $Id: ecb-help.el,v 1.114 2009/04/15 14:22:35 berndl Exp $
 
 ;;; Commentary:
 ;;
@@ -426,15 +424,23 @@ could be interesting for support."
         (ecb-internal-vars (sort '(ecb-path-selected-directory
                                    ecb-path-selected-source
                                    ecb-use-semantic-grouping
+                                   ecb-autocontrol/sync-fcn-register
                                    ecb-idle-timer-alist
                                    ecb-post-command-hooks
+                                   ecb-pre-command-hooks
                                    ecb-max-specpdl-size-old
                                    ecb-max-lisp-eval-depth-old
                                    ecb-minor-mode
+                                   ecb-adviced-function-sets
+                                   ecb-adviced-functions
                                    ecb-last-window-config-before-deactivation
                                    ecb-edit-area-creators
+                                   ecb-stealthy-function-list
+                                   ecb-stealthy-function-state-alist
                                    ecb-windows-hidden
                                    ecb-toggle-layout-state
+                                   ecb-tree-buffer-creators
+                                   ecb-tree-buffers
                                    ecb-current-maximized-ecb-buffer-name
                                    ecb-special-ecb-buffers-of-current-layout)
                                  (function (lambda (l r)

@@ -23,7 +23,7 @@
 @c GNU Emacs; see the file COPYING.  If not, write to the Free Software
 @c Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-@c $Id: ecb.texi,v 1.213 2008/05/08 12:03:41 berndl Exp $
+@c $Id: ecb.texi,v 1.214 2009/03/20 16:35:10 berndl Exp $
 
 @setfilename ecb.info
 
@@ -5718,36 +5718,6 @@ the internal state of ECB should be preserved for next activation.
 @end defopt
 
 
-@defopt current-buffer-sync-hook
-Normal hook run at the end of @code{ecb-current-buffer-sync}.
-
-See documentation of @code{ecb-current-buffer-sync} for conditions when
-synchronization takes place and so in turn these hooks are evaluated.
-
-Precondition for such a hook:
-Current buffer is the buffer of the current selected edit-window.
-
-Postcondition for such a hook:
-Point must stay in the same edit-window as before evaluating the hook.
-
-Important note: If @code{ecb-window-sync} is not nil
-@code{ecb-current-buffer-sync} is running either every time Emacs is
-idle or even after every command (see @code{ecb-window-sync-delay}).
-So these hooks can be really called very often! Therefore each
-function of this hook should/must check in an efficient way at
-beginning if its task have to be really performed and then do them
-only if really necessary! Otherwise performance of Emacs could slow
-down dramatically!
-
-It is strongly recommended that each function added to this hook uses
-the macro @code{ecb-do-if-buffer-visible-in-ecb-frame} at beginning!
-See @code{ecb-speedbar-current-buffer-sync} and
-@code{ecb-eshell-current-buffer-sync} for examples how to use this
-macro!
-@end defopt
-
-
-
 @defopt deactivate-hook
 Normal hook run at the end of deactivating (but before the ecb-layout
 is cleared!) ECB by running @code{ecb-deactivate}.
@@ -5878,39 +5848,6 @@ the ECB-windows are hidden.
 @end defopt
 
 
-@defopt mouse-click-destination
-Destination of a mouse-button click. Defines in which edit-window (if
-splitted) ECB does the ``right'' action (opening a source, jumping to
-a method/variable etc.) after clicking with the primary mouse-button
-(see @code{ecb-primary-secondary-mouse-buttons}) onto a node. There
-are two possible choices:
-
-@itemize @minus
-@item @code{left-top}:
-Does the ``right'' action always in the left/topmost edit-window.
-@item @code{last-point}:
-Does the ``right'' action always in that edit-window which had the point
-before.
-@end itemize
-This is if the user has clicked either with the primary mouse-button or
-has activated a popup-menu in the tree-buffer.
-
-If the edit-area is not splitted this setting doesn't matter.
-
-A click with the secondary mouse-button (see again
-@code{ecb-primary-secondary-mouse-buttons} does the ``right'' action
-always in another edit-window related to the setting in this option:
-If there are two edit-windows then the ``other'' edit-window is used
-and for more than 2 edit-windows the ``next'' edit-window is used
-(whereas the next edit-window of the last edit-window is the first
-edit-window).
-
-Note: If the tree-buffers are used with the keyboard instead with the
-mouse then this option takes effect too because @kbd{RET} is
-interpreted as primary mouse-button and @kbd{C-RET} as secondary
-mouse-button!
-@end defopt
-
 @defopt run-ediff-in-ecb-frame
 Run ediff-sessions in the same frame as ECB is running.
 If not nil then ECB ensures that ediff runs in the same frame as ECB and ECB
@@ -5969,41 +5906,6 @@ speedbar are installed and loaded into Emacs.
 It is strongly recommended to set this option to not @code{nil}!
 @end defopt
 
-@defopt window-sync
-Synchronize the ECB-windows automatically with current edit window. If
-@code{always} then the synchronization takes place always a buffer
-changes in the edit window, if @code{nil} then never. If a list of
-major-modes then only if the @code{major-mode} of the new buffer
-belongs NOT to this list.
-
-But in every case the synchronization only takes place if the
-current-buffer in the current active edit-window has a relation to
-files or directories. Examples for the former one are all
-programming-language-modes, @code{Info-mode} too, an example for the
-latter one is @code{dired-mode}. For all major-modes related to
-non-file/directory-buffers like @code{help-mode},
-@code{customize-mode} and others never an autom. synchronization will
-be done!
-
-It's recommended to exclude at least @code{Info-mode} because it makes
-no sense to synchronize the ECB-windows after calling the Info help.
-Per default also @code{dired-mode} is excluded but it can also making
-sense to synchronize the ECB-directories/sources windows with the
-current directory in the dired-buffer.
-
-IMPORTANT NOTE: Every time the synchronization is done the hook
-@code{ecb-current-buffer-sync-hook} is evaluated.
-@end defopt
-
-
-@defopt window-sync-delay
-Time Emacs must be idle before the ECB-windows are synchronized with
-current edit window. If nil then there is no delay, means
-synchronization takes place immediately. A small value of about 0.25
-seconds saves CPU resources and you get even though almost the same
-effect as if you set no delay.
-@end defopt
-
 
 @node ecb-tree-buffer, ecb-directories, ecb-general, Customizable options
 @subsection Group ecb-tree-buffer
@@ -6011,6 +5913,88 @@ effect as if you set no delay.
 @noindent
 This group contains general settings related to the tree-buffers of
 ECB:
+
+@defopt basic-buffer-sync
+Synchronize the basic ECB-buffers automatically with current edit buffer.
+
+The basic ECB-buffers are the buffers for directories, sources, methods and
+history.
+
+If 'always then the synchronization takes place always a buffer changes in the
+edit window, if nil then never. If a list of major-modes then only if the
+@code{major-mode} of the new buffer belongs NOT to this list.
+
+But in every case the synchronization takes only place if the current-buffer
+in the edit-window has a relation to files or directories. Examples for the
+former one are all programming-language-modes, @code{Info-mode} too, an
+example for the latter one is @code{dired-mode}. For all major-modes related
+to non-file/directory-buffers like @code{help-mode}, @code{customize-mode} and
+others never an autom. synchronization will be done!
+
+It's recommended to exclude at least @code{Info-mode} because it makes no
+sense to synchronize the ECB-windows after calling the Info help. Per default
+also @code{dired-mode} is excluded but it can also making sense to synchronize
+the ECB-directories/sources windows with the current directory in the
+dired-buffer.
+
+IMPORTANT NOTE: Every time the synchronization is done the hook
+@code{ecb-basic-buffer-sync-hook} is evaluated.
+@end defopt
+
+@defopt basic-buffer-sync-delay
+Time Emacs must be idle before the special ECB-buffers are synchronized.
+Synchronizing is done with the current source displayed in the edit window. If
+nil then there is no delay, means synchronization takes place immediately. A
+small value of about 0.25 seconds saves CPU resources and you get even though
+almost the same effect as if you set no delay.
+@end defopt
+
+@defopt basic-buffer-sync-hook
+Hook run at the end of @code{ecb-basic-buffer-sync}.
+See documentation of @code{ecb-basic-buffer-sync} for conditions when
+synchronization takes place and so in turn these hooks are evaluated.
+
+Precondition for such a hook:
+Current buffer is the buffer of the currently selected edit-window.
+
+Postcondition for such a hook:
+Point must stay in the same edit-window as before evaluating the hook.
+
+Important note: If the option @code{ecb-basic-buffer-sync} is not nil
+the function @code{ecb-basic-buffer-sync} is running either every time
+Emacs is idle or even after every command (see
+@code{ecb-basic-buffer-sync-delay}). So these hooks can be really
+called very often! Therefore each function of this hook
+should/must check in an efficient way at beginning if its task
+have to be really performed and then do them only if really
+necessary! Otherwise performance of Emacs could slow down
+dramatically!
+
+It is strongly recommended that each function added to this hook uses the
+macro @code{ecb-do-if-buffer-visible-in-ecb-frame} at beginning! See
+@code{ecb-speedbar-buffer-sync} and @code{ecb-eshell-buffer-sync} for
+examples how to use this macro!
+@end defopt
+
+@defopt bucket-node-display
+How ECB displays bucket-nodes in a ECB tree-buffer.
+Bucket-nodes have only one job: Nodes with similar properties will be dropped
+into one bucket for such a common property and all these nodes will be added
+as children to the bucket-node. Besides being expandable and collapsable a
+bucket-node has no senseful action assigned. Examples for bucket-nodes are
+''[+] Variables'', ``[+] Dependencies'' etc. in the Methods-buffer or buckets
+which combine filenames with same extension under a bucket-node with name this
+extension.
+
+This option defines how bucket-node should be displayed. The name of the
+bucket-node is computed by ECB but you can define a prefix, a suffix and a
+special face for the bucket-node
+
+The default are empty prefix/suffix-strings and @code{ecb-bucket-node-face}. But
+an alternative can be for example '(''['' ``]'' nil) which means no special
+face and a display like ``[+] [<bucket-name>]''.
+@end defopt
+
 
 @defopt common-tree-buffer-after-create-hook
 Local hook running at the end of each tree-buffer creation. Every
@@ -6026,6 +6010,40 @@ The following keys must not be rebind in all tree-buffers:
 @item @code{C-t}
 @end itemize
 @end defopt
+
+@defopt mouse-click-destination
+Destination of a mouse-button click. Defines in which edit-window (if
+splitted) ECB does the ``right'' action (opening a source, jumping to
+a method/variable etc.) after clicking with the primary mouse-button
+(see @code{ecb-primary-secondary-mouse-buttons}) onto a node. There
+are two possible choices:
+
+@itemize @minus
+@item @code{left-top}:
+Does the ``right'' action always in the left/topmost edit-window.
+@item @code{last-point}:
+Does the ``right'' action always in that edit-window which had the point
+before.
+@end itemize
+This is if the user has clicked either with the primary mouse-button or
+has activated a popup-menu in the tree-buffer.
+
+If the edit-area is not splitted this setting doesn't matter.
+
+A click with the secondary mouse-button (see again
+@code{ecb-primary-secondary-mouse-buttons} does the ``right'' action
+always in another edit-window related to the setting in this option:
+If there are two edit-windows then the ``other'' edit-window is used
+and for more than 2 edit-windows the ``next'' edit-window is used
+(whereas the next edit-window of the last edit-window is the first
+edit-window).
+
+Note: If the tree-buffers are used with the keyboard instead with the
+mouse then this option takes effect too because @kbd{RET} is
+interpreted as primary mouse-button and @kbd{C-RET} as secondary
+mouse-button!
+@end defopt
+
 
 @defopt primary-secondary-mouse-buttons
 Primary- and secondary mouse button for using the ECB-buffers. A click
@@ -12523,7 +12541,8 @@ the documentation!}
 @item @code{tree-buffer-get-node-at-point}
 @item @code{tree-buffer-node-data-equal-p}
 @item @code{tree-buffer-recenter}
-@item @code{tree-buffer-highlight-node-data}
+@item @code{tree-buffer-highlight-node-by-data/type}
+@item @code{tree-buffer-find-displayed-node-by-data/type}
 @item @code{tree-buffer-remove-highlight}
 @item @code{tree-buffer-remove-node}
 @item @code{tree-buffer-clear-tree}
@@ -13539,8 +13558,8 @@ ecb-windows:
 @item @code{ecb-layout-switch}
 @item @code{ecb-layout-undefine}
 @item @code{ecb-point-in-compile-window}
-@item @code{ecb-point-in-ecb-window}
-@item @code{ecb-point-in-edit-window}
+@item @code{ecb-point-in-ecb-window-number}
+@item @code{ecb-point-in-edit-window-number}
 @item @code{ecb-select-edit-window}
 @item @code{ecb-split-hor}
 @item @code{ecb-split-ver}

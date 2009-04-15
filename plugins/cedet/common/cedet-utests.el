@@ -3,7 +3,7 @@
 ;; Copyright (C) 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: cedet-utests.el,v 1.13 2009/03/06 11:55:15 zappo Exp $
+;; X-RCS: $Id: cedet-utests.el,v 1.20 2009/04/11 06:55:23 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -103,10 +103,11 @@
     ;; COGRE
     ;;
     ("cogre: graph" . cogre-utest)
-    ("cogre: uml" . cogre-uml-utest)
-
+    ("cogre: periodic & ascii" . cogre-periodic-utest)
+    ("cogre: conversion/export tests" . cogre-export-utest)
+    ("cogre: uml-quick-class" . cogre-utest-quick-class)
    )
-  "Alist of all the ttests in CEDET we should run.")
+  "Alist of all the tests in CEDET we should run.")
 
 (defvar cedet-running-master-tests nil
   "Non-nil when CEDET-utest is running all the tests.")
@@ -168,18 +169,31 @@ of just logging the error."
 
 ;;;###autoload
 (defun cedet-utest-batch ()
-  "Run the CEDET unit tests in BATCH mode."
+  "Run the CEDET unit test in BATCH mode."
   (unless (cedet-utest-noninteractive)
     (error "`cedet-utest-batch' is to be used only with -batch"))
   (condition-case err
       (when (catch 'cedet-utest-exit-on-error
+	      ;; Get basic semantic features up.
 	      (semantic-load-enable-minimum-features)
+	      ;; Disables all caches related to semantic DB so all
+	      ;; tests run as if we have bootstrapped CEDET for the
+	      ;; first time.
+	      (setq-default semanticdb-new-database-class 'semanticdb-project-database)
+	      (message "Disabling existing Semantic Database Caches.")
+
+	      ;; Disabling the srecoder map, we won't load a pre-existing one
+	      ;; and will be forced to bootstrap a new one.
+	      (setq srecode-map-save-file nil)
+
+	      ;; Run the tests
 	      (cedet-utest t)
 	      )
 	(kill-emacs 1))
     (error
      (error "Error in unit test harness:\n  %S" err))
-    ))
+    )
+  )
 
 ;;; Logging utility.
 ;;
@@ -273,7 +287,8 @@ ERRORCONDITION is some error that may have occured durinig testing."
   (unless (cedet-utest-noninteractive)
     (let* ((cb (current-buffer))
 	   (cf (selected-frame))
-	   (bw (get-buffer-window cedet-utest-buffer t))
+	   (bw (or (get-buffer-window cedet-utest-buffer t)
+		   (get-buffer-window (switch-to-buffer cedet-utest-buffer) t)))
 	   (lf (window-frame bw))
 	   )
       (select-frame lf)

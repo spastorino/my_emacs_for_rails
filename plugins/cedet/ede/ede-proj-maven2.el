@@ -2,7 +2,7 @@
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
 ;; Joakim Verona <joakim@verona.se>
-;; X-RCS: $Id: ede-proj-maven2.el,v 1.3 2009/03/08 20:11:43 zappo Exp $
+;; X-RCS: $Id: ede-proj-maven2.el,v 1.5 2009/03/19 19:37:55 joakimv Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -59,10 +59,12 @@
 
 ;;TODO
 
-;; BUG: in projects with a root pom and modules with poms residing in
-;; child directories of the root pom, "compile" sometimes build the
-;; root project rather than the child project. This is not what we
-;; want for maven.  maybe its a feature for makefile projects?
+;; 
+;; BUG: (this bug-description is somewhat based on a missunderstanding
+;; of EDE, FIXME) in projects with a root pom and modules with poms
+;; residing in child directories of the root pom, "compile" sometimes
+;; build the root project rather than the child project. This is not
+;; what we want for maven.  maybe its a feature for makefile projects?
 
 ;;to reproduce:
 ;; - use a hierarchical maven project:
@@ -185,20 +187,30 @@ All directories need at least one target.")
     (oset this :targets nil))
   )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;the 3 compile methods below currently do much the same thing.
+;;  - 1st one tries to find the "root project" and compile it
+;;  - 2nd 2 compiles the child project the current file is a member of
+;;maven error messages are recognized by emacs23
 
 (defmethod project-compile-project ((obj ede-maven2-project) &optional command)
   "Compile the entire current project OBJ.
 Argument COMMAND is the command to use when compiling."
-  (message "mvn install to be exectued here %s"  obj)
   ;; we need to be in the proj root dir for this to work
   (let ((default-directory (ede-project-root-directory obj)))
     (compile "mvn install")))
 
+
 (defmethod project-compile-target ((obj ede-maven2-target-java) &optional command)
   "Compile the current target OBJ.
 Argument COMMAND is the command to use for compiling the target."
-  (message "mvn install to be executed here %s" obj)
-  (let* ((default-directory (oref obj :path)))
+  (let* ((default-directory (ede-maven2-project-root (oref obj :path))))
+    (compile "mvn install")))
+
+(defmethod project-compile-target ((obj ede-maven2-target-misc) &optional command)
+  "Compile the current target OBJ.
+Argument COMMAND is the command to use for compiling the target."
+  (let* ((default-directory (ede-maven2-project-root (oref obj :path))))
     (compile "mvn install")))
 
 ;;; File Stuff

@@ -2,7 +2,7 @@
 ;; EDE project file.
 (ede-proj-project "SRecode"
   :name "srecode"
-  :version "0.1"
+  :version "0.2"
   :file "Project.ede"
   :targets (list 
    (ede-proj-target-aux "Misc"

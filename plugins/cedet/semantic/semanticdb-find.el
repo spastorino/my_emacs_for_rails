@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: tags
-;; X-RCS: $Id: semanticdb-find.el,v 1.75 2009/01/10 00:10:57 zappo Exp $
+;; X-RCS: $Id: semanticdb-find.el,v 1.76 2009/04/09 03:00:28 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -819,7 +819,7 @@ Examines the variable `semanticdb-find-lost-includes'."
 	(message "There are no includes scanned %s"
 		 (buffer-name))
     
-      (setq ab (data-debug-new-buffer "*SEMANTICDB scanned-includes ADEBUG*"))
+      (data-debug-new-buffer "*SEMANTICDB scanned-includes ADEBUG*")
       (data-debug-insert-stuff-list scanned "*")
       )))
 
@@ -1289,6 +1289,18 @@ associated with that tag should be loaded into a buffer."
    (lambda (table tags)
      (semanticdb-find-tags-external-children-of-type-method table type tags))
    path find-file-match))
+
+;;;###autoload
+(defun semanticdb-find-tags-subclasses-of-type
+  (type &optional path find-file-match)
+  "Search for all tags of class type defined that subclass TYPE.
+See `semanticdb-find-translate-path' for details on PATH.
+FIND-FILE-MATCH indicates that any time a match is found, the file
+associated with that tag should be loaded into a buffer."
+  (semanticdb-find-tags-collector
+   (lambda (table tags)
+     (semanticdb-find-tags-subclasses-of-type-method table type tags))
+   path find-file-match t))
 
 ;;; METHODS
 ;;
@@ -1321,10 +1333,16 @@ Returns a table of all matching tags."
   (semantic-find-tags-by-class class (or tags (semanticdb-get-tags table))))
 
 (defmethod semanticdb-find-tags-external-children-of-type-method ((table semanticdb-abstract-table) parent &optional tags)
-   "In TABLE, find all occurances of tags whose TYPE is PARENT.
+   "In TABLE, find all occurances of tags whose parent is the PARENT type.
 Optional argument TAGS is a list of tags to search.
 Returns a table of all matching tags."
    (semantic-find-tags-external-children-of-type parent (or tags (semanticdb-get-tags table))))
+
+(defmethod semanticdb-find-tags-subclasses-of-type-method ((table semanticdb-abstract-table) parent &optional tags)
+   "In TABLE, find all occurances of tags whose parent is the PARENT type.
+Optional argument TAGS is a list of tags to search.
+Returns a table of all matching tags."
+   (semantic-find-tags-subclasses-of-type parent (or tags (semanticdb-get-tags table))))
 
 ;;; Deep Searches
 (defmethod semanticdb-deep-find-tags-by-name-method ((table semanticdb-abstract-table) name &optional tags)

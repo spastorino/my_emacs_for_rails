@@ -1,9 +1,9 @@
 ;;; semanticdb-mode.el --- Semanticdb Minor Mode
 
-;; Copyright (C) 2008 Eric M. Ludlam
+;; Copyright (C) 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: semanticdb-mode.el,v 1.3 2008/12/10 22:10:42 zappo Exp $
+;; X-RCS: $Id: semanticdb-mode.el,v 1.4 2009/03/14 14:01:59 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -31,6 +31,7 @@
   "For a given buffer, this is the currently active database.")
 (make-variable-buffer-local 'semanticdb-current-database)
 
+;;;###autoload
 (defvar semanticdb-current-table nil
   "For a given buffer, this is the currently active database table.")
 (make-variable-buffer-local 'semanticdb-current-table)

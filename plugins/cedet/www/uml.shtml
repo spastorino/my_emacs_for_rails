@@ -2,11 +2,11 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>UML Diagrams</font></h2></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">UML Diagrams</font></h2></td></tr>
 </table>
 
-<p><img src="img-gen/cogre-quick-class.jpg" border=1 align=right>
+<p><img src="img-gen/cogre-quick-class.jpg" border="1" align="right">
 
    <b>CEDET</b> lets you create UML diagrams either by hand, or
    automatically generate simple 3-tier class diagrams from your
@@ -48,6 +48,6 @@ M-x cogre-uml-quick-class RET
 </pre></tt>
 
     
-<br clear=all>
+<br clear="all">
 <p>
 <!--#include file="footer.fsf.shtml"-->

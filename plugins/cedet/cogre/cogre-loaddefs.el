@@ -3,106 +3,258 @@
 ;;; Code:
 
 
-;;;### (autoloads (cogre-load-graph cogre) "cogre" "cogre.el" (18817
-;;;;;;  6861))
+;;;### (autoloads (cogre) "cogre" "cogre.el" (18918 12118))
 ;;; Generated autoloads from cogre.el
 
-(eieio-defclass-autoload (quote cogre-graph) (quote (eieio-persistent)) "cogre" "A Connected Graph.\na connected graph contains a series of nodes and links which are\nrendered in a buffer, or serialized to disk.")
+(eieio-defclass-autoload 'cogre-base-graph '(eieio-persistent) "cogre" "A Connected Graph.\na connected graph contains a series of nodes and links which are\nrendered in a buffer, or serialized to disk.")
 
-(eieio-defclass-autoload (quote cogre-graph-element) (quote (eieio-named)) "cogre" "A Graph Element.\nGraph elements are anything that is drawn into a `cogre-graph'.\nGraph elements have a method for marking themselves dirty.")
+(eieio-defclass-autoload 'cogre-graph-element '(eieio-named) "cogre" "A Graph Element.\nGraph elements are anything that is drawn into a `cogre-base-graph'.\nGraph elements have a method for marking themselves dirty.")
 
-(eieio-defclass-autoload (quote cogre-node) (quote (cogre-graph-element)) "cogre" "Connected Graph node.\nNodes are regions with a fill color, and some amount of text representing\na status, or values.")
+(eieio-defclass-autoload 'cogre-node '(cogre-graph-element) "cogre" "Connected Graph node.\nNodes are regions with a fill color, and some amount of text representing\na status, or values.")
 
-(eieio-defclass-autoload (quote cogre-link) (quote (cogre-graph-element)) "cogre" "Connected Graph link.\nLinks are lines drawn between two nodes, or possibly loose in space\nas an intermediate step.  Some links have text describing what they\ndo, and most links have special markers on one end or another, such as\narrows or circles.")
+(eieio-defclass-autoload 'cogre-link '(cogre-graph-element) "cogre" "Connected Graph link.\nLinks are lines drawn between two nodes, or possibly loose in space\nas an intermediate step.  Some links have text describing what they\ndo, and most links have special markers on one end or another, such as\narrows or circles.")
 
-(autoload (quote cogre) "cogre" "\
-Create a new graph with the Connected Graph Editor.
+(eieio-defclass-autoload 'cogre-arrow '(cogre-link) "cogre" "This type of link is a simple arrow.")
+
+(autoload 'cogre "cogre" "\
+Create a new graph not associated with a buffer.
 The new graph will be given NAME.  See `cogre-mode' for details.
 Optional argument GRAPH-CLASS indicates the type of graph to create.
 
 \(fn NAME &optional GRAPH-CLASS)" t nil)
 
-(autoload (quote cogre-load-graph) "cogre" "\
-Load a graph from FILE into a new graph buffer.
+;;;***
+
+;;;### (autoloads (cogre-export-ascii) "cogre-ascii" "cogre-ascii.el"
+;;;;;;  (18912 13351))
+;;; Generated autoloads from cogre-ascii.el
 
-\(fn FILE)" t nil)
+(autoload 'cogre-export-ascii "cogre-ascii" "\
+Export the current diagram into an ASCII buffer.
+
+\(fn)" t nil)
 
 ;;;***
 
-;;;### (autoloads (cogre-mode) "cogre-mode" "cogre-mode.el" (18805
-;;;;;;  13560))
+;;;### (autoloads (cogre-export-utest cogre-export-dot-method cogre-export-dot-postscript-print
+;;;;;;  cogre-export-dot-png cogre-export-dot) "cogre-convert" "cogre-convert.el"
+;;;;;;  (18912 13859))
+;;; Generated autoloads from cogre-convert.el
+
+(autoload 'cogre-export-dot "cogre-convert" "\
+Export the current COGRE graph to DOT notation.
+DOT is a part of GraphViz.
+
+\(fn)" t nil)
+
+(autoload 'cogre-export-dot-png "cogre-convert" "\
+Export the current COGRE graph to DOT, then convert that to PNG.
+The png file is then displayed in an Emacs buffer.
+DOT is a part of GraphVis.
+
+\(fn)" t nil)
+
+(autoload 'cogre-export-dot-postscript-print "cogre-convert" "\
+Print the current graph.
+This is done by exporting the current COGRE graph to DOT, then
+convert that to Postscript before printing.
+DOT is a part of GraphVis.
+
+\(fn)" t nil)
+
+(autoload 'cogre-export-dot-method "cogre-convert" "\
+Convert G into DOT syntax of semantic tags.
+
+\(fn (G cogre-base-graph))" nil nil)
+
+(autoload 'cogre-export-utest "cogre-convert" "\
+Run all the COGRE structured export/convert test.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (cogre-dot-mode) "cogre-dot-mode" "cogre-dot-mode.el"
+;;;;;;  (18906 40825))
+;;; Generated autoloads from cogre-dot-mode.el
+
+(autoload 'cogre-dot-mode "cogre-dot-mode" "\
+Major mode for the dot language.
+This is a mini-mode that will first attempt to load and install
+`graphviz-dot-mode' in this buffer.  If that fails, it installs
+the syntax table, and runs a hook needed to get Semantic working
+as a parsing engine.
+
+\(fn)" t nil)
+
+(add-to-list 'auto-mode-alist '("\\.dot\\'" . cogre-dot-mode))
+
+;;;***
+
+;;;### (autoloads (cogre-layout) "cogre-layout" "cogre-layout.el"
+;;;;;;  (18906 40988))
+;;; Generated autoloads from cogre-layout.el
+
+(autoload 'cogre-layout "cogre-layout" "\
+Layout the current graph.
+This function depends on graphviz `dot' program.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (cogre-mode) "cogre-mode" "cogre-mode.el" (18918
+;;;;;;  12118))
 ;;; Generated autoloads from cogre-mode.el
 
-(autoload (quote cogre-mode) "cogre-mode" "\
+(autoload 'cogre-mode "cogre-mode" "\
 Connected Graph Editor Mode.
 \\{cogre-mode-map}
 
 \(fn)" t nil)
 
-;;;***
-
-;;;### (autoloads nil "cogre-uml" "cogre-uml.el" (18810 32028))
-;;; Generated autoloads from cogre-uml.el
-
-(eieio-defclass-autoload (quote cogre-package) (quote (cogre-node)) "cogre-uml" "A Package node.\nPackages represent other class diagrams, and list the major nodes\nwithin them.  They can be linked by dependency links.")
-
-(eieio-defclass-autoload (quote cogre-class) (quote (cogre-node)) "cogre-uml" "A Class node.\nClass nodes represent a class, and can list the attributes and methods\nwithin them.  Classes can have attribute links, and class hierarchy links.")
-
-(eieio-defclass-autoload (quote cogre-inherit) (quote (cogre-link)) "cogre-uml" "This type of link indicates that the two nodes reference infer inheritance.\nThe `start' node is the child, and the `end' node is the parent.\nThis is supposed to infer that START inherits from END.")
-
-(eieio-defclass-autoload (quote cogre-aggrigate) (quote (cogre-link)) "cogre-uml" "This type of link indicates aggregation.\nThe `start' node is the owner of the aggregation, the `end' node is\nthe item being aggregated.\nThis is supposed to infer that START contains END.")
+(add-to-list 'auto-mode-alist (cons "\\.cgr\\'" 'cogre-mode))
 
 ;;;***
 
-;;;### (autoloads (cogre-uml-utest cogre-utest) "cogre-utest" "cogre-utest.el"
-;;;;;;  (18816 46153))
-;;; Generated autoloads from cogre-utest.el
+;;;### (autoloads (cogre-periodic-utest cogre-periodic) "cogre-periodic"
+;;;;;;  "cogre-periodic.el" (18906 45093))
+;;; Generated autoloads from cogre-periodic.el
 
-(autoload (quote cogre-utest) "cogre-utest" "\
-Unit test Various aspects of COGRE.
+(autoload 'cogre-periodic "cogre-periodic" "\
+Create a periodic table of COGRE objects.
 
 \(fn)" t nil)
 
-(autoload (quote cogre-uml-utest) "cogre-utest" "\
-Quick test for UML chart generation.
+(autoload 'cogre-periodic-utest "cogre-periodic" "\
+Run the cogre periodic table for unit testing.
+Also test various output mechanisms from the periodic table.
 
 \(fn)" t nil)
 
 ;;;***
 
-;;;### (autoloads (cogre-uml-create cogre-uml-quick-class) "uml-create"
-;;;;;;  "uml-create.el" (17954 15791))
-;;; Generated autoloads from uml-create.el
+;;;### (autoloads (cogre-uml-quick-class cogre-semantic-tag-to-node)
+;;;;;;  "cogre-semantic" "cogre-semantic.el" (18912 15979))
+;;; Generated autoloads from cogre-semantic.el
 
-(autoload (quote cogre-uml-quick-class) "uml-create" "\
+(autoload 'cogre-semantic-tag-to-node "cogre-semantic" "\
+Convert the Semantic tag TAG into a COGRE node.
+Only handles data types nodes.
+To convert function/variables into methods or attributes in
+an existing COGRE node, see @TODO - do that.
+
+\(fn TAG)" nil nil)
+
+(autoload 'cogre-uml-quick-class "cogre-semantic" "\
 Create a new UML diagram based on CLASS showing only immediate lineage.
 The parent to CLASS, CLASS, and all of CLASSes children will be shown.
 
 \(fn CLASS)" t nil)
 
-(autoload (quote cogre-uml-create) "uml-create" "\
-Create a new UML diagram, with CLASS as the root node.
-CLASS must be a type in the current project.
+;;;***
+
+;;;### (autoloads (srecode-semantic-handle-:dot srecode-semantic-handle-:cogre
+;;;;;;  cogre-srecode-setup) "cogre-srecode" "cogre-srecode.el" (18905
+;;;;;;  26818))
+;;; Generated autoloads from cogre-srecode.el
 
-\(fn CLASS)" t nil)
+(autoload 'cogre-srecode-setup "cogre-srecode" "\
+Update various paths to get SRecode to identify COGRE macros.
+
+\(fn)" nil nil)
+
+(autoload 'srecode-semantic-handle-:cogre "cogre-srecode" "\
+Add macros to dictionary DICT based on COGRE data.
+
+\(fn DICT)" nil nil)
+
+(eval-after-load "srecode-map" (cogre-srecode-setup))
+
+(autoload 'srecode-semantic-handle-:dot "cogre-srecode" "\
+Add macros to dictionary DICT based on the current DOT buffer.
+
+\(fn DICT)" nil nil)
+
+;;;***
+
+;;;### (autoloads (cogre-uml-enable-unicode) "cogre-uml" "cogre-uml.el"
+;;;;;;  (18918 12118))
+;;; Generated autoloads from cogre-uml.el
+
+(eieio-defclass-autoload 'cogre-package '(cogre-node) "cogre-uml" "A Package node.\nPackages represent other class diagrams, and list the major nodes\nwithin them.  They can be linked by dependency links.")
+
+(eieio-defclass-autoload 'cogre-note '(cogre-node) "cogre-uml" "An note node.\nNotes are used to add annotations inside a graph.\nNotes are generally linked to some node, and are supposed to look\nlike a little pieces of paper.")
+
+(eieio-defclass-autoload 'cogre-scoped-node '(cogre-node) "cogre-uml" "A UML node that has a package specifier within which it is scoped.")
+
+(eieio-defclass-autoload 'cogre-class '(cogre-scoped-node) "cogre-uml" "A Class node.\nClass nodes represent a class, and can list the attributes and methods\nwithin them.  Classes can have attribute links, and class hierarchy links.")
+
+(eieio-defclass-autoload 'cogre-instance '(cogre-scoped-node) "cogre-uml" "An instance node.\nInstances are used in instance diagrams.\nInstances are linked together with plain links.")
+
+(eieio-defclass-autoload 'cogre-inherit '(cogre-link) "cogre-uml" "This type of link indicates that the two nodes reference infer inheritance.\nThe `start' node is the child, and the `end' node is the parent.\nThis is supposed to infer that START inherits from END.")
+
+(eieio-defclass-autoload 'cogre-aggregate '(cogre-link) "cogre-uml" "This type of link indicates aggregation.\nThe `start' node is the owner of the aggregation, the `end' node is\nthe item being aggregated.\nThis is supposed to infer that START contains END.")
+
+(autoload 'cogre-uml-enable-unicode "cogre-uml" "\
+Enable use of UNICODE symbols to create COGRE graphs.
+Inheritance uses math triangle on page 25a0.
+Aggregation uses math square on edge 25a0.
+Line-drawing uses line-drawing codes on page 2500.
+See http://unicode.org/charts/symbols.html.
+
+The unicode symbols can be differing widths.  This will make the
+cogre chart a little screwy somteims.  Your mileage may vary.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (cogre-utest-quick-class cogre-utest) "cogre-utest"
+;;;;;;  "cogre-utest.el" (18918 12118))
+;;; Generated autoloads from cogre-utest.el
+
+(autoload 'cogre-utest "cogre-utest" "\
+Unit test Various aspects of COGRE.
+
+\(fn)" t nil)
+
+(autoload 'cogre-utest-quick-class "cogre-utest" "\
+Test the quick-class function.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (cogre-picture-insert-rectangle) "picture-hack"
+;;;;;;  "picture-hack.el" (18918 12118))
+;;; Generated autoloads from picture-hack.el
+
+(autoload 'cogre-picture-insert-rectangle "picture-hack" "\
+Overlay RECTANGLE with upper left corner at point.
+Leaves the region surrounding the rectangle.
+
+\(fn RECTANGLE)" nil nil)
 
 ;;;***
 
 ;;;### (autoloads (wisent-dot-setup-parser) "wisent-dot" "wisent-dot.el"
-;;;;;;  (17213 39659))
+;;;;;;  (18918 12118))
 ;;; Generated autoloads from wisent-dot.el
 
-(autoload (quote wisent-dot-setup-parser) "wisent-dot" "\
+(autoload 'wisent-dot-setup-parser "wisent-dot" "\
 Setup buffer for parse.
 
 \(fn)" nil nil)
 
-(add-hook (quote graphviz-dot-mode-hook) (quote wisent-dot-setup-parser))
+(add-hook 'graphviz-dot-mode-hook 'wisent-dot-setup-parser)
+
+(add-hook 'cogre-dot-mode-hook 'wisent-dot-setup-parser)
 
 ;;;***
 
-;;;### (autoloads nil nil ("cogre-load.el" "picture-hack.el" "wisent-dot-wy.el")
-;;;;;;  (18870 54213 216509))
+;;;### (autoloads nil nil ("cogre-load.el" "wisent-dot-wy.el") (18918
+;;;;;;  15200 713010))
 
 ;;;***
 

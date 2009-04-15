@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: srecode-dictionary.el,v 1.9 2009/02/11 00:43:45 zappo Exp $
+;; X-RCS: $Id: srecode-dictionary.el,v 1.10 2009/04/02 01:50:36 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -363,6 +363,58 @@ FUNCTION and DICTIONARY are as for the baseclass."
 	)
     (srecode-dump-code-list cmp (make-string indent ? ))
     ))
+
+;;; FIELD EDITING COMPOUND VALUE
+;;
+;; This is an interface to using field-editing objects
+;; instead of asking questions.  This provides the basics
+;; behind this compound value.
+
+;;;###autoload
+(defclass srecode-field-value (srecode-dictionary-compound-value)
+  ((firstinserter :initarg :firstinserter
+		  :documentation
+		  "The inserter object for the first occurance of this field.")
+   (defaultvalue :initarg :defaultvalue
+     :documentation
+     "The default value for this inserter.")
+   )
+  "When inserting values with editable field mode, a dictionary value.
+Compound values allow a field to be stored in the dictionary for when
+it is referenced a second time.  This compound value can then be
+inserted with a new editable field.")
+
+(defmethod srecode-compound-toString((cp srecode-field-value)
+				     function
+				     dictionary)
+  "Convert this field into an insertable string."
+  ;; If we are not in a buffer, then this is not supported.
+  (when (not (bufferp standard-output))
+    (error "FIELDS invoked while inserting template to non-buffer."))
+
+  (if function
+      (error "@todo: Cannot mix field insertion with functions.")
+
+    ;; No function.  Perform a plain field insertion.
+    ;; We know we are in a buffer, so we can perform the insertion.
+    (let* ((dv (oref cp defaultvalue))
+	   (sti (oref cp firstinserter))
+	   (start (point))
+	   (name (oref sti :object-name)))
+
+      (if (or (not dv) (string= dv ""))
+	  (insert name)
+	(insert dv))
+
+      (srecode-field name :name name
+		     :start start
+		     :end (point)
+		     :prompt (oref sti prompt)
+		     :read-fcn (oref sti read-fcn)
+		     )
+      ))
+  ;; Returning nil is a signal that we have done the insertion ourselves.
+  nil)
 
 
 ;;; Higher level dictionary functions

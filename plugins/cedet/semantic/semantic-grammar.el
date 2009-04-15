@@ -6,7 +6,7 @@
 ;; Maintainer: David Ponce <david@dponce.com>
 ;; Created: 15 Aug 2002
 ;; Keywords: syntax
-;; X-RCS: $Id: semantic-grammar.el,v 1.76 2009/01/09 23:08:32 zappo Exp $
+;; X-RCS: $Id: semantic-grammar.el,v 1.77 2009/03/15 21:21:33 zappo Exp $
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -892,6 +892,8 @@ Lisp code."
         
         )
       
+      (save-buffer 16)
+
       ;; If running in batch mode, there is nothing more to do.
       ;; Save the generated file and quit.
       (if (semantic-grammar-noninteractive)
@@ -899,7 +901,6 @@ Lisp code."
                 (delete-old-versions t)
                 (make-backup-files t)
                 (vc-make-backup-files t))
-            (save-buffer 16)
             (kill-buffer (current-buffer)))
         ;; If running interactively, eval declarations and epilogue
         ;; code, then pop to the buffer visiting the generated file.

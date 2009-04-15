@@ -2,11 +2,11 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>Smart Completion</font></h2></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">Smart Completion</font></h2></td></tr>
 </table>
 
-<img src="img-gen/semantic-ia-complete-menu.png" border=1 align=right>
+<img src="img-gen/semantic-ia-complete-menu.png" border="1" align="right">
 <p>  CEDET's <a href="intellisense.shtml">smart code completion</a>, is
   sometimes known as "Intellisense".  The CEDET infrastructure for
   parsing and tagging files, and analyzing source code is one of the
@@ -28,9 +28,9 @@
 <p>The image to the right shows smart completion configured to use
    tooltips in a CEDET unit test source file going through a templated
    smart pointer.
-<br clear=all>
+<br clear="all">
 <p>
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h3>What makes it Smart?</h3>
 </td></tr></table>
 
@@ -78,11 +78,11 @@ int main() {
 <p>The image below shows the smart completion engine working with Qt.
 
 <center>
-<img src="img-gen/semantic-ia-complete-menu-qt4.png" border=1>
+<img src="img-gen/semantic-ia-complete-menu-qt4.png" border="1">
 </center>
 <p>
 
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h3>Setup</h3>
 </td></tr></table>
 
@@ -105,7 +105,7 @@ int main() {
   enabling smart code completion.
 
 <p>
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h3>Different completion Interfaces</h3>
 </td></tr></table>
 
@@ -163,9 +163,9 @@ target symbol) and allows TAB to be used for completion purposes.
 <p>The commands available (for binding to a key) are:
 
 <ul>
-<li>semantic-ia-complete-symbol
-<li>semantic-ia-complete-symbol-menu
-<li>semantic-ia-complete-tip
+<li>semantic-ia-complete-symbol</li>
+<li>semantic-ia-complete-symbol-menu</li>
+<li>semantic-ia-complete-tip</li>
 </ul>
 
 <p>These commands are all very simple, and are designed as examples

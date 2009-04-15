@@ -214,9 +214,10 @@ Return non-@code{nil} if @var{tag} is most likely a semantic tag.
 @defun semantic-equivalent-tag-p tag1 tag2
 @anchor{semantic-equivalent-tag-p}
 Compare @var{tag1} and @var{tag2} and return non-@code{nil} if they are equivalent.
-Use @dfn{eq} to test of two tags are the same.  Use this function if tags
-are being copied and regrouped to test for if two tags represent the
-same thing, but may be constructed of different cons cells.
+Use @dfn{equal} on elements the name, class, and position.
+Use this function if tags are being copied and regrouped to test
+for if two tags represent the same thing, but may be constructed
+of different cons cells.
 @obsolete{semantic-equivalent-tokens-p,semantic-equivalent-tag-p}
 @end defun
 

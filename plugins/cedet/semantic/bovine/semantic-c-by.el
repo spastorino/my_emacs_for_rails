@@ -3,7 +3,7 @@
 ;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author:  <santiago@debian>
-;; Created: 2009-03-10 17:55:23-0300
+;; Created: 2009-04-15 16:53:54-0300
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
@@ -167,6 +167,7 @@
      ("number"
       (ZERO . "^0$"))
      ("string"
+      (CPP . "\"C\\+\\+\"")
       (C . "\"C\""))
      ("punctuation"
       (OR . "\\`[|]\\'")
@@ -256,7 +257,29 @@
       )
      (EXTERN
       string
+      "\"C\\+\\+\""
+      semantic-list
+      ,(semantic-lambda
+	(semantic-tag
+	 "C"
+	 'extern :members
+	 (semantic-parse-region
+	  (car
+	   (nth 2 vals))
+	  (cdr
+	   (nth 2 vals))
+	  'extern-c-contents
+	  1)))
+      )
+     (EXTERN
+      string
       "\"C\""
+      ,(semantic-lambda
+	(list nil))
+      )
+     (EXTERN
+      string
+      "\"C\\+\\+\""
       ,(semantic-lambda
 	(list nil))
       )
@@ -2052,28 +2075,30 @@
       close-paren)
      ) ;; end type-cast-list
 
-    (opt-function-call-args
+    (opt-stuff-after-symbol
      (semantic-list
       "^(")
+     (semantic-list
+      "\\[.*\\]$")
      ( ;;EMPTY
       )
-     ) ;; end opt-function-call-args
+     ) ;; end opt-stuff-after-symbol
 
     (multi-stage-dereference
      (namespace-symbol
-      opt-function-call-args
+      opt-stuff-after-symbol
       punctuation
       "\\`[.]\\'"
       multi-stage-dereference)
      (namespace-symbol
-      opt-function-call-args
+      opt-stuff-after-symbol
       punctuation
       "\\`[-]\\'"
       punctuation
       "\\`[>]\\'"
       multi-stage-dereference)
      (namespace-symbol
-      opt-function-call-args)
+      opt-stuff-after-symbol)
      ) ;; end multi-stage-dereference
 
     (string-seq

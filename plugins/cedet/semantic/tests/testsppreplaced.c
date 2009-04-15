@@ -63,4 +63,28 @@ int foo;
 /* TEST: macros with args using macros */
 int noodle(int noodle);
 
+/* TEST: Double macro using the argument stack. */
+int that_foo(int i);
+int this_foo(int i);
+
+/* TEST: The G++ namespace macro hack.  Not really part of SPP. */
+namespace baz {
+
+  int bazfnc(int b) { }
+
+}
+
+namespace foo { namespace bar {
+
+    int foo_bar_func(int a) { }
+
+  } 
+}
+
+/* TEST: Recursion prevention.  CPP doesn't allow even 1 level of recursion. */
+int MACROA () {
+
+}
+
+
 /* End */

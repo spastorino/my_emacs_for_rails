@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: syntax
-;; X-RCS: $Id: semantic-ctxt.el,v 1.54 2009/01/09 23:05:01 zappo Exp $
+;; X-RCS: $Id: semantic-ctxt.el,v 1.55 2009/04/02 00:48:40 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -178,30 +178,57 @@ to collect tags, such as local variables or prototypes."
   ;; anything in that case.
   (when (and semantic--parse-table (not (eq semantic--parse-table t))
 	     (not (semantic-parse-tree-unparseable-p)))
-    (let ((vars nil)
-	  (vars2 nil)
-	  ;; We want nothing to do with funny syntaxing while doing this.
-	  (semantic-unmatched-syntax-hook nil))
-      (while (not (semantic-up-context (point) 'function))
-	(save-excursion
-	  (forward-char 1)
-	  (setq vars
-		;; Note to self: semantic-parse-region returns cooked
-		;; but unlinked tags.  File information is lost here
-		;; and is added next.
-		(append (semantic-parse-region
-			 (point)
-			 (save-excursion (semantic-end-of-context) (point))
-			 'bovine-inner-scope
-			 nil
-			 t)
-			vars))))
-      (setq vars2 vars)
-      ;; Modify the tags in place.
-      (while vars2
-	(semantic--tag-put-property (car vars2) :filename (buffer-file-name))
-	(setq vars2 (cdr vars2)))
-      vars)))
+    (let ((vars (semantic-get-cache-data 'get-local-variables)))
+      (if vars
+	  (progn
+	    ;;(message "Found cached vars.")
+	    vars)
+	(let ((vars2 nil)
+	      ;; We want nothing to do with funny syntaxing while doing this.
+	      (semantic-unmatched-syntax-hook nil)
+	      (start (point))
+	      (firstusefulstart nil)
+	      )
+	  (while (not (semantic-up-context (point) 'function))
+	    (when (not vars)
+	      (setq firstusefulstart (point)))
+	    (save-excursion
+	      (forward-char 1)
+	      (setq vars
+		    ;; Note to self: semantic-parse-region returns cooked
+		    ;; but unlinked tags.  File information is lost here
+		    ;; and is added next.
+		    (append (semantic-parse-region
+			     (point)
+			     (save-excursion (semantic-end-of-context) (point))
+			     'bovine-inner-scope
+			     nil
+			     t)
+			    vars))))
+	  ;; Modify the tags in place.
+	  (setq vars2 vars)
+	  (while vars2
+	    (semantic--tag-put-property (car vars2) :filename (buffer-file-name))
+	    (setq vars2 (cdr vars2)))
+	  ;; Hash our value into the first context that produced useful results.
+	  (when (and vars firstusefulstart)
+	    (let ((end (save-excursion
+			 (goto-char firstusefulstart)
+			 (save-excursion
+			   (unless (semantic-end-of-context)
+			     (point))))))
+	      ;;(message "Caching values %d->%d." firstusefulstart end)
+	      (semantic-cache-data-to-buffer
+	       (current-buffer) firstusefulstart
+	       (or end
+		   ;; If the end-of-context fails,
+		   ;; just use our cursor starting
+		   ;; position.
+		   start)
+	       vars 'get-local-variables 'exit-cache-zone))
+	    )
+	  ;; Return our list.
+	  vars)))))
 
 (define-overloadable-function semantic-get-local-arguments (&optional point)
   "Get arguments (variables) from the current context at POINT.

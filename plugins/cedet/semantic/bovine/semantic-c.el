@@ -3,7 +3,7 @@
 ;;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
-;; X-RCS: $Id: semantic-c.el,v 1.106 2009/03/05 03:15:03 zappo Exp $
+;; X-RCS: $Id: semantic-c.el,v 1.115 2009/04/11 16:51:21 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -98,30 +98,48 @@ NOTE: In process of obsoleting this."
   '( ("__THROW" . "")
      ("__const" . "const")
      ("__restrict" . "")
+     ("__declspec" . ((spp-arg-list ("foo") 1 . 2)))
      )
   "List of symbols to include by default.")
 
+(defvar semantic-c-in-reset-preprocessor-table nil
+  "Non-nil while resetting the preprocessor symbol map.
+Used to prevent a reset while trying to parse files that are
+part of the preprocessor map.")
+
 (defun semantic-c-reset-preprocessor-symbol-map ()
   "Reset the C preprocessor symbol map based on all input variables."
-  (let ((filemap nil))
-    (dolist (sf semantic-lex-c-preprocessor-symbol-file)
-      ;; Global map entries
-      (let* ((table (semanticdb-file-table-object sf)))
-	(when table
-	  (when (semanticdb-needs-refresh-p table)
-	    (semanticdb-refresh-table table))
-	  (setq filemap (append filemap (oref table lexical-table)))
+  (when (featurep 'semantic-c)
+    (let ((filemap nil)
 	  )
-	))
+      (when (and (not semantic-c-in-reset-preprocessor-table)
+		 (featurep 'semanticdb-mode)
+		 (semanticdb-minor-mode-p))
+	(let ( ;; Don't use external parsers.  We need the internal one.
+	      (semanticdb-out-of-buffer-create-table-fcn nil)
+	      ;; Don't recurse while parsing these files the first time.
+	      (semantic-c-in-reset-preprocessor-table t)
+	      )
+	  (dolist (sf semantic-lex-c-preprocessor-symbol-file)
+	    ;; Global map entries
+	    (let* ((table (semanticdb-file-table-object sf t)))
+	      (when table
+		(when (semanticdb-needs-refresh-p table)
+		  (condition-case nil
+		      (semanticdb-refresh-table table)
+		    (error nil)))
+		(setq filemap (append filemap (oref table lexical-table)))
+		)
+	      ))))
 
-    (setq-mode-local c-mode
-		     semantic-lex-spp-macro-symbol-obarray
-		     (semantic-lex-make-spp-table
-		      (append semantic-lex-c-preprocessor-symbol-map-builtin
-			      semantic-lex-c-preprocessor-symbol-map
-			      filemap))
-		     )
-    ))
+      (setq-mode-local c-mode
+		       semantic-lex-spp-macro-symbol-obarray
+		       (semantic-lex-make-spp-table
+			(append semantic-lex-c-preprocessor-symbol-map-builtin
+				semantic-lex-c-preprocessor-symbol-map
+				filemap))
+		       )
+      )))
 
 ;;;###autoload
 (defcustom semantic-lex-c-preprocessor-symbol-map nil
@@ -198,12 +216,6 @@ if `semantic-c-member-of-autocast' is nil :
   :group 'c
   :type 'boolean)
 
-;; XEmacs' autoload can't seem to byte compile the above because it
-;; directly includes the entire defcustom.  To safely execute those,
-;; it needs this next line to bootstrap in user settings w/out
-;; loading in semantic-c.el at bootstrap time.
-(semantic-c-reset-preprocessor-symbol-map)
-
 (define-lex-spp-macro-declaration-analyzer semantic-lex-cpp-define
   "A #define of a symbol with some value.
 Record the symbol in the semantic preprocessor.
@@ -236,7 +248,7 @@ Return the the defined symbol as a special spp lex token."
       ;; Magical spp variable for end point.
       (setq semantic-lex-end-point (point))
 
-      ;; Handled nexted macro streams.
+      ;; Handled nested macro streams.
       (semantic-lex-spp-merge-streams raw-stream)
       )))
 
@@ -391,6 +403,77 @@ Go to the next line."
   "\\\\\\s-*\n"
   (setq semantic-lex-end-point (match-end 0)))
 
+(define-lex-regex-analyzer semantic-lex-c-namespace-begin-macro
+  "Handle G++'s namespace macros which the pre-processor can't handle."
+  "\\(_GLIBCXX_BEGIN_NAMESPACE\\)(\\s-*\\(\\(?:\\w\\|\\s_\\)+\\)\\s-*)"
+  (let* ((nsend (match-end 1))
+	 (sym-start (match-beginning 2))
+	 (sym-end (match-end 2))
+	 (ms (buffer-substring-no-properties sym-start sym-end)))
+    ;; Push the namespace keyword.
+    (semantic-lex-push-token 
+     (semantic-lex-token 'NAMESPACE (match-beginning 0) nsend "namespace"))
+    ;; Push the name.
+    (semantic-lex-push-token
+     (semantic-lex-token 'symbol sym-start sym-end ms))
+    )
+  (goto-char (match-end 0))
+  (let ((start (point))
+	(end 0))
+    ;; If we can't find a matching end, then create the fake list.
+    (when (re-search-forward "_GLIBCXX_END_NAMESPACE" nil t)
+      (setq end (point))
+      (semantic-lex-push-token
+       (semantic-lex-token 'semantic-list start end
+			   (list 'prefix-fake)))))
+  (setq semantic-lex-end-point (point)))
+
+(define-lex-regex-analyzer semantic-lex-c-namespace-begin-nested-macro
+  "Handle G++'s namespace macros which the pre-processor can't handle."
+  "\\(_GLIBCXX_BEGIN_NESTED_NAMESPACE\\)(\\s-*\\(\\(?:\\w\\|\\s_\\)+\\)\\s-*,\\s-*\\(\\(?:\\w\\|\\s_\\)+\\)\\s-*)"
+  (goto-char (match-end 0))
+  (let* ((nsend (match-end 1))
+	 (sym-start (match-beginning 2))
+	 (sym-end (match-end 2))
+	 (ms (buffer-substring-no-properties sym-start sym-end))
+	 (sym2-start (match-beginning 3))
+	 (sym2-end (match-end 3))
+	 (ms2 (buffer-substring-no-properties sym2-start sym2-end)))
+    ;; Push the namespace keyword.
+    (semantic-lex-push-token 
+     (semantic-lex-token 'NAMESPACE (match-beginning 0) nsend "namespace"))
+    ;; Push the name.
+    (semantic-lex-push-token
+     (semantic-lex-token 'symbol sym-start sym-end ms))
+
+    (goto-char (match-end 0))
+    (let ((start (point))
+	  (end 0))
+      ;; If we can't find a matching end, then create the fake list.
+      (when (re-search-forward "_GLIBCXX_END_NESTED_NAMESPACE" nil t)
+	(setq end (point))
+	(semantic-lex-push-token
+	 (semantic-lex-token 'semantic-list start end
+			     ;; We'll depend on a quick hack
+			     (list 'prefix-fake-plus
+				   (semantic-lex-token 'NAMESPACE 
+						       sym-end sym2-start
+						       "namespace")
+				   (semantic-lex-token 'symbol
+						       sym2-start sym2-end
+						       ms2)
+				   (semantic-lex-token 'semantic-list start end
+						       (list 'prefix-fake)))
+			     ))
+	)))
+  (setq semantic-lex-end-point (point)))
+
+(define-lex-regex-analyzer semantic-lex-c-namespace-end-macro
+  "Handle G++'s namespace macros which the pre-processor can't handle."
+  "_GLIBCXX_END_\\(NESTED_\\)?NAMESPACE"
+  (goto-char (match-end 0))
+  (setq semantic-lex-end-point (point)))
+
 (define-lex-regex-analyzer semantic-lex-c-string
   "Detect and create a C string token."
   "L?\\(\\s\"\\)"
@@ -435,6 +518,11 @@ Use semantic-cpp-lexer for parsing text inside a CPP macro."
   semantic-lex-number
   ;; Must detect C strings before symbols because of possible L prefix!
   semantic-lex-c-string
+  ;; Custom handlers for some macros come before the macro replacement analyzer.
+  semantic-lex-c-namespace-begin-macro
+  semantic-lex-c-namespace-begin-nested-macro
+  semantic-lex-c-namespace-end-macro
+  ;; Handle macros, symbols, and keywords
   semantic-lex-spp-replace-or-symbol-or-keyword
   semantic-lex-charquote
   semantic-lex-paren-or-list
@@ -486,6 +574,8 @@ START, END, NONTERMINAL, DEPTH, and RETURNONERRORS are the same
 as for the parent."
   (if (and (boundp 'lse) (or (/= start 1) (/= end (point-max))))
       (let* ((last-lexical-token lse)
+	     (llt-class (semantic-lex-token-class last-lexical-token))
+	     (llt-fakebits (car (cdr last-lexical-token)))
 	     (macroexpand (stringp (car (cdr last-lexical-token)))))
 	(if macroexpand
   	    (progn
@@ -494,12 +584,46 @@ as for the parent."
 	      (semantic-c-parse-lexical-token
 	       lse nonterminal depth returnonerror)
 	      )
-	  ;; Not a macro expansion.  the old thing.
-	  (semantic-parse-region-default start end 
-					 nonterminal depth
-					 returnonerror)
-	  ))
-    ;; Else, do the old thing.
+	  ;; Not a macro expansion, but perhaps a funny semantic-list
+	  ;; is at the start?  Remove the depth if our semantic list is not
+	  ;; made of list tokens.
+	  (if (and depth (= depth 1)
+		   (eq llt-class 'semantic-list)
+		   (not (null llt-fakebits))
+		   (consp llt-fakebits)
+		   (symbolp (car llt-fakebits))
+		   )
+	      (progn
+		(setq depth 0)
+		
+		;; This is a copy of semantic-parse-region-default where we
+		;; are doing something special with the lexication of the
+		;; contents of the semantic-list token.  Stuff not used by C
+		;; removed.
+		(let ((tokstream
+		       (if (and (consp llt-fakebits)
+				(eq (car llt-fakebits) 'prefix-fake-plus))
+			   ;; If our semantic-list is special, then only stick in the
+			   ;; fake tokens.
+			   (cdr llt-fakebits)
+			 ;; Lex up the region with a depth of 0
+			 (semantic-lex start end 0))))
+
+		  ;; Do the parse
+		  (nreverse
+		   (semantic-repeat-parse-whole-stream tokstream
+						       nonterminal
+						       returnonerror))
+
+		  ))
+
+	    ;; It was not a macro expansion, nor a special semantic-list.
+	    ;; Do old thing.
+	    (semantic-parse-region-default start end 
+					   nonterminal depth
+					   returnonerror)
+	    )))
+    ;; Do the parse
     (semantic-parse-region-default start end nonterminal
 				   depth returnonerror)
     ))
@@ -608,6 +732,7 @@ the regular parser."
 			       :typemodifiers mods
 			       :dereference (length (nth 3 cur))
 			       :pointer (nth 1 cur)
+			       :reference (semantic-tag-get-attribute tag :reference)
 			       :documentation (semantic-tag-docstring tag) ;doc
 			       )
 			      vl))
@@ -997,13 +1122,18 @@ handled.  A class is abstract iff it's destructor is virtual."
    (t (semantic-tag-abstract-p-default tag parent))))
 
 (defun semantic-c-dereference-typedef (type scope &optional type-declaration)
-  "If TYPE is a typedef, get TYPE's type by name or tag, and return."         
+  "If TYPE is a typedef, get TYPE's type by name or tag, and return.
+SCOPE is not used, and TYPE-DECLARATION is used only if TYPE is not a typedef."
   (if (and (eq (semantic-tag-class type) 'type)
            (string= (semantic-tag-type type) "typedef"))
       (let ((dt (semantic-tag-get-attribute type :typedef)))
         (cond ((and (semantic-tag-p dt)
                     (not (semantic-analyze-tag-prototype-p dt)))
-               (list dt dt))
+	       ;; In this case, DT was declared directly.  We need
+	       ;; to clone DT and apply a filename to it.
+	       (let* ((fname (semantic-tag-file-name type))
+		      (def (semantic-tag-copy dt nil fname)))
+		 (list def def)))
               ((stringp dt) (list dt (semantic-tag dt 'type)))
               ((consp dt) (list (car dt) dt))))
 
@@ -1057,6 +1187,7 @@ instantiated as specified in TYPE-DECLARATION."
         (semantic-tag-set-faux type))))
   (list type type-declaration))
 
+;;; Patch here by "Raf" for instantiating templates.
 (defun semantic-c-dereference-member-of (type scope &optional type-declaration)
   "Dereference through the `->' operator of TYPE.
 Uses the return type of the '->' operator if it is contained in TYPE.
@@ -1339,6 +1470,8 @@ DO NOT return the list of tags encompassing point."
       )))
 
 (provide 'semantic-c)
+
+(semantic-c-reset-preprocessor-symbol-map)
 
 ;;; semantic-c.el ends here
 

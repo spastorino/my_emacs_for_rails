@@ -3,7 +3,7 @@
 ;; Copyright (C) 2009 Eric M. Ludlam
 ;;
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: ede-make.el,v 1.1 2009/03/08 12:51:27 zappo Exp $
+;; X-RCS: $Id: ede-make.el,v 1.2 2009/03/12 01:06:18 zappo Exp $
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -84,7 +84,7 @@ If NOERROR is nil, then throw an error on failure.  Return t otherwise."
 		    "--version")
       ;; Check the buffer for the string
       (goto-char (point-min))
-      (when (looking-at "GNU Make version \\([0-9][^,]+\\),")
+      (when (looking-at "GNU Make\\(?: version\\)? \\([0-9][^,]+\\),")
 	(setq rev (match-string 1))
 	(setq ans (not (inversion-check-version rev nil ede-make-min-version))))
 

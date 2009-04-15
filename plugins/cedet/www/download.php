@@ -1,7 +1,7 @@
 <!-- -*-html-*- -->
-<br clear=all>
+<br clear="all">
 <p>
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h2>Downloading CEDET</h2>
 </td></tr></table>
 

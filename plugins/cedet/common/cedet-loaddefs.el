@@ -136,6 +136,31 @@ return nil.
 
 ;;;***
 
+;;;### (autoloads (cedet-graphviz-dot-version-check cedet-graphviz-neato-command
+;;;;;;  cedet-graphviz-dot-command) "cedet-graphviz" "cedet-graphviz.el"
+;;;;;;  (18909 22782))
+;;; Generated autoloads from cedet-graphviz.el
+
+(defvar cedet-graphviz-dot-command "dot" "\
+Command name for the Graphviz DOT executable.")
+
+(custom-autoload 'cedet-graphviz-dot-command "cedet-graphviz" t)
+
+(defvar cedet-graphviz-neato-command "neato" "\
+Command name for the Graphviz NEATO executable.")
+
+(custom-autoload 'cedet-graphviz-neato-command "cedet-graphviz" t)
+
+(autoload 'cedet-graphviz-dot-version-check "cedet-graphviz" "\
+Check the version of the installed Graphviz dot command.
+If optional programatic argument NOERROR is non-nil, then
+instead of throwing an error if Global isn't available, then
+return nil.
+
+\(fn &optional NOERROR)" t nil)
+
+;;;***
+
 ;;;### (autoloads (cedet-idutils-version-check cedet-idutils-expand-filename
 ;;;;;;  cedet-idutils-token-command cedet-idutils-file-command) "cedet-idutils"
 ;;;;;;  "cedet-idutils.el" (18851 8015))
@@ -168,7 +193,7 @@ return nil.
 ;;;***
 
 ;;;### (autoloads (cedet-utest-batch cedet-utest) "cedet-utests"
-;;;;;;  "cedet-utests.el" (18870 53996))
+;;;;;;  "cedet-utests.el" (18918 12118))
 ;;; Generated autoloads from cedet-utests.el
 
 (autoload 'cedet-utest "cedet-utests" "\
@@ -179,7 +204,7 @@ of just logging the error.
 \(fn &optional EXIT-ON-ERROR)" t nil)
 
 (autoload 'cedet-utest-batch "cedet-utests" "\
-Run the CEDET unit tests in BATCH mode.
+Run the CEDET unit test in BATCH mode.
 
 \(fn)" nil nil)
 
@@ -187,30 +212,42 @@ Run the CEDET unit tests in BATCH mode.
 
 ;;;### (autoloads (data-debug-eval-expression data-debug-edebug-expr
 ;;;;;;  data-debug-new-buffer data-debug-mode data-debug-insert-thing
-;;;;;;  data-debug-insert-stuff-list data-debug-insert-hash-table
+;;;;;;  data-debug-insert-stuff-vector data-debug-insert-stuff-list
+;;;;;;  data-debug-insert-widget-properties data-debug-insert-hash-table
 ;;;;;;  data-debug-insert-property-list) "data-debug" "data-debug.el"
-;;;;;;  (18834 9678))
+;;;;;;  (18918 12118))
 ;;; Generated autoloads from data-debug.el
 
-(autoload (quote data-debug-insert-property-list) "data-debug" "\
+(autoload 'data-debug-insert-property-list "data-debug" "\
 Insert the property list PROPLIST.
 Each line starts with PREFIX.
 The attributes belong to the tag PARENT.
 
 \(fn PROPLIST PREFIX &optional PARENT)" nil nil)
 
-(autoload (quote data-debug-insert-hash-table) "data-debug" "\
+(autoload 'data-debug-insert-hash-table "data-debug" "\
 Insert the contents of HASH-TABLE inserting PREFIX before each element.
 
 \(fn HASH-TABLE PREFIX)" nil nil)
 
-(autoload (quote data-debug-insert-stuff-list) "data-debug" "\
+(autoload 'data-debug-insert-widget-properties "data-debug" "\
+Insert the contents of WIDGET inserting PREFIX before each element.
+
+\(fn WIDGET PREFIX)" nil nil)
+
+(autoload 'data-debug-insert-stuff-list "data-debug" "\
 Insert all the parts of STUFFLIST.
 PREFIX specifies what to insert at the start of each line.
 
 \(fn STUFFLIST PREFIX)" nil nil)
 
-(autoload (quote data-debug-insert-thing) "data-debug" "\
+(autoload 'data-debug-insert-stuff-vector "data-debug" "\
+Insert all the parts of STUFFVECTOR.
+PREFIX specifies what to insert at the start of each line.
+
+\(fn STUFFVECTOR PREFIX)" nil nil)
+
+(autoload 'data-debug-insert-thing "data-debug" "\
 Insert THING with PREFIX.
 PREBUTTONTEXT is some text to insert between prefix and the thing
 that is not included in the indentation calculation of any children.
@@ -218,24 +255,24 @@ If PARENT is non-nil, it is somehow related as a parent to thing.
 
 \(fn THING PREFIX PREBUTTONTEXT &optional PARENT)" nil nil)
 
-(autoload (quote data-debug-mode) "data-debug" "\
+(autoload 'data-debug-mode "data-debug" "\
 Major-mode for the Analyzer debugger.
 
 \\{data-debug-map}
 
 \(fn)" t nil)
 
-(autoload (quote data-debug-new-buffer) "data-debug" "\
+(autoload 'data-debug-new-buffer "data-debug" "\
 Create a new ddebug buffer with NAME.
 
 \(fn NAME)" nil nil)
 
-(autoload (quote data-debug-edebug-expr) "data-debug" "\
+(autoload 'data-debug-edebug-expr "data-debug" "\
 Dump out the contets of some expression EXPR in edebug with ddebug.
 
 \(fn EXPR)" t nil)
 
-(autoload (quote data-debug-eval-expression) "data-debug" "\
+(autoload 'data-debug-eval-expression "data-debug" "\
 Evaluate EXPR and display the value.
 If the result is something simple, show it in the echo area.
 If the result is a list or vector, then use the data debugger to display it.
@@ -363,10 +400,10 @@ See a pretty-printed representation of FUNCTION-NAME.
 ;;;### (autoloads (pulse-line-hook-function pulse-toggle-integration-advice
 ;;;;;;  pulse-momentary-highlight-region pulse-momentary-highlight-one-line
 ;;;;;;  pulse-momentary-highlight-overlay pulse-test pulse) "pulse"
-;;;;;;  "pulse.el" (18833 41782))
+;;;;;;  "pulse.el" (18918 12118))
 ;;; Generated autoloads from pulse.el
 
-(autoload (quote pulse) "pulse" "\
+(autoload 'pulse "pulse" "\
 Pulse the colors on our highlight face.
 If optional FACE is provide, reset the face to FACE color,
 instead of `pulse-highlight-start-face'.
@@ -374,31 +411,31 @@ Be sure to call `pulse-reset-face' after calling pulse.
 
 \(fn &optional FACE)" nil nil)
 
-(autoload (quote pulse-test) "pulse" "\
+(autoload 'pulse-test "pulse" "\
 Test the lightening function for pulsing a line.
 When optional NO-ERROR Don't throw an error if we can't run tests.
 
 \(fn &optional NO-ERROR)" t nil)
 
-(autoload (quote pulse-momentary-highlight-overlay) "pulse" "\
+(autoload 'pulse-momentary-highlight-overlay "pulse" "\
 Pulse the overlay O, unhighlighting before next command.
 Optional argument FACE specifies the fact to do the highlighting.
 
 \(fn O &optional FACE)" nil nil)
 
-(autoload (quote pulse-momentary-highlight-one-line) "pulse" "\
+(autoload 'pulse-momentary-highlight-one-line "pulse" "\
 Highlight the line around POINT, unhighlighting before next command.
 Optional argument FACE specifies the face to do the highlighting.
 
 \(fn POINT &optional FACE)" nil nil)
 
-(autoload (quote pulse-momentary-highlight-region) "pulse" "\
+(autoload 'pulse-momentary-highlight-region "pulse" "\
 Highlight between START and END, unhighlighting before next command.
 Optional argument FACE specifies the fact to do the highlighting.
 
 \(fn START END &optional FACE)" nil nil)
 
-(autoload (quote pulse-toggle-integration-advice) "pulse" "\
+(autoload 'pulse-toggle-integration-advice "pulse" "\
 Toggle activation of advised functions that will now pulse.
 Wint no ARG, toggle the pulse advice.
 With a negative ARG, disable pulse advice.
@@ -417,7 +454,7 @@ the following hook:
 
 \(fn ARG)" t nil)
 
-(autoload (quote pulse-line-hook-function) "pulse" "\
+(autoload 'pulse-line-hook-function "pulse" "\
 Function used in hooks to pulse the current line.
 Only pulses the line if `pulse-command-advice-flag' is non-nil.
 
@@ -426,7 +463,7 @@ Only pulses the line if `pulse-command-advice-flag' is non-nil.
 ;;;***
 
 ;;;### (autoloads nil nil ("cedet-load.el" "cedet.el" "ezimage.el"
-;;;;;;  "sformat.el" "working.el") (18870 54198 938591))
+;;;;;;  "sformat.el" "working.el") (18918 15180 284125))
 
 ;;;***
 

@@ -13,10 +13,10 @@ Build a call tree to show all functions called by FUNC.
 
 ;;;***
 
-;;;### (autoloads (chart-test-it-all) "chart" "chart.el" (18671 49602))
+;;;### (autoloads (chart-test-it-all) "chart" "chart.el" (18918 12120))
 ;;; Generated autoloads from chart.el
 
-(autoload (quote chart-test-it-all) "chart" "\
+(autoload 'chart-test-it-all "chart" "\
 Test out various charting features.
 
 \(fn)" t nil)
@@ -184,8 +184,8 @@ Argument PPATH is the path to the directory we are going to analyze.
 ;;;;;;  "e-config.el" "ecfg-menu.el" "eieio-base.el" "eieio-comp.el"
 ;;;;;;  "eieio-custom.el" "eieio-doc.el" "eieio-load.el" "eieio-speedbar.el"
 ;;;;;;  "eieio-test-methodinvoke.el" "eieio-tests.el" "eieio.el"
-;;;;;;  "eieiocomp.el" "psql.el" "widget-d.el" "widget-i.el") (18870
-;;;;;;  54199 601996))
+;;;;;;  "eieiocomp.el" "psql.el" "widget-d.el" "widget-i.el") (18918
+;;;;;;  15181 549651))
 
 ;;;***
 

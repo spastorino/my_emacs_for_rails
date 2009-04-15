@@ -40,6 +40,15 @@ int test_fcn () {
   MyFoo.// -3-
     // #3# ( "Mumble" "get" )
     ;
+
+  Name1::Name2::F//-4-
+    // #4# ( "Foo" )
+    ;
+  
+  // @TODO - get this working...
+  Name1::stage2_Foo::M//-5-
+    /// #5# ( "Mumble" )
+    ;
 }
 
 
@@ -62,8 +71,74 @@ namespace A {
 
   void bar::xx()
   {
-    myFoo.// -4- <--- cursor is here after the dot
-      // #4# ( "aa" "bb" )
+    myFoo.// -6- <--- cursor is here after the dot
+      // #6# ( "aa" "bb" )
       ;
   }
 }
+
+// Double namespace example from Hannu Koivisto
+//
+// This is tricky because the parent class "Foo" is found within the
+// scope of B, so the scope calculation needs to put that together
+// before searching for parents in scope.
+namespace a {
+  namespace b {
+
+    class Bar : public Foo
+    {
+      int baz();
+    };
+
+    int Bar::baz()
+    {
+      return dum// -7- 
+	// #7# ( "dumdum" )
+	;
+    }
+
+  } // namespace b
+} // namespace a
+
+// Three namespace example from Hannu Koivisto
+//
+// This one is special in that the name e::Foo, where "e" is in
+// the scope, and not referenced from the global namespace.  This
+// wasn't previously handled, so the fullscope needed to be added
+// to the list of things searched when in split-name decent search mode
+// for scopes.
+
+namespace d {
+  namespace e {
+
+    class Foo
+    {
+    public:
+      int write();
+    };
+
+  } // namespace d
+} // namespace e
+
+
+namespace d {
+  namespace f {
+
+    class Bar
+    {
+    public:
+      int baz();
+
+    private:
+      e::Foo &foo;
+    };
+
+    int Bar::baz()
+    {
+      return foo.w// -8-
+	// #8# ( "write" )
+	;
+    }
+
+  } // namespace f
+} // namespace d

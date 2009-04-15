@@ -1,10 +1,10 @@
 ;;; wisent-dot.wy --- GraphViz DOT file parser
 
-;; Copyright (C) 2003, 2004 Eric M. Ludlam
+;; Copyright (C) 2003, 2004, 2009 Eric M. Ludlam
 
 ;; Author: Eric Ludlam <zappo@gnu.org>
 ;; Keywords: syntax
-;; X-RCS: $Id: wisent-dot.wy,v 1.7 2005/09/30 20:07:11 zappo Exp $
+;; X-RCS: $Id: wisent-dot.wy,v 1.10 2009/04/06 02:56:32 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -34,7 +34,7 @@
 %start dot_file
 ;; Needed for EXPANDFULL
 %start graph-contents
-%start node-description
+%start attribute-block
 
 ;;; KEYWORDS
 %type    <keyword>
@@ -46,24 +46,6 @@
 %put     SUBGRAPH summary "subgraph <name> { <graph elements> ... }"
 %keyword NODE     "node"
 %put     NODE     summary "node [<attribute>...];"
-%keyword SHAPE    "shape"
-%put     SHAPE    summary "shape=<shape-type>"
-%keyword LABEL    "label"
-%put     LABEL    summary "label=\"string\""
-%keyword COLOR    "color"
-%put     COLOR    summary "color=<color-spec>"
-%keyword STYLE    "style"
-%put     STYLE    summary "style=<style-spec>"
-%keyword LEN      "len"
-%put     LEN      summary "len=<value>"
-%keyword FONTNAME "fontname"
-%put     FONTNAME summary "fontname=<font-spec>"
-%keyword FONTSIZE "fontsize"
-%put     FONTSIZE summary "fontsize=<font-size-number>"
-%keyword WIDTH    "width"
-%keyword HEIGHT   "height"
-%keyword SPLINES  "splines"
-%keyword OVERLAP  "overlap"
 
 ;;; Punctuation Types
 %type  <punctuation> syntax "\\s.+"
@@ -120,23 +102,12 @@ graph-contents
     ()
   | RBRACE
     ()
-  | label
-  | style
   | graph-attributes
   | subgraph
   | node
+  | graphgeneric
   | named-node
   | links
-  ;
-
-label
-  : LABEL EQUAL string SEMI
-    (TAG $3 'label)
-  ;
-
-style
-  : STYLE EQUAL symbol SEMI
-    (TAG $3 'style)
   ;
 
 subgraph
@@ -144,46 +115,50 @@ subgraph
     (TAG $2 'graph :members (EXPANDFULL $3 graph-contents))
   ;
 
+graphgeneric
+  : GRAPH BRACKET_BLOCK SEMI
+    (TAG "GRAPH" 'generic-graph :attributes (EXPANDFULL $2 attribute-block))
+  ;
+
 node
   : NODE BRACKET_BLOCK SEMI
-    (TAG "NODE" 'generic-node :attributes (EXPANDFULL $2 node-description))
+    (TAG "NODE" 'generic-node :attributes (EXPANDFULL $2 attribute-block))
   ;
 
 graph-attributes
   : GRAPH BRACKET_BLOCK SEMI
-    (TAG "GRAPH" 'graph-attributes :attributes (EXPANDFULL $2 node-description))
+    (TAG "GRAPH" 'graph-attributes :attributes (EXPANDFULL $2 attribute-block))
   ;
 
 named-node
-  : symbol BRACKET_BLOCK SEMI
-    (TAG $1 'node :attributes (EXPANDFULL $2 node-description))
+  : name BRACKET_BLOCK SEMI
+    (TAG $1 'node :attributes (EXPANDFULL $2 attribute-block))
   ;
 
-node-description
+links
+  : name DILINK name opt-link-attributes opt-semi
+    (TAG $1 'link :to $3 :attributes $4)
+  | name LINK name opt-link-attributes opt-semi
+    (TAG $1 'link :to $3 :attributes $4)
+  ;
+
+name
+  : symbol
+    ( identity $1 )
+  | string
+    ( read $1 ) ;; This un-strings it.
+  ;
+
+attribute-block
   : LBRACKET 
     ()
   | RBRACKET
     ()
   | COMMA
     ()
-  | SHAPE EQUAL symbol
-    (TAG $1 'attribute :value $3)
-  | LABEL EQUAL string
-    (TAG $1 'attribute :value $3)
-  | FONTNAME EQUAL string
-    (TAG $1 'attribute :value $3)
-  | FONTSIZE EQUAL number
-    (TAG $1 'attribute :value $3)
  ;; This is a catch-all in case we miss some keyword.
-  | symbol EQUAL symbol
+  | symbol EQUAL name
     (TAG $1 'attribute :value $3)
-  ;
-
-links
-  : symbol DILINK symbol opt-link-attributes opt-semi
-    (TAG $1 'link :to $3 :attributes $4)
-  | BRACE_BLOCK
- ;; Links in braces get properties.  Deal with this later.
   ;
 
 opt-semi
@@ -194,7 +169,7 @@ opt-semi
 
 opt-link-attributes
   : BRACKET_BLOCK
-    (EXPANDFULL $1 node-description)
+    (EXPANDFULL $1 attribute-block)
   | ;; Empty
   ;
 

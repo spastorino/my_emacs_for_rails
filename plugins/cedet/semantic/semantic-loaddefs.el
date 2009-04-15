@@ -71,10 +71,10 @@ Insert texinfo documentation about TAG from BUFFER.
 
 ;;;### (autoloads (semantic-bovinate-toplevel semantic-refresh-tags-safe
 ;;;;;;  semantic-fetch-tags semantic-parse-region-default) "semantic"
-;;;;;;  "semantic.el" (18841 1628))
+;;;;;;  "semantic.el" (18918 12120))
 ;;; Generated autoloads from semantic.el
 
-(autoload (quote semantic-parse-region-default) "semantic" "\
+(autoload 'semantic-parse-region-default "semantic" "\
 Parse the area between START and END, and return any tags found.
 If END needs to be extended due to a lexical token being too large, it
 will be silently ignored.
@@ -86,7 +86,7 @@ unterminated syntax.
 
 \(fn START END &optional NONTERMINAL DEPTH RETURNONERROR)" nil nil)
 
-(autoload (quote semantic-fetch-tags) "semantic" "\
+(autoload 'semantic-fetch-tags "semantic" "\
 Fetch semantic tags from the current buffer.
 If the buffer cache is up to date, return that.
 If the buffer cache is out of date, attempt an incremental reparse.
@@ -97,7 +97,7 @@ was marked unparseable, then do nothing, and return the cache.
 
 \(fn)" nil nil)
 
-(autoload (quote semantic-refresh-tags-safe) "semantic" "\
+(autoload 'semantic-refresh-tags-safe "semantic" "\
 Refreshes the current buffer's tags safely.
 
 Return non-nil if the refresh was successful.
@@ -107,12 +107,12 @@ Does nothing if the current buffer doesn't need reparsing.
 
 \(fn)" nil nil)
 
-(autoload (quote semantic-bovinate-toplevel) "semantic" "\
+(autoload 'semantic-bovinate-toplevel "semantic" "\
 Backward Compatibility Function.
 
 \(fn &optional IGNORED)" nil nil)
 
-(make-obsolete (quote semantic-bovinate-toplevel) (quote semantic-fetch-tags))
+(make-obsolete 'semantic-bovinate-toplevel 'semantic-fetch-tags)
 
 (defsubst semantic-fetch-available-tags nil "\
 Fetch available semantic tags from the current buffer.
@@ -210,9 +210,25 @@ Report debug info for checking STARTFILE for up-to-date tags.
 
 ;;;***
 
-;;;### (autoloads (semantic-analyze-current-context) "semantic-analyze"
-;;;;;;  "semantic-analyze.el" (18870 53997))
+;;;### (autoloads (semantic-analyze-current-context semantic-analyze-current-symbol)
+;;;;;;  "semantic-analyze" "semantic-analyze.el" (18918 12120))
 ;;; Generated autoloads from semantic-analyze.el
+
+(autoload 'semantic-analyze-current-symbol "semantic-analyze" "\
+Call ANALYZEHOOKFCN after analyzing the symbol under POSITION.
+The ANALYZEHOOKFCN is called with the current symbol bounds, and the
+analyzed prefix.  It should take the arguments (START END PREFIX).
+The ANALYZEHOOKFCN is only called if some sort of prefix with bounds was
+found under POSITION.
+
+The results of ANALYZEHOOKFCN is returned, or nil if there was nothing to
+call it with.
+
+For regular analysis, you should call `semantic-analyze-current-context'
+to calculate the context information.  The purpose for this function is
+to provide a large number of non-cached analysis for filtering symbols.
+
+\(fn ANALYZEHOOKFCN &optional POSITION)" nil nil)
 
 (autoload 'semantic-analyze-current-context "semantic-analyze" "\
 Analyze the current context at optional POSITION.
@@ -231,7 +247,7 @@ if a cached copy of the return object is found.
 
 ;;;### (autoloads (semantic-analyze-possible-completions semantic-analyze-tags-of-class-list
 ;;;;;;  semantic-analyze-type-constants) "semantic-analyze-complete"
-;;;;;;  "semantic-analyze-complete.el" (18870 53997))
+;;;;;;  "semantic-analyze-complete.el" (18918 12120))
 ;;; Generated autoloads from semantic-analyze-complete.el
 
 (autoload 'semantic-analyze-type-constants "semantic-analyze-complete" "\
@@ -336,7 +352,7 @@ list of semantic tokens found.
 ;;;### (autoloads (semantic-c-add-preprocessor-symbol semantic-default-c-setup
 ;;;;;;  semantic-c-member-of-autocast semantic-lex-c-preprocessor-symbol-file
 ;;;;;;  semantic-lex-c-preprocessor-symbol-map) "semantic-c" "bovine/semantic-c.el"
-;;;;;;  (18870 53997))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from bovine/semantic-c.el
 
 (defvar semantic-lex-c-preprocessor-symbol-map nil "\
@@ -624,12 +640,60 @@ will perform the completion.
 
 ;;;***
 
-;;;### (autoloads nil "semantic-ctxt" "semantic-ctxt.el" (18791 55325))
+;;;### (autoloads nil "semantic-ctxt" "semantic-ctxt.el" (18918 12120))
 ;;; Generated autoloads from semantic-ctxt.el
 
 (defvar semantic-command-separation-character ";" "\
 String which indicates the end of a command.
 Used for identifying the end of a single command.")
+
+;;;***
+
+;;;### (autoloads (semantic-tag-customize semantic-tag-widget-to-external
+;;;;;;  semantic-tag-widget-to-internal semantic-tag-widget-value-get
+;;;;;;  semantic-tag-widget-value-create semantic-tag-widget-match)
+;;;;;;  "semantic-custom" "semantic-custom.el" (18878 61311))
+;;; Generated autoloads from semantic-custom.el
+
+(define-widget 'tag-edit 'group "\
+Abstractly modify a Semantic Tag." :tag "Tag" :format "%v" :convert-widget (quote widget-types-convert-widget) :value-create (quote semantic-tag-widget-value-create) :value-get (quote semantic-tag-widget-value-get) :value-delete (quote widget-children-value-delete) :validate (quote widget-children-validate) :match (quote semantic-tag-widget-match) :clone-object-children nil)
+
+(autoload 'semantic-tag-widget-match "semantic-custom" "\
+Match infor for WIDGET against VALUE.
+
+\(fn WIDGET VALUE)" nil nil)
+
+(autoload 'semantic-tag-widget-value-create "semantic-custom" "\
+Create the value of WIDGET.
+
+\(fn WIDGET)" nil nil)
+
+(autoload 'semantic-tag-widget-value-get "semantic-custom" "\
+Get the value out of WIDGET.
+
+\(fn WIDGET)" nil nil)
+
+(define-widget 'tag 'tag-edit "\
+A Semantic Tag." :format "%{%t%}:
+%v" :value-to-internal (quote semantic-tag-widget-to-internal) :value-to-external (quote semantic-tag-widget-to-external) :close-object-children t)
+
+(autoload 'semantic-tag-widget-to-internal "semantic-custom" "\
+For WIDGET, convert VALUE to a safe representation.
+
+\(fn WIDGET VALUE)" nil nil)
+
+(autoload 'semantic-tag-widget-to-external "semantic-custom" "\
+For WIDGET, convert VALUE from the abstract value.
+
+\(fn WIDGET VALUE)" nil nil)
+
+(autoload 'semantic-tag-customize "semantic-custom" "\
+Customize TAG.
+When the user clicks 'ACCEPT', then the location where TAG
+is stored is directly modified.
+If TAG is not provided, then the tag under point is used.
+
+\(fn &optional TAG)" t nil)
 
 ;;;***
 
@@ -1018,7 +1082,7 @@ Any mode that has been tested to work will be added to this function.
 ;;;***
 
 ;;;### (autoloads (semantic-ectag-parse-buffer) "semantic-ectag-parse"
-;;;;;;  "ctags/semantic-ectag-parse.el" (18870 53997))
+;;;;;;  "ctags/semantic-ectag-parse.el" (18918 12120))
 ;;; Generated autoloads from ctags/semantic-ectag-parse.el
 
 (autoload 'semantic-ectag-parse-buffer "semantic-ectag-parse" "\
@@ -1108,15 +1172,15 @@ Setup hook function for Emacs Lisp files and Semantic.
 ;;;***
 
 ;;;### (autoloads (semantic-elp-load-old-run semantic-elp-analyze)
-;;;;;;  "semantic-elp" "semantic-elp.el" (18765 38655))
+;;;;;;  "semantic-elp" "semantic-elp.el" (18918 12120))
 ;;; Generated autoloads from semantic-elp.el
 
-(autoload (quote semantic-elp-analyze) "semantic-elp" "\
+(autoload 'semantic-elp-analyze "semantic-elp" "\
 Run the analyzer, using ELP to measure performance.
 
 \(fn)" t nil)
 
-(autoload (quote semantic-elp-load-old-run) "semantic-elp" "\
+(autoload 'semantic-elp-load-old-run "semantic-elp" "\
 Load an old run from FILE, and show it.
 
 \(fn FILE)" t nil)
@@ -1139,10 +1203,10 @@ Load an old run from FILE, and show it.
 ;;;;;;  semantic-current-tag semantic-find-tag-parent-by-overlay
 ;;;;;;  semantic-find-tag-by-overlay-prev semantic-find-tag-by-overlay-next
 ;;;;;;  semantic-find-tag-by-overlay-in-region semantic-find-tag-by-overlay)
-;;;;;;  "semantic-find" "semantic-find.el" (18805 14022))
+;;;;;;  "semantic-find" "semantic-find.el" (18918 12120))
 ;;; Generated autoloads from semantic-find.el
 
-(autoload (quote semantic-find-tag-by-overlay) "semantic-find" "\
+(autoload 'semantic-find-tag-by-overlay "semantic-find" "\
 Find all tags covering POSITIONORMARKER by using overlays.
 If POSITIONORMARKER is nil, use the current point.
 Optional BUFFER is used if POSITIONORMARKER is a number, otherwise the current
@@ -1152,48 +1216,48 @@ from largest to smallest via the start location.
 
 \(fn &optional POSITIONORMARKER BUFFER)" nil nil)
 
-(autoload (quote semantic-find-tag-by-overlay-in-region) "semantic-find" "\
+(autoload 'semantic-find-tag-by-overlay-in-region "semantic-find" "\
 Find all tags which exist in whole or in part between START and END.
 Uses overlays to determine positin.
 Optional BUFFER argument specifies the buffer to use.
 
 \(fn START END &optional BUFFER)" nil nil)
 
-(autoload (quote semantic-find-tag-by-overlay-next) "semantic-find" "\
+(autoload 'semantic-find-tag-by-overlay-next "semantic-find" "\
 Find the next tag after START in BUFFER.
 If START is in an overlay, find the tag which starts next,
 not the current tag.
 
 \(fn &optional START BUFFER)" nil nil)
 
-(autoload (quote semantic-find-tag-by-overlay-prev) "semantic-find" "\
+(autoload 'semantic-find-tag-by-overlay-prev "semantic-find" "\
 Find the next tag before START in BUFFER.
 If START is in an overlay, find the tag which starts next,
 not the current tag.
 
 \(fn &optional START BUFFER)" nil nil)
 
-(autoload (quote semantic-find-tag-parent-by-overlay) "semantic-find" "\
+(autoload 'semantic-find-tag-parent-by-overlay "semantic-find" "\
 Find the parent of TAG by overlays.
 Overlays are a fast way of finding this information for active buffers.
 
 \(fn TAG)" nil nil)
 
-(autoload (quote semantic-current-tag) "semantic-find" "\
+(autoload 'semantic-current-tag "semantic-find" "\
 Return the current tag in the current buffer.
 If there are more than one in the same location, return the
 smallest tag.  Return nil if there is no tag here.
 
 \(fn)" nil nil)
 
-(autoload (quote semantic-current-tag-parent) "semantic-find" "\
+(autoload 'semantic-current-tag-parent "semantic-find" "\
 Return the current tags parent in the current buffer.
 A tag's parent would be a containing structure, such as a type
 containing a field.  Return nil if there is no parent.
 
 \(fn)" nil nil)
 
-(autoload (quote semantic-current-tag-of-class) "semantic-find" "\
+(autoload 'semantic-current-tag-of-class "semantic-find" "\
 Return the current (smallest) tags of CLASS in the current buffer.
 If the smallest tag is not of type CLASS, keep going upwards until one
 is found.
@@ -1207,14 +1271,14 @@ NAME is a string.
 TABLE is a semantic tags table.  See `semantic-something-to-tag-table'.
 This routine uses `assoc' to quickly find the first matching entry." (funcall (if semantic-case-fold (quote assoc-ignore-case) (quote assoc)) name (semantic-something-to-tag-table table)))
 
-(autoload (quote semantic-find-tags-by-name) "semantic-find" "\
+(autoload 'semantic-find-tags-by-name "semantic-find" "\
 Find all tags with NAME in TABLE.
 NAME is a string.
 TABLE is a tag table.  See `semantic-something-to-tag-table'.
 
 \(fn NAME &optional TABLE)" nil (quote macro))
 
-(autoload (quote semantic-find-tags-for-completion) "semantic-find" "\
+(autoload 'semantic-find-tags-for-completion "semantic-find" "\
 Find all tags whos name begins with PREFIX in TABLE.
 PREFIX is a string.
 TABLE is a tag table.  See `semantic-something-to-tag-table'.
@@ -1224,7 +1288,7 @@ Uses `compare-strings' for fast comparison.
 
 \(fn PREFIX &optional TABLE)" nil (quote macro))
 
-(autoload (quote semantic-find-tags-by-name-regexp) "semantic-find" "\
+(autoload 'semantic-find-tags-by-name-regexp "semantic-find" "\
 Find all tags with name matching REGEXP in TABLE.
 REGEXP is a string containing a regular expression,
 TABLE is a tag table.  See `semantic-something-to-tag-table'.
@@ -1233,7 +1297,7 @@ attempting to do completions.
 
 \(fn REGEXP &optional TABLE)" nil (quote macro))
 
-(autoload (quote semantic-find-tags-by-class) "semantic-find" "\
+(autoload 'semantic-find-tags-by-class "semantic-find" "\
 Find all tags of class CLASS in TABLE.
 CLASS is a symbol representing the class of the token, such as
 'variable, of 'function..
@@ -1241,7 +1305,7 @@ TABLE is a tag table.  See `semantic-something-to-tag-table'.
 
 \(fn CLASS &optional TABLE)" nil (quote macro))
 
-(autoload (quote semantic-find-tags-by-type) "semantic-find" "\
+(autoload 'semantic-find-tags-by-type "semantic-find" "\
 Find all tags of with a type TYPE in TABLE.
 TYPE is a string or tag representing a data type as defined in the
 language the tags were parsed from, such as \"int\", or perhaps
@@ -1250,7 +1314,7 @@ TABLE is a tag table.  See `semantic-something-to-tag-table'.
 
 \(fn TYPE &optional TABLE)" nil (quote macro))
 
-(autoload (quote semantic-find-tags-of-compound-type) "semantic-find" "\
+(autoload 'semantic-find-tags-of-compound-type "semantic-find" "\
 Find all tags which are a compound type in TABLE.
 Compound types are structures, or other data type which
 is not of a primitive nature, such as int or double.
@@ -1258,7 +1322,7 @@ Used in completion.
 
 \(fn &optional TABLE)" nil (quote macro))
 
-(autoload (quote semantic-find-tags-by-scope-protection) "semantic-find" "\
+(autoload 'semantic-find-tags-by-scope-protection "semantic-find" "\
 Find all tags accessable by SCOPEPROTECTION.
 SCOPEPROTECTION is a symbol which can be returned by the method
 `semantic-tag-protection'.  A hard-coded order is used to determine a match.
@@ -1274,7 +1338,7 @@ See `semantic-tag-protected-p' for details on which tags are returned.
 Find all tags in TABLE that are of the 'include class.
 TABLE is a tag table.  See `semantic-something-to-tag-table'." (semantic-find-tags-by-class (quote include) table))
 
-(autoload (quote semantic-deep-find-tags-by-name) "semantic-find" "\
+(autoload 'semantic-deep-find-tags-by-name "semantic-find" "\
 Find all tags with NAME in TABLE.
 Search in top level tags, and their components, in TABLE.
 NAME is a string.
@@ -1283,7 +1347,7 @@ See also `semantic-find-tags-by-name'.
 
 \(fn NAME &optional TABLE)" nil (quote macro))
 
-(autoload (quote semantic-deep-find-tags-for-completion) "semantic-find" "\
+(autoload 'semantic-deep-find-tags-for-completion "semantic-find" "\
 Find all tags whos name begins with PREFIX in TABLE.
 Search in top level tags, and their components, in TABLE.
 TABLE is a tag table.  See `semantic-flatten-tags-table'.
@@ -1291,7 +1355,7 @@ See also `semantic-find-tags-for-completion'.
 
 \(fn PREFIX &optional TABLE)" nil (quote macro))
 
-(autoload (quote semantic-deep-find-tags-by-name-regexp) "semantic-find" "\
+(autoload 'semantic-deep-find-tags-by-name-regexp "semantic-find" "\
 Find all tags with name matching REGEXP in TABLE.
 Search in top level tags, and their components, in TABLE.
 REGEXP is a string containing a regular expression,
@@ -1302,7 +1366,7 @@ attempting to do completions.
 
 \(fn REGEXP &optional TABLE)" nil (quote macro))
 
-(autoload (quote semantic-brute-find-first-tag-by-name) "semantic-find" "\
+(autoload 'semantic-brute-find-first-tag-by-name "semantic-find" "\
 Find a tag NAME within STREAMORBUFFER.  NAME is a string.
 If SEARCH-PARTS is non-nil, search children of tags.
 If SEARCH-INCLUDE was never implemented.
@@ -1311,7 +1375,7 @@ Use `semantic-find-first-tag-by-name' instead.
 
 \(fn NAME STREAMORBUFFER &optional SEARCH-PARTS SEARCH-INCLUDE)" nil nil)
 
-(autoload (quote semantic-brute-find-tag-by-class) "semantic-find" "\
+(autoload 'semantic-brute-find-tag-by-class "semantic-find" "\
 Find all tags with a class CLASS within STREAMORBUFFER.
 CLASS is a symbol representing the class of the tags to find.
 See `semantic-tag-class'.
@@ -1322,7 +1386,7 @@ Use `semantic-find-tag-by-class' instead.
 
 \(fn CLASS STREAMORBUFFER &optional SEARCH-PARTS SEARCH-INCLUDES)" nil (quote macro))
 
-(autoload (quote semantic-brute-find-tag-standard) "semantic-find" "\
+(autoload 'semantic-brute-find-tag-standard "semantic-find" "\
 Find all tags in STREAMORBUFFER which define simple class types.
 See `semantic-tag-class'.
 Optional argument SEARCH-PARTS and SEARCH-INCLUDES are passed to
@@ -1330,7 +1394,7 @@ Optional argument SEARCH-PARTS and SEARCH-INCLUDES are passed to
 
 \(fn STREAMORBUFFER &optional SEARCH-PARTS SEARCH-INCLUDES)" nil (quote macro))
 
-(autoload (quote semantic-brute-find-tag-by-type) "semantic-find" "\
+(autoload 'semantic-brute-find-tag-by-type "semantic-find" "\
 Find all tags with type TYPE within STREAMORBUFFER.
 TYPE is a string which is the name of the type of the tags returned.
 See `semantic-tag-type'.
@@ -1339,7 +1403,7 @@ Optional argument SEARCH-PARTS and SEARCH-INCLUDES are passed to
 
 \(fn TYPE STREAMORBUFFER &optional SEARCH-PARTS SEARCH-INCLUDES)" nil nil)
 
-(autoload (quote semantic-brute-find-tag-by-type-regexp) "semantic-find" "\
+(autoload 'semantic-brute-find-tag-by-type-regexp "semantic-find" "\
 Find all tags with type matching REGEXP within STREAMORBUFFER.
 REGEXP is a regular expression  which matches the  name of the type of the
 tags returned.  See `semantic-tag-type'.
@@ -1348,21 +1412,21 @@ Optional argument SEARCH-PARTS and SEARCH-INCLUDES are passed to
 
 \(fn REGEXP STREAMORBUFFER &optional SEARCH-PARTS SEARCH-INCLUDES)" nil nil)
 
-(autoload (quote semantic-brute-find-tag-by-name-regexp) "semantic-find" "\
+(autoload 'semantic-brute-find-tag-by-name-regexp "semantic-find" "\
 Find all tags whose name match REGEX in STREAMORBUFFER.
 Optional argument SEARCH-PARTS and SEARCH-INCLUDES are passed to
 `semantic-brute-find-tag-by-function'.
 
 \(fn REGEX STREAMORBUFFER &optional SEARCH-PARTS SEARCH-INCLUDES)" nil nil)
 
-(autoload (quote semantic-brute-find-tag-by-property) "semantic-find" "\
+(autoload 'semantic-brute-find-tag-by-property "semantic-find" "\
 Find all tags with PROPERTY equal to VALUE in STREAMORBUFFER.
 Optional argument SEARCH-PARTS and SEARCH-INCLUDES are passed to
 `semantic-brute-find-tag-by-function'.
 
 \(fn PROPERTY VALUE STREAMORBUFFER &optional SEARCH-PARTS SEARCH-INCLUDES)" nil nil)
 
-(autoload (quote semantic-brute-find-tag-by-attribute) "semantic-find" "\
+(autoload 'semantic-brute-find-tag-by-attribute "semantic-find" "\
 Find all tags with a given ATTR in STREAMORBUFFER.
 ATTR is a symbol key into the attributes list.
 Optional argument SEARCH-PARTS and SEARCH-INCLUDES are passed to
@@ -1370,7 +1434,7 @@ Optional argument SEARCH-PARTS and SEARCH-INCLUDES are passed to
 
 \(fn ATTR STREAMORBUFFER &optional SEARCH-PARTS SEARCH-INCLUDES)" nil nil)
 
-(autoload (quote semantic-brute-find-tag-by-attribute-value) "semantic-find" "\
+(autoload 'semantic-brute-find-tag-by-attribute-value "semantic-find" "\
 Find all tags with a given ATTR equal to VALUE in STREAMORBUFFER.
 ATTR is a symbol key into the attributes list.
 VALUE is the value that ATTR should match.
@@ -1379,7 +1443,7 @@ Optional argument SEARCH-PARTS and SEARCH-INCLUDES are passed to
 
 \(fn ATTR VALUE STREAMORBUFFER &optional SEARCH-PARTS SEARCH-INCLUDES)" nil nil)
 
-(autoload (quote semantic-brute-find-tag-by-function) "semantic-find" "\
+(autoload 'semantic-brute-find-tag-by-function "semantic-find" "\
 Find all tags for which FUNCTION's value is non-nil within STREAMORBUFFER.
 FUNCTION must return non-nil if an element of STREAM will be included
 in the new list.
@@ -1395,7 +1459,7 @@ This parameter hasn't be active for a while and is obsolete.
 
 \(fn FUNCTION STREAMORBUFFER &optional SEARCH-PARTS SEARCH-INCLUDES)" nil nil)
 
-(autoload (quote semantic-brute-find-first-tag-by-function) "semantic-find" "\
+(autoload 'semantic-brute-find-first-tag-by-function "semantic-find" "\
 Find the first tag which FUNCTION match within STREAMORBUFFER.
 FUNCTION must return non-nil if an element of STREAM will be included
 in the new list.
@@ -1410,14 +1474,14 @@ searched for matches.
 
 \(fn FUNCTION STREAMORBUFFER &optional SEARCH-PARTS SEARCH-INCLUDES)" nil nil)
 
-(autoload (quote semantic-brute-find-tag-by-position) "semantic-find" "\
+(autoload 'semantic-brute-find-tag-by-position "semantic-find" "\
 Find a tag covering POSITION within STREAMORBUFFER.
 POSITION is a number, or marker.  If NOMEDIAN is non-nil, don't do
 the median calculation, and return nil.
 
 \(fn POSITION STREAMORBUFFER &optional NOMEDIAN)" nil nil)
 
-(autoload (quote semantic-brute-find-innermost-tag-by-position) "semantic-find" "\
+(autoload 'semantic-brute-find-innermost-tag-by-position "semantic-find" "\
 Find a list of tags covering POSITION within STREAMORBUFFER.
 POSITION is a number, or marker.  If NOMEDIAN is non-nil, don't do
 the median calculation, and return nil.
@@ -1426,47 +1490,47 @@ details are available of findable.
 
 \(fn POSITION STREAMORBUFFER &optional NOMEDIAN)" nil nil)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-overlay) (quote semantic-find-tag-by-overlay))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-overlay 'semantic-find-tag-by-overlay)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-overlay-in-region) (quote semantic-find-tag-by-overlay-in-region))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-overlay-in-region 'semantic-find-tag-by-overlay-in-region)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-overlay-next) (quote semantic-find-tag-by-overlay-next))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-overlay-next 'semantic-find-tag-by-overlay-next)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-overlay-prev) (quote semantic-find-tag-by-overlay-prev))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-overlay-prev 'semantic-find-tag-by-overlay-prev)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-parent-by-overlay) (quote semantic-find-tag-parent-by-overlay))
+(semantic-alias-obsolete 'semantic-find-nonterminal-parent-by-overlay 'semantic-find-tag-parent-by-overlay)
 
-(semantic-alias-obsolete (quote semantic-current-nonterminal) (quote semantic-current-tag))
+(semantic-alias-obsolete 'semantic-current-nonterminal 'semantic-current-tag)
 
-(semantic-alias-obsolete (quote semantic-current-nonterminal-parent) (quote semantic-current-tag-parent))
+(semantic-alias-obsolete 'semantic-current-nonterminal-parent 'semantic-current-tag-parent)
 
-(semantic-alias-obsolete (quote semantic-current-nonterminal-of-type) (quote semantic-current-tag-of-class))
+(semantic-alias-obsolete 'semantic-current-nonterminal-of-type 'semantic-current-tag-of-class)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-name) (quote semantic-brute-find-first-tag-by-name))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-name 'semantic-brute-find-first-tag-by-name)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-token) (quote semantic-brute-find-tag-by-class))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-token 'semantic-brute-find-tag-by-class)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-standard) (quote semantic-brute-find-tag-standard))
+(semantic-alias-obsolete 'semantic-find-nonterminal-standard 'semantic-brute-find-tag-standard)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-type) (quote semantic-brute-find-tag-by-type))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-type 'semantic-brute-find-tag-by-type)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-type-regexp) (quote semantic-brute-find-tag-by-type-regexp))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-type-regexp 'semantic-brute-find-tag-by-type-regexp)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-name-regexp) (quote semantic-brute-find-tag-by-name-regexp))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-name-regexp 'semantic-brute-find-tag-by-name-regexp)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-property) (quote semantic-brute-find-tag-by-property))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-property 'semantic-brute-find-tag-by-property)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-extra-spec) (quote semantic-brute-find-tag-by-attribute))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-extra-spec 'semantic-brute-find-tag-by-attribute)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-extra-spec-value) (quote semantic-brute-find-tag-by-attribute-value))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-extra-spec-value 'semantic-brute-find-tag-by-attribute-value)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-function) (quote semantic-brute-find-tag-by-function))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-function 'semantic-brute-find-tag-by-function)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-function-first-match) (quote semantic-brute-find-first-tag-by-function))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-function-first-match 'semantic-brute-find-first-tag-by-function)
 
-(semantic-alias-obsolete (quote semantic-find-nonterminal-by-position) (quote semantic-brute-find-tag-by-position))
+(semantic-alias-obsolete 'semantic-find-nonterminal-by-position 'semantic-brute-find-tag-by-position)
 
-(semantic-alias-obsolete (quote semantic-find-innermost-nonterminal-by-position) (quote semantic-brute-find-innermost-tag-by-position))
+(semantic-alias-obsolete 'semantic-find-innermost-nonterminal-by-position 'semantic-brute-find-innermost-tag-by-position)
 
 ;;;***
 
@@ -1637,10 +1701,10 @@ Test the output parser against some collected strings.
 ;;;***
 
 ;;;### (autoloads (semantic-grammar-batch-build-packages) "semantic-grammar"
-;;;;;;  "semantic-grammar.el" (18791 55536))
+;;;;;;  "semantic-grammar.el" (18918 12120))
 ;;; Generated autoloads from semantic-grammar.el
 
-(autoload (quote semantic-grammar-batch-build-packages) "semantic-grammar" "\
+(autoload 'semantic-grammar-batch-build-packages "semantic-grammar" "\
 Build Lisp packages from grammar files on the command line.
 That is, run `semantic-grammar-batch-build-one-package' for each file.
 Each file is processed even if an error occurred previously.
@@ -1726,10 +1790,10 @@ parts of the parent classes are displayed.
 ;;;***
 
 ;;;### (autoloads (semantic-speedbar-analysis) "semantic-ia-sb" "semantic-ia-sb.el"
-;;;;;;  (18791 55550))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from semantic-ia-sb.el
 
-(autoload (quote semantic-speedbar-analysis) "semantic-ia-sb" "\
+(autoload 'semantic-speedbar-analysis "semantic-ia-sb" "\
 Start Speedbar in semantic analysis mode.
 The analyzer displays information about the current context, plus a smart
 list of possible completions.
@@ -1739,7 +1803,7 @@ list of possible completions.
 ;;;***
 
 ;;;### (autoloads (semantic-ia-utest) "semantic-ia-utest" "semantic-ia-utest.el"
-;;;;;;  (18870 53997))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from semantic-ia-utest.el
 
 (autoload 'semantic-ia-utest "semantic-ia-utest" "\
@@ -1748,6 +1812,7 @@ Argument ARG specifies which set of tests to run.
  1 - ia utests
  2 - regs utests
  3 - symrefs utests
+ 4 - symref count utests
 
 \(fn &optional ARG)" t nil)
 
@@ -1756,15 +1821,15 @@ Argument ARG specifies which set of tests to run.
 ;;;### (autoloads (semantic-idle-scheduler-remove semantic-idle-scheduler-add
 ;;;;;;  semantic-idle-scheduler-mode global-semantic-idle-scheduler-mode
 ;;;;;;  global-semantic-idle-scheduler-mode) "semantic-idle" "semantic-idle.el"
-;;;;;;  (18791 55598))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from semantic-idle.el
 
 (defvar global-semantic-idle-scheduler-mode nil "\
 *If non-nil, enable global use of idle-scheduler mode.")
 
-(custom-autoload (quote global-semantic-idle-scheduler-mode) "semantic-idle" nil)
+(custom-autoload 'global-semantic-idle-scheduler-mode "semantic-idle" nil)
 
-(autoload (quote global-semantic-idle-scheduler-mode) "semantic-idle" "\
+(autoload 'global-semantic-idle-scheduler-mode "semantic-idle" "\
 Toggle global use of option `semantic-idle-scheduler-mode'.
 The idle scheduler with automatically reparse buffers in idle time,
 and then schedule other jobs setup with `semantic-idle-scheduler-add'.
@@ -1777,7 +1842,7 @@ If ARG is nil, then toggle.
 Non-nil if idle-scheduler minor mode is enabled.
 Use the command `semantic-idle-scheduler-mode' to change this variable.")
 
-(autoload (quote semantic-idle-scheduler-mode) "semantic-idle" "\
+(autoload 'semantic-idle-scheduler-mode "semantic-idle" "\
 Minor mode to auto parse buffer following a change.
 When this mode is off, a buffer is only rescanned for tokens when
 some command requests the list of available tokens.  When idle-scheduler
@@ -1791,12 +1856,12 @@ minor mode is enabled.
 
 \(fn &optional ARG)" t nil)
 
-(autoload (quote semantic-idle-scheduler-add) "semantic-idle" "\
+(autoload 'semantic-idle-scheduler-add "semantic-idle" "\
 Schedule FUNCTION to occur during idle time.
 
 \(fn FUNCTION)" nil nil)
 
-(autoload (quote semantic-idle-scheduler-remove) "semantic-idle" "\
+(autoload 'semantic-idle-scheduler-remove "semantic-idle" "\
 Unschedule FUNCTION to occur during idle time.
 
 \(fn FUNCTION)" nil nil)
@@ -1951,7 +2016,7 @@ symbols returned in open and close tokens.
 ;;;***
 
 ;;;### (autoloads (semantic-lex-spp-write-utest semantic-lex-spp-table-write-slot-value)
-;;;;;;  "semantic-lex-spp" "semantic-lex-spp.el" (18870 53997))
+;;;;;;  "semantic-lex-spp" "semantic-lex-spp.el" (18918 12120))
 ;;; Generated autoloads from semantic-lex-spp.el
 
 (autoload 'semantic-lex-spp-table-write-slot-value "semantic-lex-spp" "\
@@ -2097,7 +2162,7 @@ Setup hook function for Emacs Lisp files and Semantic.
 
 ;;;### (autoloads (semantic-calculate-scope semantic-scope-tag-clone-with-scope
 ;;;;;;  semantic-scope-reset-cache) "semantic-scope" "semantic-scope.el"
-;;;;;;  (18870 53997))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from semantic-scope.el
 
 (autoload 'semantic-scope-reset-cache "semantic-scope" "\
@@ -2113,7 +2178,7 @@ Stores the SCOPETAGS as a set of tag properties on the cloned tag.
 
 (autoload 'semantic-calculate-scope "semantic-scope" "\
 Calculate the scope at POINT.
-If POINT is not provided, then use the current location of `point'.
+If POINT is not provided, then use the current location of point.
 The class returned from the scope calculation is variable
 `semantic-scope-cache'.
 
@@ -2340,7 +2405,7 @@ likely derived, then this function is needed.
 ;;;### (autoloads (semantic-symref-find-text semantic-symref-find-file-references-by-name
 ;;;;;;  semantic-symref-find-tags-by-completion semantic-symref-find-tags-by-regexp
 ;;;;;;  semantic-symref-find-tags-by-name semantic-symref-find-references-by-name)
-;;;;;;  "semantic-symref" "symref/semantic-symref.el" (18870 53997))
+;;;;;;  "semantic-symref" "symref/semantic-symref.el" (18918 12120))
 ;;; Generated autoloads from symref/semantic-symref.el
 
 (autoload 'semantic-symref-find-references-by-name "semantic-symref" "\
@@ -2410,6 +2475,37 @@ Returns an object of class `semantic-symref-result'.
 
 ;;;***
 
+;;;### (autoloads (semantic-symref-rename-local-variable semantic-symref-test-count-hits-in-tag
+;;;;;;  semantic-symref-hits-in-region) "semantic-symref-filter"
+;;;;;;  "symref/semantic-symref-filter.el" (18902 2318))
+;;; Generated autoloads from symref/semantic-symref-filter.el
+
+(autoload 'semantic-symref-hits-in-region "semantic-symref-filter" "\
+Find all occurances of the symbol TARGET that match TARGET the tag.
+For each match, call HOOKFCN.
+HOOKFCN takes three arguments that match
+`semantic-analyze-current-symbol's use of HOOKfCN.
+  ( START END PREFIX )
+
+Search occurs in the current buffer between START and END.
+
+\(fn TARGET HOOKFCN START END)" nil nil)
+
+(autoload 'semantic-symref-test-count-hits-in-tag "semantic-symref-filter" "\
+Lookup in the current tag the symbol under point.
+the count all the other references to the same symbol within the
+tag that contains point, and return that.
+
+\(fn)" t nil)
+
+(autoload 'semantic-symref-rename-local-variable "semantic-symref-filter" "\
+Fancy way to rename the local variable under point.
+Depends on the SRecode Field editing API.
+
+\(fn)" t nil)
+
+;;;***
+
 ;;;### (autoloads nil "semantic-symref-global" "symref/semantic-symref-global.el"
 ;;;;;;  (18870 53997))
 ;;; Generated autoloads from symref/semantic-symref-global.el
@@ -2436,10 +2532,10 @@ Returns an object of class `semantic-symref-result'.
 
 ;;;### (autoloads (semantic-symref-results-mode semantic-symref-symbol
 ;;;;;;  semantic-symref) "semantic-symref-list" "symref/semantic-symref-list.el"
-;;;;;;  (18778 43204))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from symref/semantic-symref-list.el
 
-(autoload (quote semantic-symref) "semantic-symref-list" "\
+(autoload 'semantic-symref "semantic-symref-list" "\
 Find references to the current tag.
 This command uses the currently configured references tool within the
 current project to find references to the current tag. The
@@ -2449,17 +2545,17 @@ Display the references in`semantic-symref-results-mode'
 
 \(fn)" t nil)
 
-(autoload (quote semantic-symref-symbol) "semantic-symref-list" "\
+(autoload 'semantic-symref-symbol "semantic-symref-list" "\
 Find references to the symbol SYM.
 This command uses the currently configured references tool within the
-current project to find references to the input SYM. The
+current project to find references to the input SYM.  The
 references are the organized by file and the name of the function
 they are used in.
 Display the references in`semantic-symref-results-mode'
 
 \(fn SYM)" t nil)
 
-(autoload (quote semantic-symref-results-mode) "semantic-symref-list" "\
+(autoload 'semantic-symref-results-mode "semantic-symref-list" "\
 Major-mode for displaying Semantic Symbol Reference RESULTS.
 RESULTS is an object of class `semantic-symref-results'.
 
@@ -2470,13 +2566,13 @@ RESULTS is an object of class `semantic-symref-results'.
 ;;;### (autoloads (semantic-insert-foreign-tag semantic-obtain-foreign-tag
 ;;;;;;  semantic-tag-components-with-overlays semantic-tag-components
 ;;;;;;  semantic-tag-alias-definition) "semantic-tag" "semantic-tag.el"
-;;;;;;  (18836 19150))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from semantic-tag.el
 
 (defsubst semantic-tag-p (tag) "\
 Return non-nil if TAG is most likely a semantic tag." (condition-case nil (and (consp tag) (stringp (car tag)) (symbolp (nth 1 tag)) (nth 1 tag) (listp (nth 2 tag)) (listp (nth 3 tag))) (error nil)))
 
-(autoload (quote semantic-tag-alias-definition) "semantic-tag" "\
+(autoload 'semantic-tag-alias-definition "semantic-tag" "\
 Return the definition TAG is an alias.
 The returned value is a tag of the class that
 `semantic-tag-alias-class' returns for TAG.
@@ -2485,7 +2581,7 @@ Return nil if TAG is not of class 'alias.
 
 \(fn TAG)" nil nil)
 
-(autoload (quote semantic-tag-components) "semantic-tag" "\
+(autoload 'semantic-tag-components "semantic-tag" "\
 Return a list of components for TAG.
 A Component is a part of TAG which itself may be a TAG.
 Examples include the elements of a structure in a 
@@ -2494,7 +2590,7 @@ tag of class 'function.
 
 \(fn TAG)" nil nil)
 
-(autoload (quote semantic-tag-components-with-overlays) "semantic-tag" "\
+(autoload 'semantic-tag-components-with-overlays "semantic-tag" "\
 Return the list of top level components belonging to TAG.
 Children are any sub-tags which contain overlays.
 
@@ -2508,14 +2604,14 @@ Ignoring this step will prevent several features from working correctly.
 
 \(fn TAG)" nil nil)
 
-(autoload (quote semantic-obtain-foreign-tag) "semantic-tag" "\
+(autoload 'semantic-obtain-foreign-tag "semantic-tag" "\
 Obtain a foreign tag from TAG.
 TAG defaults to the tag at point in current buffer.
 Return the obtained foreign tag or nil if failed.
 
 \(fn &optional TAG)" nil nil)
 
-(autoload (quote semantic-insert-foreign-tag) "semantic-tag" "\
+(autoload 'semantic-insert-foreign-tag "semantic-tag" "\
 Insert FOREIGN-TAG into the current buffer.
 Signal an error if FOREIGN-TAG is not a valid foreign tag.
 This function is overridable with the symbol `insert-foreign-tag'.
@@ -2702,10 +2798,10 @@ Not documented
 ;;;***
 
 ;;;### (autoloads (semantic-utest-c) "semantic-utest-c" "semantic-utest-c.el"
-;;;;;;  (18460 30085))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from semantic-utest-c.el
 
-(autoload (quote semantic-utest-c) "semantic-utest-c" "\
+(autoload 'semantic-utest-c "semantic-utest-c" "\
 Run parsing test for C from the test directory.
 
 \(fn)" t nil)
@@ -2879,15 +2975,15 @@ minor mode is enabled.
 
 ;;;### (autoloads (semanticdb-file-stream semanticdb-file-table-object
 ;;;;;;  semanticdb-current-database) "semanticdb" "semanticdb.el"
-;;;;;;  (18820 37846))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from semanticdb.el
 
-(autoload (quote semanticdb-current-database) "semanticdb" "\
+(autoload 'semanticdb-current-database "semanticdb" "\
 Return the currently active database.
 
 \(fn)" nil nil)
 
-(autoload (quote semanticdb-file-table-object) "semanticdb" "\
+(autoload 'semanticdb-file-table-object "semanticdb" "\
 Return a semanticdb table belonging to FILE, make it up to date.
 If file has database tags available in the database, return it.
 If file does not have tags available, and DONTLOAD is nil,
@@ -2896,7 +2992,7 @@ DONTLOAD does not affect the creation of new database objects.
 
 \(fn FILE &optional DONTLOAD)" nil nil)
 
-(autoload (quote semanticdb-file-stream) "semanticdb" "\
+(autoload 'semanticdb-file-stream "semanticdb" "\
 Return a list of tags belonging to FILE.
 If file has database tags available in the database, return them.
 If file does not have tags available, then load the file, and create them.
@@ -3020,13 +3116,13 @@ version needed by Semantic ctags support.
 ;;;### (autoloads (semanticdb-full-filename semanticdb-live-p semanticdb-file-loaded-p
 ;;;;;;  semanticdb-persistent-path semanticdb-default-save-directory
 ;;;;;;  semanticdb-default-file-name) "semanticdb-file" "semanticdb-file.el"
-;;;;;;  (18826 16451))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from semanticdb-file.el
 
 (defvar semanticdb-default-file-name "semantic.cache" "\
 *File name of the semantic tag cache.")
 
-(custom-autoload (quote semanticdb-default-file-name) "semanticdb-file" t)
+(custom-autoload 'semanticdb-default-file-name "semanticdb-file" t)
 
 (defvar semanticdb-default-save-directory (expand-file-name "~/.semanticdb") "\
 *Directory name where semantic cache files are stored.
@@ -3034,9 +3130,9 @@ If this value is nil, files are saved in the current directory.  If the value
 is a valid directory, then it overrides `semanticdb-default-file-name' and
 stores caches in a coded file name in this directory.")
 
-(custom-autoload (quote semanticdb-default-save-directory) "semanticdb-file" t)
+(custom-autoload 'semanticdb-default-save-directory "semanticdb-file" t)
 
-(defvar semanticdb-persistent-path (quote (always)) "\
+(defvar semanticdb-persistent-path '(always) "\
 *List of valid paths that semanticdb will cache tags to.
 When `global-semanticdb-minor-mode' is active, tag lists will
 be saved to disk when Emacs exits.  Not all directories will have
@@ -3048,29 +3144,29 @@ disable any saving anywhere, `always', which enables saving
 everywhere, or `project', which enables saving in any directory that
 passes a list of predicates in `semanticdb-project-predicate-functions'.")
 
-(custom-autoload (quote semanticdb-persistent-path) "semanticdb-file" t)
+(custom-autoload 'semanticdb-persistent-path "semanticdb-file" t)
 
-(eieio-defclass-autoload (quote semanticdb-project-database-file) (quote (semanticdb-project-database eieio-persistent)) "semanticdb-file" "Database of file tables saved to disk.")
+(eieio-defclass-autoload 'semanticdb-project-database-file '(semanticdb-project-database eieio-persistent) "semanticdb-file" "Database of file tables saved to disk.")
 
-(autoload (quote semanticdb-file-loaded-p) "semanticdb-file" "\
+(autoload 'semanticdb-file-loaded-p "semanticdb-file" "\
 Return the project belonging to FILENAME if it was already loaded.
 
 \(fn FILENAME)" nil nil)
 
-(autoload (quote semanticdb-live-p) "semanticdb-file" "\
+(autoload 'semanticdb-live-p "semanticdb-file" "\
 Return non-nil if the file associated with OBJ is live.
 Live databases are objects associated with existing directories.
 
 \(fn (OBJ semanticdb-project-database))" nil nil)
 
-(autoload (quote semanticdb-full-filename) "semanticdb-file" "\
+(autoload 'semanticdb-full-filename "semanticdb-file" "\
 Fetch the full filename that OBJ refers to.
 
 \(fn (OBJ semanticdb-project-database-file))" nil nil)
 
 ;;;***
 
-;;;### (autoloads (semanticdb-find-tags-external-children-of-type
+;;;### (autoloads (semanticdb-find-tags-subclasses-of-type semanticdb-find-tags-external-children-of-type
 ;;;;;;  semanticdb-brute-find-tags-by-class semanticdb-brute-deep-find-tags-for-completion
 ;;;;;;  semanticdb-brute-deep-find-tags-by-name semanticdb-deep-find-tags-for-completion
 ;;;;;;  semanticdb-deep-find-tags-by-name-regexp semanticdb-deep-find-tags-by-name
@@ -3083,14 +3179,14 @@ Fetch the full filename that OBJ refers to.
 ;;;;;;  semanticdb-find-adebug-scanned-includes semanticdb-find-test-translate-path
 ;;;;;;  semanticdb-find-table-for-include semanticdb-find-translate-path-default
 ;;;;;;  semanticdb-find-default-throttle) "semanticdb-find" "semanticdb-find.el"
-;;;;;;  (18791 59281))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from semanticdb-find.el
 
-(defvar semanticdb-find-throttle-custom-list (quote (repeat (radio (const (quote local)) (const (quote project)) (const (quote unloaded)) (const (quote system)) (const (quote recursive)) (const (quote omniscience))))) "\
+(defvar semanticdb-find-throttle-custom-list '(repeat (radio (const 'local) (const 'project) (const 'unloaded) (const 'system) (const 'recursive) (const 'omniscience))) "\
 Customization values for semanticdb find throttle.
 See `semanticdb-find-throttle' for details.")
 
-(defvar semanticdb-find-default-throttle (quote (local project unloaded system recursive)) "\
+(defvar semanticdb-find-default-throttle '(local project unloaded system recursive) "\
 The default throttle for `semanticdb-find' routines.
 The throttle controls how detailed the list of database
 tables is for a symbol lookup.  The value is a list with
@@ -3115,16 +3211,16 @@ the following keys:
                  in `semanticdb-project-system-databases'.
                  The Emacs Lisp system DB is an omniscience database.")
 
-(custom-autoload (quote semanticdb-find-default-throttle) "semanticdb-find" t)
+(custom-autoload 'semanticdb-find-default-throttle "semanticdb-find" t)
 
-(autoload (quote semanticdb-find-translate-path-default) "semanticdb-find" "\
+(autoload 'semanticdb-find-translate-path-default "semanticdb-find" "\
 Translate PATH into a list of semantic tables.
 If BRUTISH is non nil, return all tables associated with PATH.
 Default action as described in `semanticdb-find-translate-path'.
 
 \(fn PATH BRUTISH)" nil nil)
 
-(autoload (quote semanticdb-find-table-for-include) "semanticdb-find" "\
+(autoload 'semanticdb-find-table-for-include "semanticdb-find" "\
 For a single INCLUDETAG found in TABLE, find a `semanticdb-table' object
 INCLUDETAG is a semantic TAG of class 'include.
 TABLE is a semanticdb table that identifies where INCLUDETAG came from.
@@ -3132,7 +3228,7 @@ TABLE is optional if INCLUDETAG has an overlay of :filename attribute.
 
 \(fn INCLUDETAG &optional TABLE)" nil nil)
 
-(autoload (quote semanticdb-find-test-translate-path) "semanticdb-find" "\
+(autoload 'semanticdb-find-test-translate-path "semanticdb-find" "\
 Call and output results of `semanticdb-find-translate-path'.
 With ARG non-nil, specify a BRUTISH translation.
 See `semanticdb-find-default-throttle' and `semanticdb-project-roots'
@@ -3140,13 +3236,13 @@ for details on how this list is derived.
 
 \(fn &optional ARG)" t nil)
 
-(autoload (quote semanticdb-find-adebug-scanned-includes) "semanticdb-find" "\
+(autoload 'semanticdb-find-adebug-scanned-includes "semanticdb-find" "\
 Translate the current path, then display the lost includes.
 Examines the variable `semanticdb-find-lost-includes'.
 
 \(fn)" t nil)
 
-(autoload (quote semanticdb-strip-find-results) "semanticdb-find" "\
+(autoload 'semanticdb-strip-find-results "semanticdb-find" "\
 Strip a semanticdb search RESULTS to exclude objects.
 This makes it appear more like the results of a `semantic-find-' call.
 Optional FIND-FILE-MATCH loads all files associated with RESULTS
@@ -3160,7 +3256,7 @@ instead.
 
 \(fn RESULTS &optional FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-fast-strip-find-results) "semanticdb-find" "\
+(autoload 'semanticdb-fast-strip-find-results "semanticdb-find" "\
 Destructively strip a semanticdb search RESULTS to exclude objects.
 This makes it appear more like the results of a `semantic-find-' call.
 This is like `semanticdb-strip-find-results', except the input list RESULTS
@@ -3168,14 +3264,14 @@ will be changed.
 
 \(fn RESULTS)" nil nil)
 
-(autoload (quote semanticdb-find-results-p) "semanticdb-find" "\
+(autoload 'semanticdb-find-results-p "semanticdb-find" "\
 Non-nil if RESULTP is in the form of a semanticdb search result.
 This query only really tests the first entry in the list that is RESULTP,
 but should be good enough for debugging assertions.
 
 \(fn RESULTP)" nil nil)
 
-(autoload (quote semanticdb-find-result-with-nil-p) "semanticdb-find" "\
+(autoload 'semanticdb-find-result-with-nil-p "semanticdb-find" "\
 Non-nil of RESULTP is in the form of a semanticdb search result.
 nil is a valid value where a TABLE usually is, but only if the TAG
 results include overlays.
@@ -3184,7 +3280,7 @@ but should be good enough for debugging assertions.
 
 \(fn RESULTP)" nil nil)
 
-(autoload (quote semanticdb-find-result-nth) "semanticdb-find" "\
+(autoload 'semanticdb-find-result-nth "semanticdb-find" "\
 In RESULT, return the Nth search result.
 This is a 0 based search result, with the first match being element 0.
 
@@ -3194,7 +3290,7 @@ the TAG was found.  Sometimes TABLE can be nil.
 
 \(fn RESULT N)" nil nil)
 
-(autoload (quote semanticdb-find-result-nth-in-buffer) "semanticdb-find" "\
+(autoload 'semanticdb-find-result-nth-in-buffer "semanticdb-find" "\
 In RESULT, return the Nth search result.
 Like `semanticdb-find-result-nth', except that only the TAG
 is returned, and the buffer it is found it will be made current.
@@ -3203,7 +3299,7 @@ is still made current.
 
 \(fn RESULT N)" nil nil)
 
-(autoload (quote semanticdb-find-result-mapc) "semanticdb-find" "\
+(autoload 'semanticdb-find-result-mapc "semanticdb-find" "\
 Apply FCN to each element of find RESULT for side-effects only.
 FCN takes two arguments.  The first is a TAG, and the
 second is a DB from wence TAG originated.
@@ -3211,7 +3307,7 @@ Returns result.
 
 \(fn FCN RESULT)" nil nil)
 
-(autoload (quote semanticdb-find-tags-collector) "semanticdb-find" "\
+(autoload 'semanticdb-find-tags-collector "semanticdb-find" "\
 Collect all tags returned by FUNCTION over PATH.
 The FUNCTION must take two arguments.  The first is TABLE,
 which is a semanticdb table containing tags.  The second argument
@@ -3232,7 +3328,7 @@ and search all tables in this project tree.
 
 \(fn FUNCTION &optional PATH FIND-FILE-MATCH BRUTISH)" nil nil)
 
-(autoload (quote semanticdb-find-tags-by-name) "semanticdb-find" "\
+(autoload 'semanticdb-find-tags-by-name "semanticdb-find" "\
 Search for all tags matching NAME on PATH.
 See `semanticdb-find-translate-path' for details on PATH.
 FIND-FILE-MATCH indicates that any time a match is found, the file
@@ -3240,7 +3336,7 @@ associated with that tag should be loaded into a buffer.
 
 \(fn NAME &optional PATH FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-find-tags-by-name-regexp) "semanticdb-find" "\
+(autoload 'semanticdb-find-tags-by-name-regexp "semanticdb-find" "\
 Search for all tags matching REGEXP on PATH.
 See `semanticdb-find-translate-path' for details on PATH.
 FIND-FILE-MATCH indicates that any time a match is found, the file
@@ -3248,7 +3344,7 @@ associated with that tag should be loaded into a buffer.
 
 \(fn REGEXP &optional PATH FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-find-tags-for-completion) "semanticdb-find" "\
+(autoload 'semanticdb-find-tags-for-completion "semanticdb-find" "\
 Search for all tags matching PREFIX on PATH.
 See `semanticdb-find-translate-path' for details on PATH.
 FIND-FILE-MATCH indicates that any time a match is found, the file
@@ -3256,7 +3352,7 @@ associated with that tag should be loaded into a buffer.
 
 \(fn PREFIX &optional PATH FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-find-tags-by-class) "semanticdb-find" "\
+(autoload 'semanticdb-find-tags-by-class "semanticdb-find" "\
 Search for all tags of CLASS on PATH.
 See `semanticdb-find-translate-path' for details on PATH.
 FIND-FILE-MATCH indicates that any time a match is found, the file
@@ -3264,7 +3360,7 @@ associated with that tag should be loaded into a buffer.
 
 \(fn CLASS &optional PATH FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-deep-find-tags-by-name) "semanticdb-find" "\
+(autoload 'semanticdb-deep-find-tags-by-name "semanticdb-find" "\
 Search for all tags matching NAME on PATH.
 Search also in all components of top level tags founds.
 See `semanticdb-find-translate-path' for details on PATH.
@@ -3273,7 +3369,7 @@ associated with that tag should be loaded into a buffer.
 
 \(fn NAME &optional PATH FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-deep-find-tags-by-name-regexp) "semanticdb-find" "\
+(autoload 'semanticdb-deep-find-tags-by-name-regexp "semanticdb-find" "\
 Search for all tags matching REGEXP on PATH.
 Search also in all components of top level tags founds.
 See `semanticdb-find-translate-path' for details on PATH.
@@ -3282,7 +3378,7 @@ associated with that tag should be loaded into a buffer.
 
 \(fn REGEXP &optional PATH FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-deep-find-tags-for-completion) "semanticdb-find" "\
+(autoload 'semanticdb-deep-find-tags-for-completion "semanticdb-find" "\
 Search for all tags matching PREFIX on PATH.
 Search also in all components of top level tags founds.
 See `semanticdb-find-translate-path' for details on PATH.
@@ -3291,7 +3387,7 @@ associated with that tag should be loaded into a buffer.
 
 \(fn PREFIX &optional PATH FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-brute-deep-find-tags-by-name) "semanticdb-find" "\
+(autoload 'semanticdb-brute-deep-find-tags-by-name "semanticdb-find" "\
 Search for all tags matching NAME on PATH.
 See `semanticdb-find-translate-path' for details on PATH.
 The argument BRUTISH will be set so that searching includes all tables
@@ -3301,7 +3397,7 @@ associated wit that tag should be loaded into a buffer.
 
 \(fn NAME &optional PATH FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-brute-deep-find-tags-for-completion) "semanticdb-find" "\
+(autoload 'semanticdb-brute-deep-find-tags-for-completion "semanticdb-find" "\
 Search for all tags matching PREFIX on PATH.
 See `semanticdb-find-translate-path' for details on PATH.
 The argument BRUTISH will be set so that searching includes all tables
@@ -3311,7 +3407,7 @@ associated wit that tag should be loaded into a buffer.
 
 \(fn PREFIX &optional PATH FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-brute-find-tags-by-class) "semanticdb-find" "\
+(autoload 'semanticdb-brute-find-tags-by-class "semanticdb-find" "\
 Search for all tags of CLASS on PATH.
 See `semanticdb-find-translate-path' for details on PATH.
 The argument BRUTISH will be set so that searching includes all tables
@@ -3321,8 +3417,16 @@ associated with that tag should be loaded into a buffer.
 
 \(fn CLASS &optional PATH FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-find-tags-external-children-of-type) "semanticdb-find" "\
+(autoload 'semanticdb-find-tags-external-children-of-type "semanticdb-find" "\
 Search for all tags defined outside of TYPE w/ TYPE as a parent.
+See `semanticdb-find-translate-path' for details on PATH.
+FIND-FILE-MATCH indicates that any time a match is found, the file
+associated with that tag should be loaded into a buffer.
+
+\(fn TYPE &optional PATH FIND-FILE-MATCH)" nil nil)
+
+(autoload 'semanticdb-find-tags-subclasses-of-type "semanticdb-find" "\
+Search for all tags of class type defined that subclass TYPE.
 See `semanticdb-find-translate-path' for details on PATH.
 FIND-FILE-MATCH indicates that any time a match is found, the file
 associated with that tag should be loaded into a buffer.
@@ -3346,23 +3450,26 @@ in a GNU Global supported hierarchy.
 
 ;;;### (autoloads (global-semanticdb-minor-mode semanticdb-minor-mode-p
 ;;;;;;  semanticdb-global-mode) "semanticdb-mode" "semanticdb-mode.el"
-;;;;;;  (18752 15970))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from semanticdb-mode.el
 
 (defvar semanticdb-current-database nil "\
 For a given buffer, this is the currently active database.")
 
+(defvar semanticdb-current-table nil "\
+For a given buffer, this is the currently active database table.")
+
 (defvar semanticdb-global-mode nil "\
 *If non-nil enable the use of `semanticdb-minor-mode'.")
 
-(custom-autoload (quote semanticdb-global-mode) "semanticdb-mode" nil)
+(custom-autoload 'semanticdb-global-mode "semanticdb-mode" nil)
 
-(autoload (quote semanticdb-minor-mode-p) "semanticdb-mode" "\
+(autoload 'semanticdb-minor-mode-p "semanticdb-mode" "\
 Return non-nil if `semanticdb-minor-mode' is active.
 
 \(fn)" nil nil)
 
-(autoload (quote global-semanticdb-minor-mode) "semanticdb-mode" "\
+(autoload 'global-semanticdb-minor-mode "semanticdb-mode" "\
 Toggle the use of `semanticdb-minor-mode'.
 If ARG is positive, enable, if it is negative, disable.
 If ARG is nil, then toggle.
@@ -3478,41 +3585,41 @@ Return a list ((DB-TABLE . TOKEN-OR-TOKEN-LIST) ...).
 ;;;;;;  semanticdb-typecache-merge-streams semanticdb-get-typecache
 ;;;;;;  semanticdb-get-typecache semanticdb-typecache-add-dependant
 ;;;;;;  semanticdb-typecache-notify-reset) "semanticdb-typecache"
-;;;;;;  "semanticdb-typecache.el" (18791 59356))
+;;;;;;  "semanticdb-typecache.el" (18918 12120))
 ;;; Generated autoloads from semanticdb-typecache.el
 
-(eieio-defclass-autoload (quote semanticdb-typecache) (quote nil) "semanticdb-typecache" "Structure for maintaining a typecache.")
+(eieio-defclass-autoload 'semanticdb-typecache 'nil "semanticdb-typecache" "Structure for maintaining a typecache.")
 
-(autoload (quote semanticdb-typecache-notify-reset) "semanticdb-typecache" "\
+(autoload 'semanticdb-typecache-notify-reset "semanticdb-typecache" "\
 Do a reset from a notify from a table we depend on.
 
 \(fn (TC semanticdb-typecache))" nil nil)
 
-(autoload (quote semanticdb-typecache-add-dependant) "semanticdb-typecache" "\
+(autoload 'semanticdb-typecache-add-dependant "semanticdb-typecache" "\
 Add into the local typecache a dependant DEP.
 
 \(fn DEP)" nil nil)
 
-(autoload (quote semanticdb-get-typecache) "semanticdb-typecache" "\
+(autoload 'semanticdb-get-typecache "semanticdb-typecache" "\
 Retrieve the typecache from the semanticdb TABLE.
 If there is no table, create one, and fill it in.
 
 \(fn (TABLE semanticdb-abstract-table))" nil nil)
 
-(eieio-defclass-autoload (quote semanticdb-database-typecache) (quote (semanticdb-abstract-db-cache)) "semanticdb-typecache" "Structure for maintaining a typecache.")
+(eieio-defclass-autoload 'semanticdb-database-typecache '(semanticdb-abstract-db-cache) "semanticdb-typecache" "Structure for maintaining a typecache.")
 
-(autoload (quote semanticdb-get-typecache) "semanticdb-typecache" "\
+(autoload 'semanticdb-get-typecache "semanticdb-typecache" "\
 Retrieve the typecache from the semantic database DB.
 If there is no table, create one, and fill it in.
 
 \(fn (DB semanticdb-project-database))" nil nil)
 
-(autoload (quote semanticdb-typecache-merge-streams) "semanticdb-typecache" "\
+(autoload 'semanticdb-typecache-merge-streams "semanticdb-typecache" "\
 Merge into CACHE1 and CACHE2 together.  The Caches will be merged in place.
 
 \(fn CACHE1 CACHE2)" nil nil)
 
-(autoload (quote semanticdb-typecache-find) "semanticdb-typecache" "\
+(autoload 'semanticdb-typecache-find "semanticdb-typecache" "\
 Search the typecache for TYPE in PATH.
 If type is a string, split the string, and search for the parts.
 If type is a list, treat the type as a pre-split string.
@@ -3521,17 +3628,17 @@ FIND-FILE-MATCH is non-nil to force all found tags to be loaded into a buffer.
 
 \(fn TYPE &optional PATH FIND-FILE-MATCH)" nil nil)
 
-(autoload (quote semanticdb-typecache-refresh-for-buffer) "semanticdb-typecache" "\
+(autoload 'semanticdb-typecache-refresh-for-buffer "semanticdb-typecache" "\
 Refresh the typecache for BUFFER.
 
 \(fn BUFFER)" nil nil)
 
-(autoload (quote semanticdb-typecache-dump) "semanticdb-typecache" "\
+(autoload 'semanticdb-typecache-dump "semanticdb-typecache" "\
 Dump the typecache for the current buffer.
 
 \(fn)" t nil)
 
-(autoload (quote semanticdb-db-typecache-dump) "semanticdb-typecache" "\
+(autoload 'semanticdb-db-typecache-dump "semanticdb-typecache" "\
 Dump the typecache for the current buffer's database.
 
 \(fn)" t nil)
@@ -3544,14 +3651,14 @@ Dump the typecache for the current buffer's database.
 ;;;;;;  senator-search-forward senator-completion-menu-popup senator-complete-symbol
 ;;;;;;  senator-jump-regexp senator-jump senator-previous-tag senator-next-tag
 ;;;;;;  senator-step-at-start-end-tag-classes senator-step-at-tag-classes
-;;;;;;  global-senator-minor-mode) "senator" "senator.el" (18828
-;;;;;;  61891))
+;;;;;;  global-senator-minor-mode) "senator" "senator.el" (18918
+;;;;;;  12120))
 ;;; Generated autoloads from senator.el
 
 (defvar global-senator-minor-mode nil "\
 *If non-nil enable global use of senator minor mode.")
 
-(custom-autoload (quote global-senator-minor-mode) "senator" nil)
+(custom-autoload 'global-senator-minor-mode "senator" nil)
 
 (defvar senator-step-at-tag-classes nil "\
 *List of tag classes where to step.
@@ -3560,9 +3667,9 @@ If nil navigation steps at any tag found.  This is a buffer local
 variable.  It can be set in a mode hook to get a specific langage
 navigation.")
 
-(custom-autoload (quote senator-step-at-tag-classes) "senator" t)
+(custom-autoload 'senator-step-at-tag-classes "senator" t)
 
-(defvar senator-step-at-start-end-tag-classes (quote (function)) "\
+(defvar senator-step-at-start-end-tag-classes '(function) "\
 *List of tag classes where to step at start and end.
 A tag class is a symbol like 'variable, 'function, 'type, or other.
 If nil, navigation only step at beginning of tags.  If t, step at
@@ -3571,21 +3678,21 @@ at start and end of a tag prevent stepping inside its components.
 This is a buffer local variable.  It can be set in a mode hook to get
 a specific langage navigation.")
 
-(custom-autoload (quote senator-step-at-start-end-tag-classes) "senator" t)
+(custom-autoload 'senator-step-at-start-end-tag-classes "senator" t)
 
-(autoload (quote senator-next-tag) "senator" "\
+(autoload 'senator-next-tag "senator" "\
 Navigate to the next Semantic tag.
 Return the tag or nil if at end of buffer.
 
 \(fn)" t nil)
 
-(autoload (quote senator-previous-tag) "senator" "\
+(autoload 'senator-previous-tag "senator" "\
 Navigate to the previous Semantic tag.
 Return the tag or nil if at beginning of buffer.
 
 \(fn)" t nil)
 
-(autoload (quote senator-jump) "senator" "\
+(autoload 'senator-jump "senator" "\
 Jump to the semantic symbol SYM.
 
 If optional IN-CONTEXT is non-nil jump in the local type's context
@@ -3601,7 +3708,7 @@ NO-DEFAULT switches like this:
 
 \(fn SYM &optional IN-CONTEXT NO-DEFAULT)" t nil)
 
-(autoload (quote senator-jump-regexp) "senator" "\
+(autoload 'senator-jump-regexp "senator" "\
 Jump to the semantic symbol SYMREGEX.
 SYMREGEX is treated as a regular expression.
 
@@ -3619,14 +3726,14 @@ NO-DEFAULT switches like this:
 
 \(fn SYMREGEX &optional IN-CONTEXT NO-DEFAULT)" t nil)
 
-(autoload (quote senator-complete-symbol) "senator" "\
+(autoload 'senator-complete-symbol "senator" "\
 Complete the current symbol under point.
 If optional argument CYCLE-ONCE is non-nil, only cycle through the list
 of completions once, doing nothing where there are no more matches.
 
 \(fn &optional CYCLE-ONCE)" t nil)
 
-(autoload (quote senator-completion-menu-popup) "senator" "\
+(autoload 'senator-completion-menu-popup "senator" "\
 Popup a completion menu for the symbol at point.
 The popup menu displays all of the possible completions for the symbol
 it was invoked on.  To automatically split large menus this function
@@ -3634,7 +3741,7 @@ use `imenu--mouse-menu' to handle the popup menu.
 
 \(fn)" t nil)
 
-(autoload (quote senator-search-forward) "senator" "\
+(autoload 'senator-search-forward "senator" "\
 Search in tag names forward from point for STRING.
 Set point to the end of the occurrence found, and return point.
 See also the function `search-forward' for details on the BOUND,
@@ -3642,7 +3749,7 @@ NOERROR and COUNT arguments.
 
 \(fn STRING &optional BOUND NOERROR COUNT)" t nil)
 
-(autoload (quote senator-re-search-forward) "senator" "\
+(autoload 'senator-re-search-forward "senator" "\
 Search in tag names forward from point for regular expression REGEXP.
 Set point to the end of the occurrence found, and return point.
 See also the function `re-search-forward' for details on the BOUND,
@@ -3650,7 +3757,7 @@ NOERROR and COUNT arguments.
 
 \(fn REGEXP &optional BOUND NOERROR COUNT)" t nil)
 
-(autoload (quote senator-word-search-forward) "senator" "\
+(autoload 'senator-word-search-forward "senator" "\
 Search in tag names forward from point for WORD.
 Set point to the end of the occurrence found, and return point.
 See also the function `word-search-forward' for details on the BOUND,
@@ -3658,7 +3765,7 @@ NOERROR and COUNT arguments.
 
 \(fn WORD &optional BOUND NOERROR COUNT)" t nil)
 
-(autoload (quote senator-search-backward) "senator" "\
+(autoload 'senator-search-backward "senator" "\
 Search in tag names backward from point for STRING.
 Set point to the beginning of the occurrence found, and return point.
 See also the function `search-backward' for details on the BOUND,
@@ -3666,7 +3773,7 @@ NOERROR and COUNT arguments.
 
 \(fn STRING &optional BOUND NOERROR COUNT)" t nil)
 
-(autoload (quote senator-re-search-backward) "senator" "\
+(autoload 'senator-re-search-backward "senator" "\
 Search in tag names backward from point for regular expression REGEXP.
 Set point to the beginning of the occurrence found, and return point.
 See also the function `re-search-backward' for details on the BOUND,
@@ -3674,7 +3781,7 @@ NOERROR and COUNT arguments.
 
 \(fn REGEXP &optional BOUND NOERROR COUNT)" t nil)
 
-(autoload (quote senator-word-search-backward) "senator" "\
+(autoload 'senator-word-search-backward "senator" "\
 Search in tag names backward from point for WORD.
 Set point to the beginning of the occurrence found, and return point.
 See also the function `word-search-backward' for details on the BOUND,
@@ -3682,7 +3789,7 @@ NOERROR and COUNT arguments.
 
 \(fn WORD &optional BOUND NOERROR COUNT)" t nil)
 
-(autoload (quote senator-minor-mode) "senator" "\
+(autoload 'senator-minor-mode "senator" "\
 Toggle senator minor mode.
 With prefix argument ARG, turn on if positive, otherwise off.  The
 minor mode can be turned on only if semantic feature is available and
@@ -3693,14 +3800,14 @@ minor mode is enabled.
 
 \(fn &optional ARG)" t nil)
 
-(autoload (quote global-senator-minor-mode) "senator" "\
+(autoload 'global-senator-minor-mode "senator" "\
 Toggle global use of senator minor mode.
 If ARG is positive, enable, if it is negative, disable.
 If ARG is nil, then toggle.
 
 \(fn &optional ARG)" t nil)
 
-(autoload (quote senator-try-expand-semantic) "senator" "\
+(autoload 'senator-try-expand-semantic "senator" "\
 Attempt inline completion at the cursor.
 Use Semantic, or the semantic database to look up possible
 completions.  The argument OLD has to be nil the first call of this
@@ -3899,7 +4006,7 @@ Setup buffer for parse.
 ;;;;;;  "wisent/wisent-expr.el" "wisent/wisent-grammar-macros.el"
 ;;;;;;  "wisent/wisent-java-tags-wy.el" "wisent/wisent-java-wy.el"
 ;;;;;;  "wisent/wisent-java.el" "wisent/wisent-javascript-jv-wy.el"
-;;;;;;  "wisent/wisent-python-wy.el") (18870 54199 744432))
+;;;;;;  "wisent/wisent-python-wy.el") (18918 15181 868149))
 
 ;;;***
 

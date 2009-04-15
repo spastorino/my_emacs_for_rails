@@ -2,7 +2,7 @@
 ;; EDE project file.
 (ede-proj-project "COGRE"
   :name "COGRE"
-  :version "0.7"
+  :version "0.8"
   :file "Project.ede"
   :targets (list 
    (semantic-ede-proj-target-grammar "wy"
@@ -23,8 +23,8 @@
    (ede-proj-target-elisp "dot"
     :name "dot"
     :path ""
-    :source '("wisent-dot.el")
-    :aux-packages '("wisent")
+    :source '("wisent-dot.el" "cogre-dot-mode.el")
+    :aux-packages '("wisent" "mode-local")
     )
    (ede-proj-target-elisp "Mode"
     :name "Mode"
@@ -49,14 +49,19 @@
    (ede-proj-target-elisp "COGRE"
     :name "COGRE"
     :path ""
-    :source '("cogre.el" "cogre-uml.el" "uml-create.el")
+    :source '("cogre.el" "cogre-uml.el" "cogre-periodic.el" "cogre-ascii.el" "cogre-srecode.el" "cogre-convert.el" "cogre-layout.el" "cogre-semantic.el")
     :versionsource '("cogre.el")
-    :aux-packages '("eieio" "semantic" "semantic-el" "inversion" "speedbar")
+    :aux-packages '("eieio" "semantic" "semantic-el" "inversion" "speedbar" "srecode")
     )
-   (ede-proj-target-elisp "tests"
-    :name "tests"
+   (ede-proj-target-elisp "utests"
+    :name "utests"
     :path ""
     :source '("cogre-utest.el")
+    )
+   (ede-proj-target-makefile-miscelaneous "icons"
+    :name "icons"
+    :path ""
+    :source '("cogre-class.xpm" "cogre-hasa.xpm" "cogre-isa.xpm" "cogre-package.xpm" "cogre-node.xpm" "cogre-instance.xpm" "cogre-arrow.xpm" "cogre-link.xpm" "cogre-note.xpm")
     )
    )
   :web-site-url "http://cedet.sourceforge.net/cogre.shtml"

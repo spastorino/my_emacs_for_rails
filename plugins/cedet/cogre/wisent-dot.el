@@ -1,10 +1,10 @@
 ;;; wisent-dot.el --- GraphViz DOT parser
 
-;; Copyright (C) 2003, 2004 Eric M. Ludlam
+;; Copyright (C) 2003, 2004, 2009 Eric M. Ludlam
 
 ;; Author: Eric Ludlam <zappo@gnu.org>
 ;; Keywords: syntax
-;; X-RCS: $Id: wisent-dot.el,v 1.9 2005/09/30 20:07:07 zappo Exp $
+;; X-RCS: $Id: wisent-dot.el,v 1.12 2009/04/07 00:34:49 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -29,28 +29,12 @@
 ;; The language is declaritive and the whole thing is parsed.
 ;; The result could be used as a data structure representing a graph.
 
-;; This depends on graphics dot mode by
+;; This depends on A dot mode 
+;;
+;; It will work with either cogre-dot-mode, or if available, the much
+;; nicer graphviz-dot-mode by
 ;;   Pieter E.J. Pareit <pieter.pareit@planetinternet.be>
 ;;   http://users.skynet.be/ppareit/graphviz-dot-mode.el
-;;   with the following patch:
-;;
-;;
-;; *** graphviz-dot-mode.el	2003/03/23 17:14:22	1.1
-;; --- graphviz-dot-mode.el	2003/03/26 03:39:21
-;; ***************
-;; *** 98,103 ****
-;; --- 98,109 ----
-;;       (modify-syntax-entry ?/ ". 124b" st)
-;;       (modify-syntax-entry ?* ". 23" st)
-;;       (modify-syntax-entry ?\n "> b" st)
-;; +     (modify-syntax-entry ?= "." st)
-;; +     (modify-syntax-entry ?, "." st)
-;; +     (modify-syntax-entry ?\; "." st)
-;; +     (modify-syntax-entry ?- "." st)
-;; +     (modify-syntax-entry ?> "." st)
-;; +     (modify-syntax-entry ?< "." st)
-;;       st)
-;;     "Syntax table for `graphviz-dot-mode'.")
 ;;   
 
 
@@ -59,7 +43,7 @@
 (require 'semantic)
 (require 'wisent-dot-wy)
 
-(define-mode-overload-implementation semantic-tag-components
+(define-mode-local-override semantic-tag-components
   graphviz-dot-mode (tag)
   "Return the children of tag TAG."
   (cond
@@ -77,9 +61,17 @@
   "Setup buffer for parse."
   (wisent-dot-wy--install-parser)
 
-  (setq 
+  (setq
    ;; Lexical Analysis
    semantic-lex-analyzer 'wisent-dot-lexer
+   semantic-lex-syntax-modifications
+   '(
+     (?- ".")
+     (?= ".")
+     (?, ".")
+     (?> ".")
+     (?< ".")
+     )
    ;; Parsing
    ;; Environment
    semantic-imenu-summary-function 'semantic-format-tag-name
@@ -97,6 +89,8 @@
 
 ;;;###autoload
 (add-hook 'graphviz-dot-mode-hook 'wisent-dot-setup-parser)
+;;;###autoload
+(add-hook 'cogre-dot-mode-hook 'wisent-dot-setup-parser)
 
 (provide 'wisent-dot)
 

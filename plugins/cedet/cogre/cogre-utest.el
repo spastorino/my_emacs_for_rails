@@ -3,7 +3,7 @@
 ;; Copyright (C) 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: cogre-utest.el,v 1.6 2009/01/28 19:38:49 zappo Exp $
+;; X-RCS: $Id: cogre-utest.el,v 1.10 2009/04/11 06:54:19 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -59,7 +59,7 @@
   (cedet-utest-log " * Create Nodes ... pass")
   
   ;; Create a link.
-  (cogre-utest-link-at 2 2 12 12 'cogre-aggrigate)
+  (cogre-utest-link-at 2 2 12 12 'cogre-aggregate)
 
   (cogre-render-buffer cogre-graph)
   
@@ -109,28 +109,34 @@ Link is created with the specified TYPE."
     (call-interactively 'cogre-new-link)
     ))
 
-;;; TEST FOR QUICK-CLASS
+;;; Test graphs derived from source
 ;;
 ;;;###autoload
-(defun cogre-uml-utest ()
-  "Quick test for UML chart generation."
+(defun cogre-utest-quick-class ()
+  "Test the quick-class function."
   (interactive)
-
-  (save-excursion
-
-    (set-buffer (semantic-find-file-noselect
-		 (locate-library "cogre.el")))
-
-    (semantic-fetch-tags)
-
-    (set-buffer (semantic-find-file-noselect
-		 (locate-library "cogre-uml.el")))
-
-    (semantic-fetch-tags)
-
-    (cogre-uml-quick-class "cogre-node"))
-
-  )
+  (let* ((lib (locate-library "cogre"))
+	 (testfile
+	  (expand-file-name "tests/testclasses.hh"
+			    (file-name-directory lib))))
+    (save-excursion
+      (set-buffer (find-file-noselect testfile))
+      (semantic-fetch-tags)
+      (cogre-uml-quick-class "Subclass")
+      ;; Make sure we are in a graph.
+      (unless (cogre-base-graph-p cogre-graph)
+	(error "Test cogre-uml-quick-class did not createa graph"))
+      ;; Test the elements of the graph.
+      (let ((expectednodes '("Subclass"
+			     "MyBaseclass"
+			     "SpecificClass"
+			     "OtherClass"
+			     "AltClass")))
+	(dolist (C expectednodes)
+	  (unless (cogre-find-node-by-name C)
+	    (error "Could not find expected node %S" C)))
+	))))
+    
 
 (provide 'cogre-utest)
 ;;; cogre-utest.el ends here

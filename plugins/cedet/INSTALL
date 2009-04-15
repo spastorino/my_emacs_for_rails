@@ -183,13 +183,6 @@ OTHER REQUIREMENTS:
    To use the JavaScript parser:
    javascript-mode.el : http://www.emacswiki.org/cgi-bin/wiki/JavaScriptMode
    
-   To use the UML chart generation from "M-x semantic-dot":
-   graphviz dot programs, including "dotty"
-   http://www.graphviz.org/
-
-   To use the graphviz dot parser:
-   graphviz-dot-mode.el: See the commentary in cogre/wisent-dot.el
-
    To use Exuberent CTags to parse files:
    http://ctags.sourceforge.net/
 
@@ -201,3 +194,9 @@ OTHER REQUIREMENTS:
 
    To use CScope integration:
    http://cscope.sourceforge.net/
+
+   To use COGRE with Graphviz Dot integration:
+   http://www.graphviz.org/
+
+   And a major mode for dot (not required):
+   http://users.skynet.be/ppareit/projects/graphviz-dot-mode/graphviz-dot-mode.html

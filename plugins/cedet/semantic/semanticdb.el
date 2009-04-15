@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: tags
-;; X-RCS: $Id: semanticdb.el,v 1.132 2009/01/31 18:09:26 zappo Exp $
+;; X-RCS: $Id: semanticdb.el,v 1.133 2009/03/19 00:47:13 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -940,7 +940,10 @@ This should take a filename to be parsed.")
   "Create a table for the file FILENAME.
 If there are no language specific configurations, this
 function will read in the buffer, parse it, and kill the buffer."
-  (if semanticdb-out-of-buffer-create-table-fcn
+  (if (and semanticdb-out-of-buffer-create-table-fcn
+	   (not (file-remote-p filename)))
+      ;; Use external parser only of the file is accessible to the
+      ;; local file system.
       (funcall semanticdb-out-of-buffer-create-table-fcn filename)
     (save-excursion
       (let* ( ;; Remember the buffer to kill

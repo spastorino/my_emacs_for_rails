@@ -25,7 +25,7 @@
 @copying
 This manual documents Application Development with Semantic.
 
-Copyright @copyright{} 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2008 Eric M. Ludlam
+Copyright @copyright{} 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009 Eric M. Ludlam
 Copyright @copyright{} 2001, 2002, 2003, 2004 David Ponce
 Copyright @copyright{} 2002, 2003 Richard Y. Kim
 
@@ -365,6 +365,13 @@ See @dfn{semantic-tag-protected-p} for details on which tags are returned.
 @defun semantic-find-tags-external-children-of-type type &optional table
 @anchor{semantic-find-tags-external-children-of-type}
 Find all tags in whose parent is @var{TYPE} in @var{TABLE}.
+These tags are defined outside the scope of the original @var{TYPE} declaration.
+@var{TABLE} is a tag table.  See @dfn{semantic-something-to-tag-table}.
+@end defun
+
+@defun semantic-find-tags-subclasses-of-type type &optional table
+@anchor{semantic-find-tags-subclasses-of-type}
+Find all tags of class type in whose parent is @var{TYPE} in @var{TABLE}.
 These tags are defined outside the scope of the original @var{TYPE} declaration.
 @var{TABLE} is a tag table.  See @dfn{semantic-something-to-tag-table}.
 @end defun
@@ -2144,6 +2151,14 @@ associated wit that tag should be loaded into a buffer.
 Search for all tags defined outside of @var{type} w/ @var{type} as a parent.
 See @dfn{semanticdb-find-translate-path} for details on @var{path}.
 @var{find-file-match} indicates that any time a match is found, the file
+associated with that tag should be loaded into a buffer.
+@end defun
+
+@defun semanticdb-find-tags-subclasses-of-type type &optional path find-file-match
+@anchor{semanticdb-find-tags-subclasses-of-type}
+Search for all tags of class type defined that subclass @var{TYPE}.
+See @dfn{semanticdb-find-translate-path} for details on @var{PATH}.
+@var{FIND-FILE-MATCH} indicates that any time a match is found, the file
 associated with that tag should be loaded into a buffer.
 @end defun
 

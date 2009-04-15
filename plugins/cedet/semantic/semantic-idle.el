@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: syntax
-;; X-RCS: $Id: semantic-idle.el,v 1.52 2009/01/09 23:09:34 zappo Exp $
+;; X-RCS: $Id: semantic-idle.el,v 1.54 2009/04/01 04:48:35 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -815,7 +815,9 @@ current tag to display information."
              (str (cond ((stringp found) found)
                         ((semantic-tag-p found)
                          (funcall semantic-idle-summary-function
-                                  found nil t)))))
+                                  found nil t))))
+	     )
+	;; Show the message with eldoc functions
         (require 'eldoc)
         (unless (and str (boundp 'eldoc-echo-area-use-multiline-p)
                      eldoc-echo-area-use-multiline-p)
@@ -828,6 +830,98 @@ current tag to display information."
 			 'semantic-idle-summary-mode)
 (semantic-alias-obsolete 'global-semantic-summary-mode
 			 'global-semantic-idle-summary-mode)
+
+;;; Current symbol highlight
+;;
+;; This mode will use context analysis to perform highlighting
+;; of all uses of the symbol that is under the cursor.
+;;
+;; This is to mimic the Eclipse tool of a similar nature.
+(defvar semantic-idle-summary-highlight-face 'region
+  "Face used for the summary highlight.")
+
+(defun semantic-idle-summary-maybe-highlight (tag)
+  "Perhaps add highlighting onto TAG.
+TAG was found as the thing under point.  If it happens to be
+visible, then highlight it."
+  (let* ((region (when (and (semantic-tag-p tag)
+			    (semantic-tag-with-position-p tag))
+		   (semantic-tag-overlay tag)))
+	 (file (when (and (semantic-tag-p tag)
+			  (semantic-tag-with-position-p tag))
+		 (semantic-tag-file-name tag)))
+	 (buffer (when file (get-file-buffer file)))
+	 ;; We use pulse, but we don't want the flashy version,
+	 ;; just the stable version.
+	 (pulse-flag nil)
+	 )
+    (cond ((semantic-overlay-p region)
+	   (save-excursion
+	     (set-buffer (semantic-overlay-buffer region))
+	     (goto-char (semantic-overlay-start region))
+	     (when (pos-visible-in-window-p
+		    (point) (get-buffer-window (current-buffer) 'visible))
+	       (if (< (semantic-overlay-end region) (point-at-eol))
+		   (pulse-momentary-highlight-overlay
+		    region semantic-idle-summary-highlight-face)
+		 ;; Not the same
+		 (pulse-momentary-highlight-region
+		  (semantic-overlay-start region)
+		  (point-at-eol)
+		  semantic-idle-summary-highlight-face)))
+	     ))
+	  ((vectorp region)
+	   (let ((start (aref region 0))
+		 (end (aref region 1)))
+	     (save-excursion
+	       (when buffer (set-buffer buffer))
+	       ;; As a vector, we have no filename.  Perhaps it is a
+	       ;; local variable?
+	       (when (and (<= end (point-max))
+			  (pos-visible-in-window-p
+			   start (get-buffer-window (current-buffer) 'visible)))
+		 (goto-char start)
+		 (when (re-search-forward
+			(regexp-quote (semantic-tag-name tag))
+			end t)
+		   ;; This is likely it, give it a try.
+		   (pulse-momentary-highlight-region
+		    start (if (<= end (point-at-eol)) end
+			    (point-at-eol))
+		    semantic-idle-summary-highlight-face)))
+	       ))))
+    nil))
+
+(define-semantic-idle-service semantic-idle-tag-highlight
+  "Highlight the tag, and references of the sumbol under point.
+Call `semantic-analyze-current-context' to find the reference tag.
+Call `semantic-symref-hits-in-region' to identify local references."
+  (when (semantic-idle-summary-useful-context-p)
+    (let* ((ctxt (semantic-analyze-current-context))
+	   (Hbounds (when ctxt (oref ctxt bounds)))
+	   (target (when ctxt (car (reverse (oref ctxt prefix)))))
+	   (tag (semantic-current-tag))
+	   ;; We use pulse, but we don't want the flashy version,
+	   ;; just the stable version.
+	   (pulse-flag nil))
+      (when ctxt
+	;; Highlight the original tag?  Protect against problems.
+	(condition-case nil
+	    (semantic-idle-summary-maybe-highlight target)
+	  (error nil))
+	;; Identify all hits in this current tag.
+	(when (semantic-tag-p target)
+	  (semantic-symref-hits-in-region
+	   target (lambda (start end prefix)
+		    (when (/= start (car Hbounds))
+		      (pulse-momentary-highlight-region
+		       start end))
+		    (semantic-throw-on-input 'symref-highlight)
+		    )
+	   (semantic-tag-start tag)
+	   (semantic-tag-end tag)))
+	))))
+
 
 ;;; Completion Popup Mode
 ;;

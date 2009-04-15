@@ -2,11 +2,11 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>Setting up CEDET</font></h2></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">Setting up CEDET</font></h2></td></tr>
 </table>
 
-<img src="img-gen/setup.jpg" border=1 align=right>
+<img src="img-gen/setup.png" border="1" align="right">
 
 <p>Setting up a tool as large and
    complex as <b>CEDET</b> can seem daunting.  Fortunately, a
@@ -27,11 +27,11 @@
    revision testing output.  Making sure all the package revisions
    needed are accurate is important, and fully automatic.
 
-<br clear=all>
+<br clear="all">
 <p>
 
-<table width=100% class=BAR>
-<tr><td><h3><font color=black>Basic Setup</font></h3></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h3><font color="black">Basic Setup</font></h3></td></tr>
 </table>
 
 <h4>Step 1</h4>

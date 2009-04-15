@@ -72,7 +72,7 @@ int WITH_CONT () { };
 
 int tail int_arg(q) {}
 
-/* TEST: macros used impropertly. */
+/* TEST: macros used improperly. */
 #define tail_fail tail_with_args_and_long_name(q)
 
 int tail_fcn tail_fail(q);
@@ -93,5 +93,35 @@ mf_declare;
 #define mf_Amacro(B) int B Amacro(B)
 
 mf_Amacro(noodle);
+
+/* TEST: Double macro using the argument stack. */
+#define MACRO0(name) int that_ ## name(int i);
+#define MACRO1(name) int this_ ## name(int i);
+#define MACRO2(name) MACRO0(name) MACRO1(name)
+
+MACRO2(foo)
+
+/* TEST: The G++ namespace macro hack.  Not really part of SPP. */
+_GLIBCXX_BEGIN_NAMESPACE(baz)
+
+  int bazfnc(int b) { }
+
+_GLIBCXX_END_NAMESPACE;
+
+_GLIBCXX_BEGIN_NESTED_NAMESPACE(foo,bar)
+
+  int foo_bar_func(int a) { }
+
+_GLIBCXX_END_NESTED_NAMESPACE;
+
+/* TEST: Recursion prevention.  CPP doesn't allow even 1 level of recursion. */
+#define STARTMACRO MACROA
+#define MACROA MACROB
+#define MACROB MACROA
+
+int STARTMACRO () {
+
+}
+
 
 /* END */

@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: pulse.el,v 1.11 2009/02/10 15:54:30 zappo Exp $
+;; X-RCS: $Id: pulse.el,v 1.12 2009/04/02 13:11:07 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -257,7 +257,7 @@ When optional NO-ERROR Don't throw an error if we can't run tests."
   "Pulse the overlay O, unhighlighting before next command.
 Optional argument FACE specifies the fact to do the highlighting."
   (pulse-overlay-put o 'original-face (pulse-overlay-get o 'face))
-  (setq pulse-momentary-overlay o)
+  (add-to-list 'pulse-momentary-overlay o)
   (if (or (not pulse-flag) (not (pulse-available-p)))
       ;; Provide a face... clear on next command
       (progn
@@ -283,22 +283,22 @@ Optional argument FACE specifies the fact to do the highlighting."
   ;; will still be nil, and won't need modifying.
   (when pulse-momentary-overlay
     ;; clear the starting face
-    (pulse-overlay-put pulse-momentary-overlay 'face
-		       (pulse-overlay-get pulse-momentary-overlay
-					  'original-face))
-    (pulse-overlay-put pulse-momentary-overlay 'original-face nil)
-    ;; Clear the overlay if it needs deleting.
-    (if (pulse-overlay-get pulse-momentary-overlay 'pulse-delete)
-	(pulse-overlay-delete pulse-momentary-overlay))
+    (mapc
+     (lambda (ol)
+       (pulse-overlay-put ol 'face (pulse-overlay-get ol 'original-face))
+       (pulse-overlay-put ol 'original-face nil)
+       ;; Clear the overlay if it needs deleting.
+       (when (pulse-overlay-get ol 'pulse-delete) (pulse-overlay-delete ol)))
+     pulse-momentary-overlay)
+
     ;; Clear the variable.
     (setq pulse-momentary-overlay nil))
-
+    
   ;; Reset the pulsing face.
   (pulse-reset-face)
 
   ;; Remove this hook.
-  (remove-hook 'pre-command-hook
-	       'pulse-momentary-unhighlight)
+  (remove-hook 'pre-command-hook 'pulse-momentary-unhighlight)
   )
 
 ;;;###autoload

@@ -7,7 +7,7 @@
 ;;         David Ponce <david@dponce.com>
 ;;         Klaus Berndl <klaus.berndl@sdm.de>
 ;;
-;; X-RCS: $Id: c.by,v 1.54 2009/03/08 21:07:50 zappo Exp $
+;; X-RCS: $Id: c.by,v 1.56 2009/03/14 23:44:09 zappo Exp $
 ;;
 ;; c.by is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@
 %token <punctuation>   HAT        "\\`\\^\\'"
 %token <punctuation>   OR         "\\`[|]\\'"
 %token <string>        C          "\"C\""
+%token <string>        CPP        "\"C\\+\\+\""
 %token <number>        ZERO       "^0$"
 %token <symbol>        RESTRICT   "\\<\\(__\\)?restrict\\>"
 %token <open-paren>    LPAREN     "("
@@ -223,9 +224,13 @@ extern-c
  ;; list of entries.  This must be done via the function
  ;; that expands singular nonterminals, such as int x,y;
     (TAG "C" 'extern :members (EXPANDFULL $3 extern-c-contents) )
+  | EXTERN CPP semantic-list
+    (TAG "C" 'extern :members (EXPANDFULL $3 extern-c-contents) )
   | EXTERN C
  ;; A plain extern "C" call should add something to the token,
  ;; but just strip it from the buffer here for now.
+    ( nil )
+  | EXTERN CPP
     ( nil )
   ;
 
@@ -1118,16 +1123,16 @@ type-cast-list
   : open-paren typeformbase close-paren
   ;
 
-;; Klaus Berndl: symbol -> namespace-symbol!
-opt-function-call-args
+opt-stuff-after-symbol
   : PAREN_BLCK
+  | BRACK_BLCK
   | ;; EMPTY 
   ;
 
 multi-stage-dereference
-  : namespace-symbol opt-function-call-args PERIOD multi-stage-dereference ;; method call
-  | namespace-symbol opt-function-call-args MINUS GREATER multi-stage-dereference ;;method call
-  | namespace-symbol opt-function-call-args
+  : namespace-symbol opt-stuff-after-symbol PERIOD multi-stage-dereference ;; method call
+  | namespace-symbol opt-stuff-after-symbol MINUS GREATER multi-stage-dereference ;;method call
+  | namespace-symbol opt-stuff-after-symbol
   ;
 
 string-seq

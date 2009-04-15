@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: picture
-;; X-RCS: $Id: picture-hack.el,v 1.10 2009/01/20 03:40:43 zappo Exp $
+;; X-RCS: $Id: picture-hack.el,v 1.14 2009/03/31 09:28:02 zappo Exp $
 
 ;; Semantic is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -101,26 +101,14 @@
     :group 'picture)
   )
 
-;;; Changes to exsiting functions
-;;
-(defun picture-insert-rectangle (rectangle &optional insertp)
+;;;###autoload
+(defun cogre-picture-insert-rectangle (rectangle)
   "Overlay RECTANGLE with upper left corner at point.
-Optional argument INSERTP, if non-nil causes RECTANGLE to be inserted.
 Leaves the region surrounding the rectangle."
   (let ((indent-tabs-mode nil))
-    (if (not insertp)
-	(save-excursion
-	  (delete-rectangle (point)
-			    (progn
-			      (picture-forward-column
-			       (length (car rectangle)))
-			      (picture-move-down (1- (length rectangle)))
-			      (point)))))
-    ;; This line is different from the one in Emacs 21, and enables
-    ;; the mark to only be pushed if it is interactivly called.
-    (if (interactive-p) (push-mark (point) t))
-    ;(picture-hack-insert-rectangle rectangle)
-    
+
+    ;; The below is pulled from 'insert-rectangle, and removes the
+    ;; setting of the mark.
     (let ((lines rectangle)
 	  (insertcolumn (current-column))
 	  (first t))
@@ -131,13 +119,17 @@ Leaves the region surrounding the rectangle."
 	      (or (bolp) (insert ?\n))
 	      (move-to-column insertcolumn t)))
 	(setq first nil)
-	;;(insert-for-yank (car lines))
-	;; No need for the above complication, as there are no yank-handlers.
-	(insert (car lines))
-	(setq lines (cdr lines))))
-    
-    ))
 
+	;; Clear the old text.
+	(if (> (- (point-at-eol) (point)) (length (car lines)))
+	    (delete-char (length (car lines)))
+	  (delete-char (- (point-at-eol) (point))))
+
+	(insert (car lines))
+	(setq lines (cdr lines)))) ))
+
+;;; Changes to exsiting functions
+;;
 (if (condition-case nil
 	(and (clear-rectangle 0 0 t)
 	     nil)
@@ -191,6 +183,21 @@ Apply TEXTPROPERTIES to the character inserted."
 				textproperties))
 	)
       (picture-move))))
+
+(defun picture-mouse-set-point (event)
+  "Move point to the position clicked on, making whitespace if necessary.
+Location is determined from EVENT.
+Different from the default in that it handles hscrolling."
+  (interactive "e")
+  (let* ((pos (posn-col-row (event-start event)))
+	 (hs (window-hscroll))
+	 (x (+ (car pos) hs))
+	 (y (cdr pos))
+	 (current-row (count-lines (window-start) (line-beginning-position))))
+    (unless (equal x (current-column))
+      (picture-forward-column (- x (current-column))))
+    (unless (equal y current-row)
+      (picture-move-down (- y current-row)))))
 
 ;;; New functions
 ;;

@@ -1,9 +1,9 @@
 ;;; wisent-dot-wy.el --- Generated parser support file
 
-;; Copyright (C) 2003, 2004 Eric M. Ludlam
+;; Copyright (C) 2003, 2004, 2009 Eric M. Ludlam
 
-;; Author:  <santiago@localhost>
-;; Created: 2009-02-16 04:33:39-0200
+;; Author:  <santiago@debian>
+;; Created: 2009-04-15 16:54:04-0300
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
@@ -44,26 +44,8 @@
    '(("digraph" . DIGRAPH)
      ("graph" . GRAPH)
      ("subgraph" . SUBGRAPH)
-     ("node" . NODE)
-     ("shape" . SHAPE)
-     ("label" . LABEL)
-     ("color" . COLOR)
-     ("style" . STYLE)
-     ("len" . LEN)
-     ("fontname" . FONTNAME)
-     ("fontsize" . FONTSIZE)
-     ("width" . WIDTH)
-     ("height" . HEIGHT)
-     ("splines" . SPLINES)
-     ("overlap" . OVERLAP))
-   '(("fontsize" summary "fontsize=<font-size-number>")
-     ("fontname" summary "fontname=<font-spec>")
-     ("len" summary "len=<value>")
-     ("style" summary "style=<style-spec>")
-     ("color" summary "color=<color-spec>")
-     ("label" summary "label=\"string\"")
-     ("shape" summary "shape=<shape-type>")
-     ("node" summary "node [<attribute>...];")
+     ("node" . NODE))
+   '(("node" summary "node [<attribute>...];")
      ("subgraph" summary "subgraph <name> { <graph elements> ... }")
      ("graph" summary "graph <name> { <graph elements> ... }")
      ("digraph" summary "digraph <name> { <graph elements> ... }")))
@@ -109,7 +91,7 @@
     (eval-when-compile
       (require 'wisent-comp))
     (wisent-compile-grammar
-     '((DIGRAPH GRAPH SUBGRAPH NODE SHAPE LABEL COLOR STYLE LEN FONTNAME FONTSIZE WIDTH HEIGHT SPLINES OVERLAP DILINK LINK EQUAL SEMI COMMA BRACKET_BLOCK BRACE_BLOCK PAREN_BLOCK LBRACE RBRACE LBRACKET RBRACKET LPAREN RPAREN symbol string number)
+     '((DIGRAPH GRAPH SUBGRAPH NODE DILINK LINK EQUAL SEMI COMMA BRACKET_BLOCK BRACE_BLOCK PAREN_BLOCK LBRACE RBRACE LBRACKET RBRACKET LPAREN RPAREN symbol string number)
        nil
        (dot_file
 	((digraph))
@@ -135,21 +117,12 @@
 	 nil)
 	((RBRACE)
 	 nil)
-	((label))
-	((style))
 	((graph-attributes))
 	((subgraph))
 	((node))
+	((graphgeneric))
 	((named-node))
 	((links)))
-       (label
-	((LABEL EQUAL string SEMI)
-	 (wisent-raw-tag
-	  (semantic-tag $3 'label))))
-       (style
-	((STYLE EQUAL symbol SEMI)
-	 (wisent-raw-tag
-	  (semantic-tag $3 'style))))
        (subgraph
 	((SUBGRAPH symbol BRACE_BLOCK)
 	 (wisent-raw-tag
@@ -158,6 +131,14 @@
 			 (car $region3)
 			 (cdr $region3)
 			 'graph-contents 1)))))
+       (graphgeneric
+	((GRAPH BRACKET_BLOCK SEMI)
+	 (wisent-raw-tag
+	  (semantic-tag "GRAPH" 'generic-graph :attributes
+			(semantic-parse-region
+			 (car $region2)
+			 (cdr $region2)
+			 'attribute-block 1)))))
        (node
 	((NODE BRACKET_BLOCK SEMI)
 	 (wisent-raw-tag
@@ -165,7 +146,7 @@
 			(semantic-parse-region
 			 (car $region2)
 			 (cdr $region2)
-			 'node-description 1)))))
+			 'attribute-block 1)))))
        (graph-attributes
 	((GRAPH BRACKET_BLOCK SEMI)
 	 (wisent-raw-tag
@@ -173,42 +154,37 @@
 			(semantic-parse-region
 			 (car $region2)
 			 (cdr $region2)
-			 'node-description 1)))))
+			 'attribute-block 1)))))
        (named-node
-	((symbol BRACKET_BLOCK SEMI)
+	((name BRACKET_BLOCK SEMI)
 	 (wisent-raw-tag
 	  (semantic-tag $1 'node :attributes
 			(semantic-parse-region
 			 (car $region2)
 			 (cdr $region2)
-			 'node-description 1)))))
-       (node-description
+			 'attribute-block 1)))))
+       (links
+	((name DILINK name opt-link-attributes opt-semi)
+	 (wisent-raw-tag
+	  (semantic-tag $1 'link :to $3 :attributes $4)))
+	((name LINK name opt-link-attributes opt-semi)
+	 (wisent-raw-tag
+	  (semantic-tag $1 'link :to $3 :attributes $4))))
+       (name
+	((symbol)
+	 (identity $1))
+	((string)
+	 (read $1)))
+       (attribute-block
 	((LBRACKET)
 	 nil)
 	((RBRACKET)
 	 nil)
 	((COMMA)
 	 nil)
-	((SHAPE EQUAL symbol)
-	 (wisent-raw-tag
-	  (semantic-tag $1 'attribute :value $3)))
-	((LABEL EQUAL string)
-	 (wisent-raw-tag
-	  (semantic-tag $1 'attribute :value $3)))
-	((FONTNAME EQUAL string)
-	 (wisent-raw-tag
-	  (semantic-tag $1 'attribute :value $3)))
-	((FONTSIZE EQUAL number)
-	 (wisent-raw-tag
-	  (semantic-tag $1 'attribute :value $3)))
-	((symbol EQUAL symbol)
+	((symbol EQUAL name)
 	 (wisent-raw-tag
 	  (semantic-tag $1 'attribute :value $3))))
-       (links
-	((symbol DILINK symbol opt-link-attributes opt-semi)
-	 (wisent-raw-tag
-	  (semantic-tag $1 'link :to $3 :attributes $4)))
-	((BRACE_BLOCK)))
        (opt-semi
 	((SEMI)
 	 nil)
@@ -218,9 +194,9 @@
 	 (semantic-parse-region
 	  (car $region1)
 	  (cdr $region1)
-	  'node-description 1))
+	  'attribute-block 1))
 	(nil)))
-     '(dot_file graph-contents node-description)))
+     '(dot_file graph-contents attribute-block)))
   "Parser table.")
 
 (defun wisent-dot-wy--install-parser ()

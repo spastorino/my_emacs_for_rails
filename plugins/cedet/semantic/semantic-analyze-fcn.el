@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: semantic-analyze-fcn.el,v 1.26 2009/03/05 03:26:52 zappo Exp $
+;; X-RCS: $Id: semantic-analyze-fcn.el,v 1.28 2009/04/11 16:50:09 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -149,21 +149,30 @@ Almost all searches use the same arguments."
 ;;
 ;; Finding a data type by name within a project.
 ;;
-(defun semantic-analyze-tag-type-to-name (tag)
+(defun semantic-analyze-type-to-name (type)
   "Get the name of TAG's type.
 The TYPE field in a tag can be nil (return nil)
 or a string, or a non-positional tag."
-  (let ((tt (semantic-tag-type tag)))
-    (cond ((semantic-tag-p tt)
-	   (semantic-tag-name tt))
-	  ((stringp tt)
-	   tt)
-	  ((listp tt)
-	   (car tt))
-	  (t nil))))
+  (cond ((semantic-tag-p type)
+	 (semantic-tag-name type))
+	((stringp type)
+	 type)
+	((listp type)
+	 (car type))
+	(t nil)))
 
 (defun semantic-analyze-tag-type (tag &optional scope nometaderef)
   "Return the semantic tag for a type within the type of TAG.
+TAG can be a variable, function or other type of tag.
+The behavior of TAG's type is defined by `semantic-analyze-type'.
+Optional SCOPE represents a calculated scope in which the
+types might be found.  This can be nil.
+If NOMETADEREF, then do not dereference metatypes.  This is
+used by the analyzer debugger."
+  (semantic-analyze-type (semantic-tag-type tag) scope nometaderef))
+
+(defun semantic-analyze-type (type-declaration &optional scope nometaderef)
+  "Return the semantic tag for TYPE-DECLARATION.
 TAG can be a variable, function or other type of tag.
 The type of tag (such as a class or struct) is a name.
 Lookup this name in database, and return all slots/fields
@@ -172,8 +181,7 @@ Optional SCOPE represents a calculated scope in which the
 types might be found.  This can be nil.
 If NOMETADEREF, then do not dereference metatypes.  This is
 used by the analyzer debugger."
-  (let ((type-declaration (semantic-tag-type tag))
-	(name nil)
+  (let ((name nil)
 	(typetag nil)
 	)
 
@@ -192,7 +200,7 @@ used by the analyzer debugger."
 
       ;; Not an anonymous type.  Look up the name of this type
       ;; elsewhere, and report back.
-      (setq name (semantic-analyze-tag-type-to-name tag))
+      (setq name (semantic-analyze-type-to-name type-declaration))
 
       (if (and name (not (string= name "")))
 	  (progn
@@ -228,14 +236,15 @@ used by the analyzer debugger."
 (defun semantic-analyze-dereference-metatype-stack (type scope &optional type-declaration)
   "Dereference metatypes repeatedly until we hit a real TYPE.
 Uses `semantic-analyze-dereference-metatype'.
-Argument SCOPE is the scope object with additional items in which to search."
+Argument SCOPE is the scope object with additional items in which to search.
+Optional argument TYPE-DECLARATION is how TYPE was found referenced."
   (let ((lasttype type)
         (lasttypedeclaration type-declaration)
 	(nexttype (semantic-analyze-dereference-metatype type scope type-declaration))
 	(idx 0))
     (catch 'metatype-recursion
       (while (and nexttype (not (eq (car nexttype) lasttype)))
-	(setq lasttype (car nexttype) 
+	(setq lasttype (car nexttype)
 	      lasttypedeclaration (cadr nexttype))
 	(setq nexttype (semantic-analyze-dereference-metatype lasttype scope lasttypedeclaration))
 	(setq idx (1+ idx))
@@ -259,7 +268,7 @@ Just a name, or short tag will be ok.  It will be expanded here.
 SCOPE is the scope object with additional items in which to search for names."
   (catch 'default-behavior
     (let* ((ans-tuple (:override
-                       ;; Nothing fancy, just return type be default.
+                       ;; Nothing fancy, just return type by default.
                        (throw 'default-behavior (list type type-declaration))))           
            (ans-type (car ans-tuple))
            (ans-type-declaration (cadr ans-tuple)))      

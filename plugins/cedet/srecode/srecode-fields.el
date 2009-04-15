@@ -3,7 +3,7 @@
 ;; Copyright (C) 2009 Eric M. Ludlam
 ;;
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: srecode-fields.el,v 1.6 2009/03/01 04:39:10 zappo Exp $
+;; X-RCS: $Id: srecode-fields.el,v 1.10 2009/04/02 01:50:20 zappo Exp $
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -107,7 +107,7 @@ Has virtual :start and :end initializers.")
   "Initialize OLAID, being sure it archived."
   ;; Extract :start and :end from the olaid list.
   (let ((newargs nil)
-	(smarker (make-marker))
+	(olay nil)
 	start end
 	)
 
@@ -129,9 +129,13 @@ Has virtual :start and :end initializers.")
 	     (setq args (cdr args)))
 	    ))
 
-    (move-marker smarker start (current-buffer))
-    (oset olaid overlay (cons smarker (- end start)))
-    
+    ;; Create a temporary overlay now.  We have to use an overlay and
+    ;; not a marker becaues of the in-front insertion rules.  The rules
+    ;; are backward from what is wanted while typing.
+    (setq olay (srecode-make-overlay start end (current-buffer) t nil))
+    (srecode-overlay-put olay 'srecode-init-only t)
+
+    (oset olaid overlay olay)
     (call-next-method olaid (nreverse newargs))
 
     ))
@@ -139,9 +143,13 @@ Has virtual :start and :end initializers.")
 (defmethod srecode-overlaid-activate ((olaid srecode-overlaid))
   "Activate the overlaid area."
   (let* ((ola (oref olaid overlay))
-	 (start (car ola))
-	 (end (+ start (cdr ola)))
+	 (start (srecode-overlay-start ola))
+	 (end (srecode-overlay-end ola))
+	 ;; Create a new overlay here.
 	 (ol (srecode-make-overlay start end (current-buffer) nil t)))
+
+    ;; Remove the old one.
+    (srecode-overlay-delete ola)
 
     (srecode-overlay-put ol 'srecode olaid)
     
@@ -206,6 +214,7 @@ If SET-TO is a string, then replace the text of OLAID wit SET-TO."
   ((fields :documentation
 	   "A list of field overlays in this region.")
    (active-region :allocation :class
+		  :initform nil
 		  :documentation
 		  "The template region currently being handled.")
    )
@@ -302,6 +311,7 @@ Try to use this to provide useful completion when available.")
     (define-key km "\C-e" 'srecode-field-end)
     (define-key km "\C-a" 'srecode-field-start)
     (define-key km "\M-m" 'srecode-field-start)
+    (define-key km "\C-c\C-c" 'srecode-field-exit-ask)
     km)
   "Keymap applied to field overlays.")
 
@@ -457,52 +467,11 @@ PRE-LEN is used in the after mode for the length of the changed text."
   (let* ((f (srecode-overlaid-at-point 'srecode-field)))
     (goto-char (srecode-overlay-start (oref f overlay)))))
 
-;;; COMPOUND VALUE
-;;
-(defclass srecode-field-value (srecode-dictionary-compound-value)
-  ((firstinserter :initarg :firstinserter
-		  :documentation
-		  "The inserter object for the first occurance of this field.")
-   (defaultvalue :initarg :defaultvalue
-     :documentation
-     "The default value for this inserter.")
-   )
-  "When inserting values with editable field mode, a dictionary value.
-Compound values allow a field to be stored in the dictionary for when
-it is referenced a second time.  This compound value can then be
-inserted with a new editable field.")
-
-(defmethod srecode-compound-toString((cp srecode-field-value)
-				     function
-				     dictionary)
-  "Convert this field into an insertable string."
-  ;; If we are not in a buffer, then this is not supported.
-  (when (not (bufferp standard-output))
-    (error "FIELDS invoked while inserting template to non-buffer."))
-
-  (if function
-      (error "@todo: Cannot mix field insertion with functions.")
-
-    ;; Otherwise, apply the function to the tag itself.
-    ;; We know we are in a buffer, so we can perform the insertion.
-    (let* ((dv (oref cp defaultvalue))
-	   (sti (oref cp firstinserter))
-	   (start (point))
-	   (name (oref sti :object-name)))
-
-      (if (or (not dv) (string= dv ""))
-	  (insert name)
-	(insert dv))
-
-      (srecode-field name :name name
-		     :start start
-		     :end (point)
-		     :prompt (oref sti prompt)
-		     :read-fcn (oref sti read-fcn)
-		     )
-      ))
-  ;; Returning nil is a signal that we have done the insertion ourselves.
-  nil)
+(defun srecode-field-exit-ask ()
+  "Ask if the user wants to exit field-editing mini-mode."
+  (interactive)
+  (when (y-or-n-p "Exit field-editing mode? ")
+    (srecode-delete (srecode-active-template-region))))
 
 ;;; TESTS
 ;;
@@ -547,13 +516,15 @@ It is filled with some text."
       (when (or (not (slot-boundp f 'overlay)) (not (oref f overlay)))
 	(error "Field test: Overlay info not created for field"))
 
-      (when (srecode-overlay-p (oref f overlay))
-	(error "Overlay created during creation"))
+      (when (and (srecode-overlay-p (oref f overlay))
+		 (not (srecode-overlay-get (oref f overlay) 'srecode-init-only)))
+	(error "Field creation overlay is not tagged w/ init flag"))
 
       (srecode-overlaid-activate f)
 
-      (when (not (srecode-overlay-p (oref f overlay)))
-	(error "Overlay not created during activation"))
+      (when (or (not (srecode-overlay-p (oref f overlay)))
+		(srecode-overlay-get (oref f overlay) 'srecode-init-only))
+	(error "New field overlay not created during activation"))
 
       (when (not (= (length srecode-field-archive) 1))
 	(error "Field test: Incorrect number of elements in the field archive"))

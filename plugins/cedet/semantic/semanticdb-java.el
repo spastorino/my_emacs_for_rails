@@ -5,7 +5,7 @@
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;;Joakim Verona joakim@verona.se
 ;; Keywords: tags
-;; X-RCS: $Id: semanticdb-java.el,v 1.5 2009/03/10 14:28:13 joakimv Exp $
+;; X-RCS: $Id: semanticdb-java.el,v 1.6 2009/03/11 07:43:58 joakimv Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -75,33 +75,11 @@ It is not necessary to do system or recursive searching because of
 the omniscience database.")
 
 
-;;; just a hack...
-;;(define-mode-local-override semanticdb-find-translate-path java-mode (path brutish)
-;;  "brutish hack" 
-;;  (progn 
-;;    (message "semanticdb-find-translate-path java-mode %s " path)
-;;    (semanticdb-find-translate-path-default path t); always do brutish search. its a hack.
-;;    )
+;; ;;; just a hack...
+;; (define-mode-local-override semanticdb-find-translate-path java-mode (path brutish)
+;;     (message "semanticdb-find-translate-path java-mode %s " path)
+;;     (semanticdb-find-translate-path-default path t); always do brutish search. its a hack.
 ;;  )
-
-
-
-;;; Filename based methods
-;;
-;; (defmethod semanticdb-file-table ((obj semanticdb-project-database-java) filename)
-;;   "From OBJ, return FILENAME's associated table object."
-;;   ;; Creates one table for all of the compiled java environment.
-;;   ;; Query the environment each time?
-;;   ;; Perhaps it should instead keep a group of tables for each file
-;;   ;; actually queried and cache the results.
-;;   (message "semanticdb-file-table")
-;;   (if (slot-boundp obj 'tables)
-;;       (car (oref obj tables))
-;;     (let ((newtable (semanticdb-table-java "javatable")))
-;;       (oset obj tables (list newtable))
-;;       (oset newtable parent-db obj)
-;;       (oset newtable tags nil)
-;;       newtable)))
 
 
 
@@ -112,7 +90,7 @@ the omniscience database.")
 Create one of our special tables that can act as an intermediary."
   ;; We need to return something since there is always the "master table"
   ;; The table can then answer file name type questions.
-  (message "semanticdb-get-database-tables java")
+  (message "semanticdb-get-database-tables java: %s" obj)
   (when (not (slot-boundp obj 'tables))
     (let ((newtable (semanticdb-table-java "java")))
       (oset obj tables (list newtable))
@@ -124,6 +102,7 @@ Create one of our special tables that can act as an intermediary."
 (defmethod semanticdb-file-table ((obj semanticdb-project-database-java) filename)
   "From OBJ, return FILENAME's associated table object.
 For Emacs Lisp, creates a specialized table."
+  (message "semanticdb-file-table java: %s %s" obj filename)  
   (car (semanticdb-get-database-tables obj))
   )
 
@@ -135,7 +114,7 @@ For Emacs Lisp, creates a specialized table."
 (defmethod semanticdb-get-tags ((table semanticdb-table-java ))
   "Return the list of tags belonging to TABLE."
   ;; specialty table ?  Probably derive tags at request time?
-  (message "semanticdb-get-tags")
+  (message "semanticdb-get-tags %s" table)
   )
 
 (defmethod semanticdb-equivalent-mode ((table semanticdb-table-java) &optional buffer)
@@ -154,7 +133,7 @@ local variable."
   ((table semanticdb-table-java) name  &optional tags)
   "Find all tags name NAME in TABLE.
 Return a list of tags."
-  (message "semanticdb-find-tags-by-name-method %s" name)
+  (message "semanticdb-find-tags-by-name-method %s %s" name tags)
   
   (list (semantic-tag name 'type))
   )
@@ -190,7 +169,7 @@ Returns a table of all matching tags."
   "Find all tags name NAME in TABLE.
 Optional argument TAGS is a list of tags t
 Like `semanticdb-find-tags-by-name-method' for java."
-  (message "semanticdb-deep-find-tags-by-name-method")
+  (message "semanticdb-deep-find-tags-by-name-method %s %s" name tags)
   (semanticdb-find-tags-by-name-method table name tags))
 
 (defmethod semanticdb-deep-find-tags-by-name-regexp-method
@@ -198,7 +177,7 @@ Like `semanticdb-find-tags-by-name-method' for java."
   "Find all tags with name matching REGEX in TABLE.
 Optional argument TAGS is a list of tags to search.
 Like `semanticdb-find-tags-by-name-method' for java."
-  (message " semanticdb-deep-find-tags-by-name-regexp-method")
+  (message " semanticdb-deep-find-tags-by-name-regexp-method %s %s" regex tags)
   (semanticdb-find-tags-by-name-regexp-method table regex tags))
 
 (defmethod semanticdb-deep-find-tags-for-completion-method
@@ -206,7 +185,7 @@ Like `semanticdb-find-tags-by-name-method' for java."
   "In TABLE, find all occurances of tags matching PREFIX.
 Optional argument TAGS is a list of tags to search.
 Like `semanticdb-find-tags-for-completion-method' for java."
-  (message " semanticdb-deep-find-tags-for-completion-method")
+  (message " semanticdb-deep-find-tags-for-completion-method %s %s" prefix tags)
   (semanticdb-find-tags-for-completion-method table prefix tags))
 
 ;;; Advanced Searches
@@ -308,5 +287,15 @@ Each entry looks like:(method-name (argument_type,...) return_type)"
   
  (semanticdb-clojure-send (format "(get-class-info \"%s\")" classname)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;test code
+(defun semanticdb-java-test ()
+  (semantic-find-tags-by-name
+   "java.lang.String"
+   (mode-local-value  'java-mode 'semanticdb-project-system-databases)))
+;(semanticdb-java-test)
+
+
 (provide 'semanticdb-java)
 ;;; semanticdb-java.el ends here
+

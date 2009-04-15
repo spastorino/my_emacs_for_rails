@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: syntax
-;; X-RCS: $Id: semantic-find.el,v 1.26 2009/01/20 02:28:22 zappo Exp $
+;; X-RCS: $Id: semantic-find.el,v 1.27 2009/04/09 02:57:15 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -420,6 +420,16 @@ TABLE is a tag table.  See `semantic-something-to-tag-table'."
   (semantic--find-tags-by-macro
    (equal (semantic-tag-external-member-parent (car tags))
 	  type)
+   table))
+
+(defun semantic-find-tags-subclasses-of-type (type &optional table)
+  "Find all tags of class type in whose parent is TYPE in TABLE.
+These tags are defined outside the scope of the original TYPE declaration.
+TABLE is a tag table.  See `semantic-something-to-tag-table'."
+  (semantic--find-tags-by-macro
+   (and (eq (semantic-tag-class (car tags)) 'type)
+	(or (member type (semantic-tag-type-superclasses (car tags)))
+	    (member type (semantic-tag-type-interfaces (car tags)))))
    table))
 
 ;;

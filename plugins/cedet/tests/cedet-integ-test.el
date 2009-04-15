@@ -64,14 +64,23 @@
 ;;    a Make sure the semanticdb cleans up the dead cache files.
 ;;    b Make sure EDE clears this project from it's project cache.
 (require 'semantic)
+(require 'ede)
+(require 'data-debug)
+(require 'ede-make)
+
+(eval-and-compile
+  (defvar cedet-integ-base "/tmp/CEDET_INTEG"
+    "Root of multiple project integration tests.")
+  )
+
 (require 'cit-cpp)
 (require 'cit-srec)
 (require 'cit-el)
 (require 'cit-texi)
 (require 'cit-gnustep)
 
-(defvar cedet-integ-target "/tmp/CEDET_INTEG"
-  "Root of the integration tests.")
+(defvar cedet-integ-target (expand-file-name "edeproj" cedet-integ-base)
+  "Root of the EDE project integration tests.")
 
 ;;; Code:
 (defun cedet-integ-test ()
@@ -79,6 +88,7 @@
   (interactive)
   ;; 1 a) build directories
   ;;
+  (cit-make-dir cedet-integ-base)
   (cit-make-dir cedet-integ-target)
   ;; 1 c) make src and include directories
   (cit-make-dir (cit-file "src"))
@@ -108,10 +118,8 @@
   ;; Do a EDE GNUstep-Make Project
   (make-directory (concat cedet-integ-target "_ede_GSMake") t)
   (find-file (expand-file-name "README" (concat cedet-integ-target "_ede_GSMake"))) ;; only to change dir
-  (setq oldval ede-auto-add-method
-	ede-auto-add-method 'always)
-  (cit-ede-step-test)
-  (setq ede-auto-add-method oldval)
+  (let ((ede-auto-add-method 'always))
+    (cit-ede-step-test))
 
   ;; Leave a message
   (let ((b (set-buffer (get-buffer-create "*PASSED*"))))
@@ -203,7 +211,7 @@ are found, but don't error if they are not their."
     (let ((T1 (car actual))
 	  (T2 (car expected)))
 
-      (cond 
+      (cond
        ((semantic-tag-similar-p T1 T2 :default-value)
 
 	(let ((mem1 (semantic-tag-components T1))
@@ -224,15 +232,17 @@ are found, but don't error if they are not their."
 	)
 
        (t ;; Not the same
-	(semantic-adebug-show (cit-tag-verify-error-debug
-			       "Dbg" :actual T1 :expected T2))
+	(data-debug-new-buffer "*Test Failure*")
+	(data-debug-insert-thing
+	 (cit-tag-verify-error-debug "Dbg" :actual T1 :expected T2)
+	 ">" "")
 
 	(error "Tag %s does not match %s"
 	       (semantic-format-tag-name T1)
 	       (semantic-format-tag-name T2))
 	)
        ))
-
+    
     (setq actual (cdr actual))
     ))
 
@@ -242,7 +252,7 @@ are found, but don't error if they are not their."
   ;; 1 f) Create a build file.
   (ede-proj-regenerate)
   ;; 1 g) build the sources.
-  (compile "make")
+  (compile ede-make-command)
   
   (while compilation-in-progress
     (accept-process-output)

@@ -2,11 +2,11 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>Project Management</font></h2></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">Project Management</font></h2></td></tr>
 </table>
 
-<img src="img-gen/cedet-project-menu.png" align=right>
+<img src="img-gen/cedet-project-menu.png" align="right">
 <p>The CEDET Project management system provides a few simple
    keystrokes for organizing your files, building Makefiles or
    Automake files, and compiling your sources.
@@ -21,10 +21,10 @@
    distribution package, you will be using a <b>CEDET</b> project.
 
 <p>The image to the right shows a part of the Project management menu.
-<br clear=all>
+<br clear="all">
 
-<table width=100% class=BAR>
-<tr><td><h3><font color=black>Project Basics</font></h3></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h3><font color="black">Project Basics</font></h3></td></tr>
 </table>
 
 <p>The project system for CEDET is implemented in a tool

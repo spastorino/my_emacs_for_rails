@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: project, make
-;; RCS: $Id: ede-pmake.el,v 1.55 2009/03/09 23:06:58 zappo Exp $
+;; RCS: $Id: ede-pmake.el,v 1.56 2009/03/12 22:38:21 zappo Exp $
 
 ;; This software is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -546,7 +546,7 @@ Argument THIS is the target that should insert stuff."
     (ede-map-subprojects
      this (lambda (sproj)
 	    (let ((rp (directory-file-name (ede-subproject-relative-path sproj))))
-	      (insert "\t$(MAKE) " rp " $(MFLAGS) DISTDIR=$(DISTDIR)/" rp
+	      (insert "\t$(MAKE) -C " rp " $(MFLAGS) DISTDIR=$(DISTDIR)/" rp
 		      " dist"
 		      "\n"))))
 

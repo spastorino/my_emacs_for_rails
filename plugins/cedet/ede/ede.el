@@ -4,8 +4,8 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: project, make
-;; RCS: $Id: ede.el,v 1.132 2009/03/08 19:52:18 zappo Exp $
-(defconst ede-version "1.0pre6"
+;; RCS: $Id: ede.el,v 1.134 2009/03/19 00:43:27 zappo Exp $
+(defconst ede-version "1.0pre7"
   "Current version of the Emacs EDE.")
 
 ;; This software is free software; you can redistribute it and/or modify
@@ -811,12 +811,30 @@ If ARG is negative, disable.  Toggle otherwise."
       (remove-hook 'dired-mode-hook 'ede-turn-on-hook))
     (ede-reset-all-buffers arg)))
 
+(defvar ede-ignored-file-alist
+  '( "\\.cvsignore$"
+     "\\.#"
+     "~$"
+     )
+  "List of file name patters that EDE will never ask about.")
+
+(defun ede-ignore-file (filename)
+  "Should we ignore FILENAME?"
+  (let ((any nil)
+	(F ede-ignored-file-alist))
+    (while (and (not any) F)
+      (when (string-match (car F) filename)
+	(setq any t))
+      (setq F (cdr F)))
+    any))
+
 (defun ede-auto-add-to-target ()
   "Look for a target that wants to own the current file.
 Follow the preference set with `ede-auto-add-method' and get the list
 of objects with the `ede-want-file-p' method."
   (if ede-object (error "Ede-object already defined for %s" (buffer-name)))
-  (if (eq ede-auto-add-method 'never)
+  (if (or (eq ede-auto-add-method 'never)
+	  (ede-ignore-file (buffer-file-name)))
       nil
     (let (wants desires)
       ;; Find all the objects.

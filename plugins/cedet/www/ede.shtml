@@ -2,9 +2,9 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>EDE:</font></h2></td>
-<td><font color=black>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">EDE:</font></h2></td>
+<td><font color="black">
 "Emacs Development Environment: A project management system"</font></td></tr>
 </table>
 
@@ -45,12 +45,12 @@ functionality.</p>
 <dd>The simple project style you can use to build your own simple EDE projects.
 </dl>
 
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h2>Read the docs:</h2>
 </td></tr></table>
 
 <P>You can read the 
-   <a href=info/ede.html>html documentation</a>
+   <a href="info/ede.html">html documentation</a>
    created from the texinfo file.</p>
 
 <!--#include file="download.php"-->

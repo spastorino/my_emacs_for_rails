@@ -28,7 +28,7 @@
 ;; The output are a series of EIEIO objects which represent the
 ;; templates in a way that could be inserted later.
 
-
+(require 'semantic-fw)
 (require 'eieio)
 (require 'eieio-base)
 (require 'srecode-table)
@@ -177,7 +177,7 @@ Arguments ESCAPE-START and ESCAPE-END are the current escape sequences in use."
     (save-excursion
       ;; Make whatever it is local.
       (if (not peb)
-	  (set-buffer (find-file-noselect fname))
+	  (set-buffer (semantic-find-file-noselect fname))
 	(set-buffer peb))
       ;; Do the compile.
       (srecode-compile-templates)

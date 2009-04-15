@@ -1,11 +1,11 @@
 ;;; sb-info --- Speedbar support for Info
 
-;; Copyright (C) 1997, 1998, 2000, 2001, 2002, 2005 Free Software Foundation
+;; Copyright (C) 1997, 1998, 2000, 2001, 2002, 2005, 2009 Free Software Foundation
 ;;
 ;; Author: Eric M. Ludlam <zappo@gnu.ai.mit.edu>
 ;; Version: 0.3
 ;; Keywords: file, tags, tools
-;; X-RCS: $Id: sb-info.el,v 1.20 2006/06/23 08:26:16 ponced Exp $
+;; X-RCS: $Id: sb-info.el,v 1.21 2009/03/12 22:48:07 zappo Exp $
 ;;
 ;; This file is patch of GNU Emacs.
 ;;
@@ -245,6 +245,7 @@ BUFFER is the buffer speedbar is requesting buttons for."
 		      (not (looking-at "Info Nodes:")))
       (erase-buffer))
   (Info-speedbar-hierarchy-buttons nil 0)
+  (goto-char (point-min))
   )
 
 (provide 'sb-info)

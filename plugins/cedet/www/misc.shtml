@@ -1,7 +1,7 @@
 <title>Miscelaneous Small CEDET Tools</title>
 
 <!--#include file="pagestart.php"-->
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h3>Miscellaneous small CEDET tools:</h3>
 </td></tr></table>
 
@@ -24,7 +24,7 @@
   <li>cedet-cscope - Simple CScope integration tool.
 </ul>
 
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h3>Other Miscellaneous Emacs Hacks at this web site:</h3>
 </td></tr></table>
 

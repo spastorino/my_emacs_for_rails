@@ -1,12 +1,12 @@
 ;;; speedbar --- quick access to files and tags in a frame
 
-;;; Copyright (C) 1996, 97, 98, 99, 00, 01, 02, 03, 04, 05, 06, 07, 08 Free Software Foundation
+;;; Copyright (C) 1996, 97, 98, 99, 00, 01, 02, 03, 04, 05, 06, 07, 08, 09 Free Software Foundation
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: file, tags, tools
-;; X-RCS: $Id: speedbar.el,v 1.259 2008/04/14 15:07:12 zappo Exp $
+;; X-RCS: $Id: speedbar.el,v 1.260 2009/03/19 00:49:01 zappo Exp $
 
-(defvar speedbar-version "1.0.2"
+(defvar speedbar-version "1.0.3"
   "The current version of speedbar.")
 (defvar speedbar-incompatible-version "0.14beta4"
   "This version of speedbar is incompatible with this version.

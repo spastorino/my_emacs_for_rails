@@ -1,10 +1,10 @@
 ;;; chart.el --- Draw charts (bar charts, etc)
 
-;;; Copyright (C) 1996, 1998, 1999, 2001, 2004, 2005, 2007, 2008 Eric M. Ludlam
+;;; Copyright (C) 1996, 1998, 1999, 2001, 2004, 2005, 2007, 2008, 2009 Eric M. Ludlam
 ;;
 ;; Author: <zappo@gnu.org>
 ;; Version: 0.2
-;; RCS: $Id: chart.el,v 1.18 2008/10/10 20:57:38 zappo Exp $
+;; RCS: $Id: chart.el,v 1.19 2009/03/28 13:04:10 zappo Exp $
 ;; Keywords: OO, chart, graph
 ;;                                                                          
 ;; This program is free software; you can redistribute it and/or modify
@@ -127,6 +127,9 @@ Useful if new Emacs is used on B&W display")
   (use-local-map chart-map)
   (setq major-mode 'chart-mode
 	mode-name "CHART")
+  (buffer-disable-undo)
+  (set (make-local-variable 'font-lock-global-modes) nil)
+  (font-lock-mode -1)
   (run-hooks 'chart-mode-hook)
   )
 

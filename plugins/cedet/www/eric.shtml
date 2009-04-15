@@ -1,8 +1,8 @@
 <title>Eric Ludlam</title>
 <!--#include file="pagestart.php"-->
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>Eric Ludlam:</font></h2></td>
-<td><font color=black>Who is this guy?</font></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">Eric Ludlam:</font></h2></td>
+<td><font color="black">Who is this guy?</font></td></tr>
 </table>
 
 <P>
@@ -11,7 +11,7 @@ Eric is the original author and current maintainer of the
 project and maintainer of these web pages.
 </p>
 
-<table align=right><tr><td>
+<table align="right"><tr><td>
 <a href="http://gnutalk.sourceforge.net">
 <img src="http://gnutalk.sourceforge.net/etalk.gif">
 </a></td></tr></table>
@@ -25,7 +25,7 @@ started hacking Emacs, and released
 in the early 90s.
 <br clear="both">
 
-<table align=right><tr><td>
+<table align="right"><tr><td>
 <a href="http://www.mathworks.com/matlabcentral/fileexchange/loadFile.do?objectType=file&objectId=764#">
 <img src="http://www.mathworks.com/matlabcentral/files/764/preview.jpg">
 </a></td></tr></table>
@@ -33,7 +33,7 @@ in the early 90s.
 These days, Eric works as a manager of software engineers on
 <a href="http://www.mathworks.com/products/matlab/description4.jsp">
 MATLAB Handle Graphics</a> at
-<a href=www.mathworks.com>The MathWorks</a>
+<a href="http://www.mathworks.com">The MathWorks</a>
 where, in spare moments, he maintains
 <a href="http://www.mathworks.com/matlabcentral/fileexchange/Files.jsp?type=category&id=19&fileId=104">
 matlab.el</a>, a major mode for writing and debugging Matlab M files.
@@ -46,7 +46,7 @@ MATLAB Central homepage for Eric</a> proclaims his loyalties.
 <a href="http://cedet.sourceforge.net">CEDET</a> Emacs project.
 <br clear="both">
 
-<table align=right><tr><td>
+<table align="right"><tr><td>
 <a href="http://www.siege-engine.com/TeamBios.shtml#EricLudlam">
 <img src="http://www.siege-engine.com/bios/scrap-023.jpg">
 </a></td></tr></table>
@@ -81,7 +81,7 @@ Eric's Catapult Bio page.</a>
 <img src="http://www.siege-engine.com/chunk06/DCP_3887.jpg">
 </a>
 </td></tr>
-<tr><td align=center>
+<tr><td align="center">
 Next time you are rude on the mailing list remember...<br>
 You are in range!
 </td></tr></table>

@@ -3,7 +3,7 @@
 ;;; Copyright (C) 2005, 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
-;; X-RCS: $Id: srecode-insert.el,v 1.28 2009/03/01 04:39:10 zappo Exp $
+;; X-RCS: $Id: srecode-insert.el,v 1.31 2009/04/04 03:09:20 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -37,15 +37,19 @@
 
 ;;; Code:
 
-(defcustom srecode-insert-with-fields-p nil
-  "Non-nil means to insert editable fields with the template.
-When this is nil, then questions are asked in the mini-buffer.
-When fields are used, areas are shown with overlays that can
-be TABbed between for quick inline-editing.
+(defcustom srecode-insert-ask-variable-method 'ask
+  "Determine how to ask for a dictionary value when inserting a template.
+Only the ASK style inserter will query the user for a value.
+Dictionary value references that ask begin with the ? character.
+Possible values are:
+  'ask   - Prompt in the minibuffer as the value is inserted.
+  'field - Use the dictionary macro name as the inserted value,
+           and place a field there.  Matched fields change together.
 
-NOTE: This feature does not yet work with XEmacs."
+NOTE: The field feature does not yet work with XEmacs."
   :group 'srecode
-  :type 'boolean)
+  :type '(choice (const :tag "Ask" ask)
+		 (cons :tag "Field" field)))
 
 (defvar srecode-insert-with-fields-in-progress nil
   "Non-nil means that we are actively inserting a template with fields.")
@@ -90,15 +94,19 @@ DICT-ENTRIES are additional dictionary values to add."
     ))
 
 ;;;###autoload
-(defun srecode-insert-fcn (template dictionary &optional stream)
-  "Insert TEMPLATE using DICTIONARY into STREAM."
+(defun srecode-insert-fcn (template dictionary &optional stream skipresolver)
+  "Insert TEMPLATE using DICTIONARY into STREAM.
+Optional SKIPRESOLVER means to avoid refreshing the tag list,
+or resolving any template arguments.  It is assumed the caller
+has set everything up already."
   ;; Perform the insertion.
   (let ((standard-output (or stream (current-buffer)))
 	(end-mark nil))
-    ;; Make sure the semantic tags are up to date.
-    (semantic-fetch-tags)
-    ;; Resolve the arguments
-    (srecode-resolve-arguments template dictionary)
+    (unless skipresolver
+      ;; Make sure the semantic tags are up to date.
+      (semantic-fetch-tags)
+      ;; Resolve the arguments
+      (srecode-resolve-arguments template dictionary))
     ;; Insert
     (if (bufferp standard-output)
 	;; If there is a buffer, turn off various hooks.  This will cause
@@ -146,24 +154,30 @@ Do not call this function yourself.  Instead use:
   `srecode-insert-fcn' - Insert with objects.
 This function handles the case from one of the above functions when
 the template is inserted into a buffer.  It looks
-at `srecode-insert-with-fields-p' to decide if unbound dictionary
+at `srecode-insert-ask-variable-method' to decide if unbound dictionary
 entries ask questions or insert editable fields.
 
 Buffer based features related to change hooks is handled one level up."
+  ;; This line prevents the field archive from being let bound
+  ;; while the field insert tool is loaded via autoloads during
+  ;; the insert.
+  (when (eq srecode-insert-ask-variable-method 'field)
+    (require 'srecode-fields))
+
   (let ((srecode-field-archive nil) ; Prevent field leaks during insert
 	(start (point)) ; Beginning of the region.
 	)
     ;; This sub-let scopes the 'in-progress' piece so we know
     ;; when to setup the end-template.
     (let ((srecode-insert-with-fields-in-progress
-	   (if srecode-insert-with-fields-p t nil))
+	   (if (eq srecode-insert-ask-variable-method 'field) t nil))
 	  )
       (srecode-insert-method template dictionary)
       )
     ;; If we are not in-progress, and we insert fields, then
     ;; create the end-template with fields editable area.
     (when (and (not srecode-insert-with-fields-in-progress)
-	       srecode-insert-with-fields-p ; Only if user asked
+	       (eq srecode-insert-ask-variable-method 'field) ; Only if user asked
 	       srecode-field-archive ; Only if there were fields created
 	       )
       (let ((reg

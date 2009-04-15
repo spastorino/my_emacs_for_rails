@@ -192,8 +192,16 @@ int otherFunction()
     // #10# ( "fBunnyPublic" "testAccess")
     ;
 
+  Jackalope// @1@ 6
+    ;
+  Jackalope;
+  Jackalope;
+  Jackalope;
+
   Bugalope.// -11-
     // #11# ( "fBugPublic" "testAccess")
+    ;
+  Bugalope// @2@ 3
     ;
 }
 

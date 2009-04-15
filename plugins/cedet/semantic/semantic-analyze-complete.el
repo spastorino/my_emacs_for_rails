@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: semantic-analyze-complete.el,v 1.13 2009/03/09 00:28:39 zappo Exp $
+;; X-RCS: $Id: semantic-analyze-complete.el,v 1.14 2009/04/01 04:40:39 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -215,7 +215,7 @@ Argument CONTEXT is an object specifying the locally derived context."
 	   ;; Ok, we now have a completion list based on the text we found
 	   ;; we want to complete on.  Now filter that stream against the
 	   ;; type we want to search for.
-	   ((string= dtname (semantic-analyze-tag-type-to-name (car origc)))
+	   ((string= dtname (semantic-analyze-type-to-name (semantic-tag-type (car origc))))
 	    (setq c (cons (car origc) c))
 	    )
 

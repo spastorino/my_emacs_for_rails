@@ -26,6 +26,26 @@ namespace Name1 {
 
   typedef Name2::stage1_Foo stage2_Foo;
 
+  typedef Name2::Foo decl_stage1_Foo;
+
 } // namespace Name1
 
 typedef Name1::stage2_Foo stage3_Foo;
+
+
+// Double namespace from Hannu Koivisto
+namespace a {
+  namespace b {
+
+    class Foo
+    {
+      struct Dum {
+        int diDum;
+      };
+
+    protected:
+      mutable a::b::Foo::Dum dumdum;
+    };
+
+  } // namespace b
+} // namespace a

@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: data-debug.el,v 1.16 2009/02/11 01:11:42 zappo Exp $
+;; X-RCS: $Id: data-debug.el,v 1.21 2009/03/28 12:46:14 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -442,6 +442,57 @@ PREBUTTONTEXT is some text between prefix and the stuff list button."
 	    "\n"))
   )
 
+;;; Widget
+;;
+;; Widgets have a long list of properties
+;;;###autoload
+(defun data-debug-insert-widget-properties (widget prefix)
+  "Insert the contents of WIDGET inserting PREFIX before each element."
+  (let ((type (car widget))
+	(rest (cdr widget)))
+    (while rest
+      (data-debug-insert-thing (car (cdr rest))
+			       prefix
+			       (concat
+				(dd-propertize (format "%s" (car rest))
+					       'face font-lock-comment-face)
+				" : "))
+      (setq rest (cdr (cdr rest))))
+    ))
+
+(defun data-debug-insert-widget-from-point (point)
+  "Insert the contents of the widget button at POINT."
+  (let ((widget (get-text-property point 'ddebug))
+	(indent (get-text-property point 'ddebug-indent))
+	start)
+    (end-of-line)
+    (setq start (point))
+    (forward-char 1)
+    (data-debug-insert-widget-properties
+     widget (concat (make-string indent ? ) "# "))
+    (goto-char start))
+  )
+
+(defun data-debug-insert-widget (widget prefix prebuttontext)
+  "Insert one WIDGET.
+A Symbol is a simple thing, but this provides some face and prefix rules.
+PREFIX is the text that preceeds the button.
+PREBUTTONTEXT is some text between prefix and the thing."
+  (let ((string (dd-propertize (format "#<WIDGET %s>" (car widget))
+			       'face 'font-lock-keyword-face)))
+    (insert (dd-propertize
+	     (concat prefix prebuttontext string)
+	     'ddebug        widget
+	     'ddebug-indent (length prefix)
+	     'ddebug-prefix prefix
+	     'help-echo
+	     (format "Widget\nType: %s\n# Properties: %d"
+		     (car widget)
+		     (/ (1- (length widget)) 2))
+	     'ddebug-function
+	     'data-debug-insert-widget-from-point)
+	    "\n")))
+
 ;;; list of stuff
 ;;
 ;; just a list.  random stuff inside.
@@ -500,6 +551,60 @@ PREBUTTONTEXT is some text between prefix and the stuff list button."
     (put-text-property start end 'help-echo tip)
     (put-text-property start end 'ddebug-function
 		       'data-debug-insert-stuff-list-from-point)
+    (insert "\n")
+    )
+  )
+
+;;; vector of stuff
+;;
+;; just a vector.  random stuff inside.
+;;;###autoload
+(defun data-debug-insert-stuff-vector (stuffvector prefix)
+  "Insert all the parts of STUFFVECTOR.
+PREFIX specifies what to insert at the start of each line."
+  (let ((idx 0))
+    (while (< idx (length stuffvector))
+      (data-debug-insert-thing
+       ;; Some vectors may put a value in the CDR
+       (aref stuffvector idx)
+       prefix
+       "")
+      (setq idx (1+ idx)))))
+
+(defun data-debug-insert-stuff-vector-from-point (point)
+  "Insert the stuff found at the stuff vector button at POINT."
+  (let ((stuffvector (get-text-property point 'ddebug))
+	(indent (get-text-property point 'ddebug-indent))
+	start
+	)
+    (end-of-line)
+    (setq start (point))
+    (forward-char 1)
+    (data-debug-insert-stuff-vector stuffvector
+				  (concat (make-string indent ? )
+					  "[ "))
+    (goto-char start)
+    ))
+
+(defun data-debug-insert-stuff-vector-button (stuffvector
+					    prefix
+					    prebuttontext)
+  "Insert a button representing STUFFVECTOR.
+PREFIX is the text that preceeds the button.
+PREBUTTONTEXT is some text between prefix and the stuff vector button."
+  (let* ((start (point))
+	 (end nil)
+	 (str (format "#<vector o' stuff: %d entries>" (length stuffvector)))
+	 (tip str))
+    (insert prefix prebuttontext str)
+    (setq end (point))
+    (put-text-property (- end (length str)) end 'face 'font-lock-variable-name-face)
+    (put-text-property start end 'ddebug stuffvector)
+    (put-text-property start end 'ddebug-indent (length prefix))
+    (put-text-property start end 'ddebug-prefix prefix)
+    (put-text-property start end 'help-echo tip)
+    (put-text-property start end 'ddebug-function
+		       'data-debug-insert-stuff-vector-from-point)
     (insert "\n")
     )
   )
@@ -581,14 +686,30 @@ PREBUTTONTEXT is some text between prefix and the thing."
 
 ;;; Lambda Expression
 (defun data-debug-insert-lambda-expression (thing prefix prebuttontext)
-  "Insert one symbol THING.
+  "Insert one lambda expression THING.
 A Symbol is a simple thing, but this provides some face and prefix rules.
 PREFIX is the text that preceeds the button.
 PREBUTTONTEXT is some text between prefix and the thing."
   (let ((txt (prin1-to-string thing)))
     (data-debug-insert-simple-thing
-     txt prefix prebuttontext 'font-lock-keyword))
+     txt prefix prebuttontext 'font-lock-keyword-face))
   )
+
+;;; nil thing
+(defun data-debug-insert-nil (thing prefix prebuttontext)
+  "Insert one simple THING with a face.
+PREFIX is the text that preceeds the button.
+PREBUTTONTEXT is some text between prefix and the thing.
+FACE is the face to use."
+  (insert prefix prebuttontext)
+  (insert ": ")
+  (let ((start (point))
+	(end nil))
+    (insert "nil")
+    (setq end (point))
+    (insert "\n" )
+    (put-text-property start end 'face 'font-lock-variable-name-face)
+    ))
 
 ;;; simple thing
 (defun data-debug-insert-simple-thing (thing prefix prebuttontext face)
@@ -605,7 +726,7 @@ FACE is the face to use."
     (put-text-property start end 'face face)
     ))
 
-;;; simple thing
+;;; custom thing
 (defun data-debug-insert-custom (thingstring prefix prebuttontext face)
   "Insert one simple THINGSTRING with a face.
 Use for simple items that need a custom insert.
@@ -624,6 +745,9 @@ FACE is the face to use."
 
 (defvar data-debug-thing-alist
   '(
+    ;; nil
+    (null . data-debug-insert-nil)
+
     ;; eieio object
     ((lambda (thing) (object-p thing)) . data-debug-insert-object-button)
 
@@ -678,9 +802,15 @@ FACE is the face to use."
 
     ;; Hash-table
     (hash-table-p . data-debug-insert-hash-table-button)
+
+    ;; Widgets
+    (widgetp . data-debug-insert-widget)
      
     ;; List of stuff
     (listp . data-debug-insert-stuff-list-button)
+
+    ;; Vector of stuff
+    (vectorp . data-debug-insert-stuff-vector-button)
     )
   "Alist of methods used to insert things into an Ddebug buffer.")
 
@@ -762,6 +892,8 @@ If PARENT is non-nil, it is somehow related as a parent to thing."
   (set-syntax-table data-debug-mode-syntax-table)
   (use-local-map data-debug-map)
   (run-hooks 'data-debug-hook)
+  (buffer-disable-undo)
+  (set (make-local-variable 'font-lock-global-modes) nil)
   (font-lock-mode -1)
   )
 

@@ -5,7 +5,7 @@
   include ("pagestart.php")
 ?>
 
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <H3>What is <b>CEDET</b> ?</h3>
 </td></tr></table>
 
@@ -34,7 +34,7 @@
 </p>
 
 
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <H3>CEDET: A User's View</h3>
 </td></tr></table>
 
@@ -42,7 +42,7 @@
    includes the following major user features:
 
 </p>
-<img src="img-gen/cedet-project-menu.png" align=right> 
+<img src="img-gen/cedet-project-menu.png" align="right"> 
 <h4>Projects</h4>
 
 <p>
@@ -60,12 +60,12 @@
    distribution package, you will be using a <b>CEDET</b> project.
 
 <p>The image to the right shows a part of the Project management menu.
-<br clear=all>
+<br clear="all">
 
 </p>
 <h4>Smart Completion</h4>
 
-<p><img src="img-gen/semantic-ia-complete-menu.png" border=1 align=right>
+<p><img src="img-gen/semantic-ia-complete-menu.png" border="1" align="right">
    Write code with <a href="intellisense.shtml">smart code completion</a>,
    sometimes known as "Intellisense".  The <b>CEDET</b> infrastructure for
    parsing and tagging files, and analyzing source code is one of the
@@ -76,12 +76,13 @@
 <p>Code completion is not restricted to just C or C++.  The completion
    engine is generic and works for any language that has a robust
    tagging parser written for <b>CEDET</b>, and a thin adaptation layer for
-   the language.
+   the language. See the <a href="languagesupport.shtml">language
+   support page</a> to see if your language is supported.
 
-<p>The image to the right shows smart completion configured to use
-   tooltips in a <b>CEDET</b> unit test source file going through a templated
-   smart pointer.
-<br clear=all>
+<p>The image to the right shows smart completion configured to use a
+   popup menu in a <b>CEDET</b> unit test source file going through a
+   templated smart pointer.
+<br clear="all">
 
 </p>
 <h4>Smart Help/Jump</h4>
@@ -97,11 +98,11 @@
   with the same name to find the one you want.  Using the <b>CEDET</b>
   smart jump feature takes you to the right definition the first time.
 
-<br clear=all>
+<br clear="all">
 
 <h4>Symbol References</h4>
 
-<p><img src="img-gen/symref.jpg" border=1 align=right>Analyze
+<p><img src="img-gen/symref.png" border="1" align="right">Analyze
    where <a href="symref.shtml">symbols are referenced</a> in your
    code base.  The Symbol References tool in <b>CEDET</b> can use
    external tools such as GNU Global, ID Utils, CScope, or even
@@ -113,11 +114,11 @@
 <p>The image to the right shows integration with GNU Global running in
    the GNU Global source code.
 
-<br clear=all>
+<br clear="all">
 
 <h4>Code Generation</h4>
 
-<p><img src="img-gen/srecode-fields.png" border=1 align=right>
+<p><img src="img-gen/srecode-fields.png" border="1" align="right">
    Generate code with a
    powerful <a href="codegen.shtml">language-independent template
    system</a>.  The template system in <b>CEDET</b> is a framework
@@ -134,15 +135,13 @@
    get/set methods for variables in a class.
 
 <p>The image to the right shows a simple class declaration inserted
-   with the experimental "fields" feature enabled.  Typing in one
-   field updates the others that match the same template dictionary
-   macro.
+   into an empty buffer.
 
-<br clear=all>
+<br clear="all">
 
 <h4>UML Diagrams</h4>
 
-<p><img src="img-gen/cogre-quick-class.jpg" border=1 align=right>
+<p><img src="img-gen/cogre-quick-class.jpg" border="1" align="right">
    Create UML diagrams either by hand, or automatically generate
    simple 3-tier class diagrams from your sources.  The diagrams are
    linked to your source-code, so you can browse quickly through you
@@ -153,13 +152,13 @@
    character support is enabled for the special characters.
     
 </p>
-<br clear=all>
+<br clear="all">
 
 <h4>Advanced Code Browsing</h4>
 
 <p><a href="http://ecb.sf.net">
-   <img src="http://ecb.sourceforge.net/screenshots/1.png" border=0
-	align=right width=50% height=50%></a> With the <b>CEDET</b>
+   <img src="img-gen/ecb.png" border="0"
+	align="right" width="500" height="335"></a> With the <b>CEDET</b>
    parsing backend, advanced code browsing tools
    like <a href="http://ecb.sf.net"><b>ECB</b></a> can be
    used.  <b>ECB</b>, or the <em>Emacs Code Browser</em> provides an
@@ -175,24 +174,20 @@
 <li> and many others
 </ul>
 
-<p>The <a href="http://ecb.sf.net"><b>ECB</b></a> image on the right
-   shows a sample of <b>ECB</b> from
-   the <a href="http://ecb.sourceforge.net/screenshots/index.html">ECB
-   screenshots area</a> on SourceForge.  <b>ECB</b> is NOT a part
+<p>The <a href="http://ecb.sf.net"><b>ECB</b></a> image on the right shows a sample
+   of <b>ECB</b> (<a href="img-gen/ecb.png">in full size</a>).  <b>ECB</b> is NOT a part
    of <b>CEDET</b>, and must be downloaded and installed seperately.
 
 </p>
-<br clear=all>
+<br clear="all">
 <h4>Install and Configure CEDET</h4>
 
-<p><img src="img-gen/setup.jpg" border=1
-   align=right><a href="setup.shtml">Setting up a tool as large and
-   complex as <b>CEDET</b></a> can seem daunting.  Fortunately, a
-   minimal <b>CEDET</b> initialization can take up only a couple lines
-   of code in your <tt>.emacs</tt> file.  If you are brave and enjoy
-   customizing your <b>CEDET</b> past this, then you are in luck as
-   there are more options and small features to play with than anyone
-   sane person might want.
+<p><img src="img-gen/setup.png" border="1" align="right"><a href="setup.shtml">Setting up a
+   tool as large and complex as <b>CEDET</b></a> can seem daunting.  Fortunately, a
+   minimal <b>CEDET</b> initialization can take up only a couple lines of code in
+   your <tt>.emacs</tt> file.  If you are brave and enjoy customizing your <b>CEDET</b>
+   past this, then you are in luck as there are more options and small features to play
+   with than anyone sane person might want.
 
 <P>Alex Ott has written a great article
    called <a href="http://xtalk.msk.su/~ott/en/writings/emacs-devenv/EmacsCedet.html">
@@ -205,7 +200,7 @@
    revision testing output.  Making sure all the package revisions
    needed are accurate is important, and fully automatic.
 
-<br clear=all>
+<br clear="all">
 
 <h4>Contribute to CEDET</h4>
 
@@ -217,7 +212,7 @@
    the <a href="http://lists.sourceforge.net/lists/listinfo/cedet-devel">cedet-devel</a>
    mailing list to learn more.
 
-<br clear=all>
+<br clear="all">
 <p>
 
 <?php

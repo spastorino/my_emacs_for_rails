@@ -1,10 +1,11 @@
 ;;; semantic-java.el --- Semantic functions for Java
 
+;;; Copyright (C) 2009 Eric M. Ludlam
 ;;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
 ;;;   David Ponce
 
 ;; Author: David Ponce <david@dponce.com>
-;; X-RCS: $Id: semantic-java.el,v 1.16 2008/09/03 03:17:19 zappo Exp $
+;; X-RCS: $Id: semantic-java.el,v 1.17 2009/03/20 03:06:57 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -233,6 +234,16 @@ Optional argument COLOR indicates that color should be mixed in."
 
 (semantic-alias-obsolete 'semantic-java-prototype-nonterminal
                          'semantic-format-prototype-tag-java-mode)
+
+;; Include Tag Name
+;;
+
+;; Thanks Bruce Stephens
+(define-mode-local-override semantic-tag-include-filename java-mode (tag)
+  "Return a suitable path for (some) Java imports"
+  (let ((name (semantic-tag-name tag)))
+    (concat (mapconcat 'identity (split-string name "\\.") "/") ".java")))
+
 
 ;; Documentation handler
 ;;

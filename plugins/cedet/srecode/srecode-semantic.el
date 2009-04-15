@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: srecode-semantic.el,v 1.13 2009/01/20 23:42:54 scymtym Exp $
+;; X-RCS: $Id: srecode-semantic.el,v 1.14 2009/04/04 03:09:42 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -409,7 +409,7 @@ as `function' will leave point where code might be inserted."
 	(setq entries (cdr (cdr entries)))))
 
     ;; Insert the template.
-    (let ((endpt (srecode-insert-fcn temp dict)))
+    (let ((endpt (srecode-insert-fcn temp dict nil t)))
 
       (run-hook-with-args 'point-insert-fcn tag)
       ;;(sit-for 1)

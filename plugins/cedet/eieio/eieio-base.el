@@ -1,10 +1,10 @@
 ;;; eieio-base.el --- Base classes for EIEIO.
 
 ;;;
-;; Copyright (C) 2000, 2001, 2002, 2004, 2005, 2007, 2008 Eric M. Ludlam
+;; Copyright (C) 2000, 2001, 2002, 2004, 2005, 2007, 2008, 2009 Eric M. Ludlam
 ;;
 ;; Author: <zappo@gnu.org>
-;; RCS: $Id: eieio-base.el,v 1.26 2008/09/17 14:23:04 zappo Exp $
+;; RCS: $Id: eieio-base.el,v 1.27 2009/04/07 00:31:40 zappo Exp $
 ;; Keywords: OO, lisp
 ;;
 ;; This program is free software; you can redistribute it and/or modify
@@ -210,20 +210,25 @@ a file.  Optional argument NAME specifies a default file name."
 
 (defun eieio-persistent-read (filename)
   "Read a persistent object from FILENAME, and return it."
-  (save-excursion
-    (let ((ret nil))
-      (set-buffer (get-buffer-create " *tmp eieio read*"))
-      (unwind-protect
-	  (progn
+  (let ((ret nil)
+	(buffstr nil))
+    (unwind-protect
+	(progn
+	  (save-excursion
+	    (set-buffer (get-buffer-create " *tmp eieio read*"))
 	    (insert-file-contents filename nil nil nil t)
 	    (goto-char (point-min))
-	    (setq ret (read (current-buffer)))
-	    (if (not (child-of-class-p (car ret) 'eieio-persistent))
-		(error "Corrupt object on disk"))
-	    (setq ret (eval ret))
-	    (oset ret file filename))
-	(kill-buffer " *tmp eieio read*"))
-      ret)))
+	    (setq buffstr (buffer-string)))
+	  ;; Do the read in the buffer the read was initialized from
+	  ;; so that any initialize-instance calls that depend on
+	  ;; the current buffer will work.
+	  (setq ret (read buffstr))
+	  (if (not (child-of-class-p (car ret) 'eieio-persistent))
+	      (error "Corrupt object on disk"))
+	  (setq ret (eval ret))
+	  (oset ret file filename))
+      (kill-buffer " *tmp eieio read*"))
+    ret))
 
 (defmethod object-write ((this eieio-persistent) &optional comment)
   "Write persistent object THIS out to the current stream.

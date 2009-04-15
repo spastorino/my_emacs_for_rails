@@ -2,11 +2,11 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>Symbol References</font></h2></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">Symbol References</font></h2></td></tr>
 </table>
 
-<p><img src="img-gen/symref.jpg" border=1 align=right> 
+<p><img src="img-gen/symref.png" border="1" align="right"> 
    
    <b>CEDET</b> can Analyze where symbols are referenced in your code
    base.  The Symbol References tool in <b>CEDET</b> can use external
@@ -18,9 +18,9 @@
 <p>The image to the right shows integration with GNU Global running in
    the GNU Global source code.
 
-<br clear=all>
+<br clear="all">
 <p>
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h3>How it works</h3>
 </td></tr></table>
 

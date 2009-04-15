@@ -9,7 +9,6 @@
 /semantic-bovine.el/1.14/Sun Sep  2 17:07:30 2007//
 /semantic-el.el/1.50/Sat Jan 10 00:13:51 2009//
 /semantic-erlang.el/1.7/Sat Jan 24 04:05:54 2009//
-/semantic-java.el/1.16/Wed Sep  3 03:17:19 2008//
 /semantic-make.el/1.21/Tue Apr  1 01:51:45 2008//
 /semantic-scm.el/1.15/Sat Jan 24 03:52:52 2009//
 /semantic-skel.el/1.8/Sat Jan 24 03:53:52 2009//
@@ -17,7 +16,8 @@
 /skeleton.by/1.5/Fri Sep 30 20:22:41 2005//
 /.cvsignore/1.2/Mon Mar  9 02:15:15 2009//
 /Makefile/1.33/Tue Mar 10 20:51:57 2009//
-/c.by/1.54/Tue Mar 10 20:51:57 2009//
-/semantic-c.el/1.106/Tue Mar 10 20:51:57 2009//
 /semantic-gcc.el/1.12/Tue Mar 10 20:51:57 2009//
+/c.by/1.56/Wed Apr 15 19:02:48 2009//
+/semantic-c.el/1.115/Wed Apr 15 19:02:48 2009//
+/semantic-java.el/1.17/Wed Apr 15 19:02:48 2009//
 D

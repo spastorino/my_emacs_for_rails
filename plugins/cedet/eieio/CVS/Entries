@@ -3,7 +3,6 @@
 /NEWS/1.2/Thu Jun 26 02:20:52 2008//
 /Project.ede/1.30/Thu Jan 29 03:06:11 2009//
 /call-tree.el/1.6/Fri Sep 30 20:17:37 2005//
-/chart.el/1.18/Fri Oct 10 20:57:38 2008//
 /d-config.texi/1.3/Tue Jan 21 01:12:48 1997//
 /d-dataobj.texi/1.2/Mon Nov 18 00:00:46 1996//
 /d-widget.texi/1.3/Tue Jan 21 01:11:31 1997//
@@ -17,9 +16,7 @@
 /dlg-config.el/1.13/Wed Jan 29 02:19:39 1997//
 /e-config.el/1.10/Sun Jan 19 22:08:28 1997//
 /ecfg-menu.el/1.3/Sat Jan 18 16:51:22 1997//
-/eieio-base.el/1.26/Wed Sep 17 14:23:04 2008//
 /eieio-comp.el/1.14/Mon Sep 29 00:18:57 2008//
-/eieio-custom.el/1.27/Fri Jan  9 22:51:37 2009//
 /eieio-datadebug.el/1.5/Tue Jan 20 03:45:50 2009//
 /eieio-doc.el/1.20/Fri Sep 30 20:18:01 2005//
 /eieio-load.el/1.2/Fri Sep 30 20:18:08 2005//
@@ -29,7 +26,6 @@
 /eieio-test-methodinvoke.el/1.8/Mon Sep 15 00:21:45 2008//
 /eieio-tests.el/1.46/Sun Feb  1 20:54:40 2009//
 /eieio-xml.el/1.3/Mon Sep 29 00:21:05 2008//
-/eieio.el/1.183/Sun Feb  1 20:26:44 2009//
 /eieio.texi/1.62/Wed Jan 14 00:00:20 2009//
 /eieiocomp.el/1.3/Fri Sep 30 20:17:50 2005//
 /linemark.el/1.17/Fri Jan  9 22:53:20 2009//
@@ -40,4 +36,8 @@
 /widget-i.el/1.20/Sat Mar  1 16:38:10 1997//
 /.cvsignore/1.2/Mon Mar  9 02:12:15 2009//
 /Makefile/1.25/Tue Mar 10 20:51:57 2009//
+/chart.el/1.19/Wed Apr 15 19:02:48 2009//
+/eieio-base.el/1.27/Wed Apr 15 19:02:48 2009//
+/eieio-custom.el/1.28/Wed Apr 15 19:02:48 2009//
+/eieio.el/1.184/Wed Apr 15 19:02:48 2009//
 D

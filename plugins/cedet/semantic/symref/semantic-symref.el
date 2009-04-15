@@ -353,7 +353,10 @@ already."
 	       (t
 		(let ((kbuff 
 		       (if open-buffers
-			   (find-file-noselect file t)
+			   ;; Even if we keep the buffers open, don't
+			   ;; let EDE ask lots of questions.
+			   (let ((ede-auto-add-method 'never))
+			     (find-file-noselect file t))
 			 ;; When not keeping the buffers open, then
 			 ;; don't setup all the fancy froo-froo features
 			 ;; either.

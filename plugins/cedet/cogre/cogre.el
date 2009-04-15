@@ -4,9 +4,9 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: graph, oop, extensions, outlines
-;; X-RCS: $Id: cogre.el,v 1.24 2009/01/29 02:56:13 zappo Exp $
+;; X-RCS: $Id: cogre.el,v 1.43 2009/04/11 12:54:13 zappo Exp $
 
-(defvar cogre-version "0.7"
+(defvar cogre-version "0.8"
   "Current version of Cogre.")
 
 ;; This file is not part of GNU Emacs.
@@ -59,15 +59,59 @@
   :group 'cogre
   :type 'number)
 
+;; Export Variables
+(defvar cogre-node-rebuild-method nil
+  "A method used when exporting a graph to some other format.")
+
+;; Compatibility
 (defun cogre-noninteractive ()
   "Return non-nil if running non-interactively."
   (if (featurep 'xemacs)
       (noninteractive)
     noninteractive))
 
-;;; Classes
+;;; PEER Classes
+;;
+;; Each cogre element, and the graph is an abstract representation of
+;; something.  The peer would then be an object that handles a
+;; concrete represenatation of something else.  
+;;
+;; For example, a `note' node might be linked to a comment in some
+;; code.  Updating the node should update the file or updating the
+;; file should update the node.
+;;
+;; As the different types of nodes might be linked to different kinds
+;; of things, an abstract handler for peers is needed so COGRE can do
+;; many kinds of jobs.
+
+(defclass cogre-element-peer ()
+  (
+   )
+  "COGRE Elements, such as nodes an links all have a peer.
+While graph elements can have a nil peer, if there is one, it
+must be a subclass of this class.
+
+The peer provides services to the graph that allows that graph
+to be linked to other items in the system defined by the peers.
+Subclasses should define slots to store their data."
+  :abstract t)
+
+(defmethod cogre-peer-update-from-source ((peer cogre-element-peer) element)
+  "Update the PEER object, and ELEMENT from environment."
+  nil)
+
+(defmethod cogre-peer-update-from-element ((peer cogre-element-peer) element)
+  "Update the PEER object, from the ELEMENT data, changing the environment."
+  nil)
+
+(defmethod cogre-peer-source-file ((peer cogre-element-peer))
+  "Does this peer have a source file?"
+  nil)
+
+;;; GRAPH Classes
+;;
 ;;;###autoload
-(defclass cogre-graph (eieio-persistent)
+(defclass cogre-base-graph (eieio-persistent)
   ((extension :initform ".cgr") ;; Override the default
    (name :initarg :name
 	 :initform "NewGraph"
@@ -76,12 +120,42 @@
 	 :documentation
 	 "The name of this graph.
 The save file name is based on this name.")
-   (buffer :initarg :buffer
-	   :initform nil
+   (buffer :initform nil
 	   :type (or null buffer)
 	   :documentation
 	   "When this graph is active, this is the buffer the graph is
 displayed in.")
+   (peer :initarg :peer
+	 :initform nil
+	 :type (or null cogre-element-peer)
+	 :documentation
+	 "The peer for this graph.")
+   (major-mode :initarg :major-mode
+	       :initform fundamental-mode
+	       :type symbol
+	       :custom (choice (const emacs-lisp-mode)
+			       (const c++-mode)
+			       (const c-mode)	
+			       (const java-mode)
+			       ;; Any other useful modes?
+			       (symbol)
+			       )
+	       :documentation
+	       "Mode used for any mode-specific function calls.
+Used when calling some mode-local functions.")
+   (detail :initarg :detail
+	   :initform 0
+	   :type number
+	   :custom (choice (const :tag "Max Detail"      0 )
+			   (const :tag "Less Detail"     1 )
+			   (const :tag "Not Much Detail" 2 )
+			   (const :tag "No Detail"       3 ))
+	   :documentation
+	   "A flag for items being rendered on how much detail to show.
+A 0 means to show everything.
+A 1 means to show a little bit less.
+A 2 means to show less than that.
+A 3 means just the package and name.")
    (elements :initarg :elements
 	     :initform nil
 	     :type list
@@ -91,6 +165,12 @@ displayed in.")
   "A Connected Graph.
 a connected graph contains a series of nodes and links which are
 rendered in a buffer, or serialized to disk.")
+
+(defmethod initialize-instance ((G cogre-base-graph) fields)
+  "Initialize ELT's name before the main FIELDS are initialized."
+  (call-next-method)
+  (oset G buffer (current-buffer))
+  )
 
 ;;;###autoload
 (defclass cogre-graph-element (eieio-named)
@@ -107,18 +187,14 @@ Elements must be erased before any graphical fields are changed.")
      "The object-name of this node.
 Node object-names must be unique within the current graph so that save
 references in links can be restored.")
-   (menu :initform nil
-	 :type list
-	 :allocation :class
+   (peer :initarg :peer
+	 :initform nil
+	 :type (or null cogre-element-peer)
 	 :documentation
-	 "List of menu items in Easymenu format of changeable things.
-Any given element may have several entries of details which are
-modifiable.
-Examples could be Add/Removing/Renaming slots, or changing linkages."
-	 )
+	 "The peer for this graph.")
    )
   "A Graph Element.
-Graph elements are anything that is drawn into a `cogre-graph'.
+Graph elements are anything that is drawn into a `cogre-base-graph'.
 Graph elements have a method for marking themselves dirty."
   :abstract t)
 
@@ -215,6 +291,17 @@ as an intermediate step.  Some links have text describing what they
 do, and most links have special markers on one end or another, such as
 arrows or circles.")
 
+;;; Links
+;;
+;;;###autoload
+(defclass cogre-arrow (cogre-link)
+  ((end-glyph :initform [ (" ^ " "/|\\")
+			  ("\\|/" " V ")
+			  ("<")
+			  (">") ])
+   )
+  "This type of link is a simple arrow.")
+
 ;;; Connecte Graph variables
 ;;
 (defvar cogre-loading-from-file nil
@@ -233,14 +320,14 @@ arrows or circles.")
 ;;
 ;;;###autoload
 (defun cogre (name &optional graph-class)
-  "Create a new graph with the Connected Graph Editor.
+  "Create a new graph not associated with a buffer.
 The new graph will be given NAME.  See `cogre-mode' for details.
 Optional argument GRAPH-CLASS indicates the type of graph to create."
   (interactive "sGraph Name: ")
+  (switch-to-buffer (get-buffer-create (concat "*Graph " name "*")))
   (let ((newgraph (if graph-class
 		      (funcall graph-class name :name name)
-		    (cogre-graph name :name name))))
-    (switch-to-buffer (get-buffer-create (concat "*Graph " name "*")))
+		    (cogre-base-graph name :name name))))
     (setq cogre-graph newgraph)
     ;;(toggle-read-only 1)
     (require 'cogre-mode)
@@ -253,6 +340,22 @@ Optional argument GRAPH-CLASS indicates the type of graph to create."
 ;; of node/link, or whatever.  By using these functions in `interactive'
 ;; commands, a set of defaults can be specified which are used
 ;; continuously.
+(defun cogre-last-event-element-type (class)
+  "Return a symbol representing the last event or command.
+Return nil if that event is not related to some cogre element
+that is a subclass of CLASS."
+  (let* ((event last-command-event)
+	 (ksym (if (symbolp event)
+		   (downcase (symbol-name event))
+		 "unknown"))
+	 (name (concat "cogre-" ksym))
+	 (sym (intern-soft name)))
+    (if (and sym (child-of-class-p sym class))
+	;; The input key defines the type of node to use this time.
+	sym
+      ;; No match
+      nil)))
+
 (defvar cogre-node-history nil
   "The history for reading in node class names.")
 
@@ -267,19 +370,34 @@ If run interactively, query for a new node to make the default.
 If called non-interactivly there is no default, query for one.
 If NODE is supplied, use that.
 If there is a PREFIX argument, then force a query for one."
-  (interactive (list (eieio-read-subclass "Node Type: "
-					  cogre-node
-					  'cogre-node-history
-					  t)
-		     current-prefix-arg))
+  (interactive (list
+		
+		;; Check the last key.  Fake keys from toolbar/menu-bar can
+		;; force our hand for some node types.
+		(or (cogre-last-event-element-type cogre-node)
+		    ;; ELSE, read it in.
+		    (eieio-read-subclass "Node Type: "
+					 cogre-node
+					 'cogre-node-history
+					 t))
+		;; The prefix
+		current-prefix-arg))
+
+  (when (and (not (interactive-p)) (not node) (symbolp last-command-event))
+    ;; Check the last key.  Fake keys from toolbar/menu-bar can
+    ;; force our hand for some node types.
+    (let ((sym (cogre-last-event-element-type cogre-node)))
+      ;; The input key defines the type of node to use this time.
+      (when sym (setq node sym))))
+
   ;; Save whatever is being set.
   (if node (setq cogre-default-node node))
   ;; If we are not interactive, then check the prefix.
   (if (or prefix (not cogre-default-node))
       (setq cogre-default-node (eieio-read-subclass "Node Type: "
-				      cogre-node
-				      'cogre-node-history
-				      t)))
+						    cogre-node
+						    'cogre-node-history
+						    t)))
   ;; Return the cached node.
   cogre-default-node
   )
@@ -298,11 +416,23 @@ If run interactively, query for a new link to make the default.
 If called non-interactivly there is no default, query for one.
 If LINK is supplied, use that.
 If there is a PREFIX argument, then force a query for one."
-  (interactive (list (eieio-read-subclass "Link Type: "
-					  cogre-link
-					  'cogre-link-history
-					  t)
-		     current-prefix-arg))
+  (interactive (list
+		;; Check the last key.  Fake keys from toolbar/menu-bar can
+		;; force our hand for some link types.
+		(or (cogre-last-event-element-type cogre-link)
+		    ;; Else, read it in.
+		    (eieio-read-subclass "Link Type: "
+					 cogre-link
+					 'cogre-link-history
+					 t))
+		current-prefix-arg))
+
+  (when (and (not (interactive-p)) (not link) (symbolp last-command-event))
+    ;; Check the last key.  Fake keys from toolbar/menu-bar can
+    ;; force our hand for some link types.
+    (let ((sym (cogre-last-event-element-type cogre-link)))
+      (when sym (setq link sym))))
+
   ;; Save whatever is being set.
   (if link (setq cogre-default-link link))
   ;; If we are not interactive, then check the prefix.
@@ -324,9 +454,10 @@ If there is a PREFIX argument, then force a query for one."
 
 ;;; Utilities
 ;;
-(defun cogre-map-elements (function)
-  "Map FUNCTION onto all current graph elements."
-  (cogre-map-graph-elements cogre-graph function))
+(defun cogre-map-elements (function &optional graph)
+  "Map FUNCTION onto all GRAPH elements.
+If GRAPH is not supplied, use the current graph."
+  (cogre-map-graph-elements (or graph cogre-graph) function))
 
 (defun cogre-map-graph-elements (graph function)
   "For elements of GRAPH, call FUNCTION.
@@ -334,6 +465,20 @@ Function must take one argument, which is the element.
 This function can also be a method.
 Returns a list of return values from each call of function."
   (mapcar function (oref graph elements)))
+
+;;; Peer handling
+;;
+(defun cogre-update-graph-from-peers (graph)
+  "Update GRAPH, and all elements from any source peers."
+  ;; First, update the graph...
+  (let ((peer (oref graph peer)))
+    (when peer (cogre-peer-update-from-source peer graph)))
+  ;; Now update all the elements.
+  (cogre-map-graph-elements
+   graph (lambda (E)
+	   (let ((peer (oref E peer)))
+	     (when peer (cogre-peer-update-from-source peer E)))))
+  )
 
 ;;; State Management
 ;;
@@ -356,26 +501,43 @@ customizing the object, or performing some complex task."
   (cogre-set-dirty element t)
   (save-excursion
     (set-buffer cogre-custom-originating-graph-buffer)
-    (cogre-render-buffer cogre-graph))
+    (cogre-render-buffer cogre-graph t))
   )
 
-(defmethod cogre-add-element ((graph cogre-graph) elt)
+(defmethod eieio-done-customizing ((g cogre-base-graph))
+  "Finish customizing a graph element."
+  (save-excursion
+    (set-buffer cogre-custom-originating-graph-buffer)
+    (cogre-render-buffer g t))
+  )
+
+(defmethod cogre-augment-element-menu ((node cogre-graph-element) menu)
+  "For NODE, augment the current element MENU.
+Return the modified element."
+  nil)
+
+(defmethod cogre-add-element ((graph cogre-base-graph) elt)
   "Add to GRAPH a new element ELT."
   (object-add-to-list graph 'elements elt t))
 
-(defmethod cogre-delete-element ((graph cogre-graph) elt)
+(defmethod cogre-delete-element ((graph cogre-base-graph) elt)
   "Delete from GRAPH the element ELT."
   (object-remove-from-list graph 'elements elt))
 
-(defmethod cogre-unique-name ((graph cogre-graph) name)
+(defun cogre-find-node-by-name (name &optional graph)
+  "Find a cogre node by NAME in GRAPH.
+If GRAPH is nil, use the current graph."
+  (object-assoc name :object-name (oref (or graph cogre-graph) elements)))
+
+(defmethod cogre-unique-name ((graph cogre-base-graph) name)
   "Within GRAPH, make NAME unique."
   (let ((newname name)
-	(obj (object-assoc name :object-name (oref graph elements)))
+	(obj (cogre-find-node-by-name name graph))
 	(inc 1))
     (while obj
       (setq newname (concat name (int-to-string inc)))
       (setq inc (1+ inc))
-      (setq obj (object-assoc newname :object-name (oref graph elements))))
+      (setq obj (cogre-find-node-by-name newname graph)))
     newname))
 
 (defmethod cogre-set-dirty ((element cogre-graph-element) dirty-state)
@@ -406,21 +568,25 @@ Argument FIELDS are ignored."
 
 ;;; Buffer Rendering
 ;;
-(defmethod cogre-render-buffer ((graph cogre-graph) &optional erase)
+(defmethod cogre-render-buffer ((graph cogre-base-graph) &optional erase)
   "Render the current graph GRAPH.
 If optional argument ERASE is non-nil, then erase the buffer,
 and render everything.  If ERASE is nil, then only redraw items
 with dirty flags set."
   (let ((inhibit-read-only t)
+	(inhibit-modification-hooks t)
+	(inhibit-point-motion-hooks t)
 	(x (current-column))
 	(y (1- (picture-current-line)))
-	(inhibit-point-motion-hooks t))
+	(oldmod (buffer-modified-p (current-buffer)))
+	)
     (save-excursion
       (if erase
 	  (progn
 	    (erase-buffer)
-	    (cogre-map-elements (lambda (e) (cogre-set-dirty e t)))))
-      (cogre-map-elements 'cogre-render))
+	    (cogre-map-elements (lambda (e) (cogre-set-dirty e t)) graph)))
+      (cogre-map-elements 'cogre-render graph))
+    (unless oldmod (set-buffer-modified-p nil))
     (picture-goto-coordinate x y)))
 
 (defmethod cogre-render ((element cogre-graph-element))
@@ -450,9 +616,7 @@ Reverses `cogre-graph-pre-serialize'."
 (defmethod cogre-entered ((element cogre-graph-element) start end)
   "Method called when the cursor enters ELEMENT.
 START and END cover the region with the property."
-  (when (not (cogre-noninteractive))
-    (message "%s" (object-name element)))
-  )
+  nil)
 
 (defmethod cogre-left ((element cogre-graph-element) start end)
   "Method called when the cursor exits ELEMENT.
@@ -492,11 +656,25 @@ START and END cover the region with the property."
   (cogre-node-rectangle node)
   (with-slots (position rectangle) node
     (picture-goto-coordinate (aref position 0) (aref position 1))
-    (picture-insert-rectangle rectangle nil)
+    (cogre-picture-insert-rectangle rectangle)
     )
   (call-next-method))
 
 (defmethod cogre-node-rebuild ((node cogre-node))
+  "Create a new value for `:rectangle' in NODE.
+The `:rectangle' slot is inserted with rectangle commands.
+A Rectangle is basically a list of equal length strings.
+Those strings must have the proper face values on them.
+Always make the width 2 greater than the widest string.
+
+This function calls `cogre-node-rebuild-default', unless the
+current output device has been changed with by
+setting``cogre-node-rebuild-method'."
+  (if cogre-node-rebuild-method
+      (funcall cogre-node-rebuild-method node)
+    (cogre-node-rebuild-default node)))
+
+(defmethod cogre-node-rebuild-default ((node cogre-node))
   "Create a new value for `:rectangle' in NODE.
 The `:rectangle' slot is inserted with rectangle commands.
 A Rectangle is basically a list of equal length strings.
@@ -520,11 +698,12 @@ Always make the width 2 greater than the widest string."
 			node width align)
 		       rect)
 	    top-lines (1- top-lines)))
-    (setq title (nreverse title))
     (while title
       (let ((face (cond ((and first (null (cdr title)))
+			 (setq first nil)
 			 '(cogre-box-first-face cogre-box-last-face))
 			(first
+			 (setq first nil)
 			 'cogre-box-first-face)
 			((and (null (cdr title))
 			      (not (and (null slots)
@@ -588,18 +767,23 @@ Each list will be prefixed with a line before it."
 
 (defmethod cogre-node-widest-string ((node cogre-node))
   "Return the widest string in NODE."
-  (let ((namel (length (oref node object-name)))
+  (let ((names (cogre-node-title node))
 	(slots (cogre-node-slots node))
-	(names nil)
+	(str nil)
 	(ws 0))
+    (while names
+      (setq str (car names))
+      (when (> (length str) ws)
+	(setq ws (length str)))
+      (setq names (cdr names)))
     (while slots
-      (setq names (car slots))
-      (while names
-	(if (> (length (car names)) ws)
-	    (setq ws (length (car names))))
-	(setq names (cdr names)))
+      (setq str (car slots))
+      (while str
+	(if (> (length (car str)) ws)
+	    (setq ws (length (car str))))
+	(setq str (cdr str)))
       (setq slots (cdr slots)))
-    (if (> ws namel) ws namel)))
+    ws))
     
 
 (defun cogre-node-horizontal-distance (node1 node2)
@@ -784,17 +968,19 @@ Reverses `cogre-graph-pre-serialize'."
 	  ;; Ok, splat the glyph
 	  (if cogre-erase-mode
 	      (progn
-		(cogre-erase-rectangle x1 y1
-				       (length (car startrect))
-				       (length startrect))
-		(cogre-erase-rectangle x2 y2
-				       (length (car endrect))
-				       (length endrect))
+		(when startrect
+		  (cogre-erase-rectangle x1 y1
+					 (length (car startrect))
+					 (1- (length startrect))))
+		(when endrect
+		  (cogre-erase-rectangle x2 y2
+					 (length (car endrect))
+					 (1- (length endrect))))
 		)
 	    (picture-goto-coordinate x1 y1)
-	    (picture-insert-rectangle startrect nil)
+	    (cogre-picture-insert-rectangle startrect)
 	    (picture-goto-coordinate x2 y2)
-	    (picture-insert-rectangle endrect nil)
+	    (cogre-picture-insert-rectangle endrect)
 	    )
 	  ))))
   (call-next-method))
@@ -802,44 +988,36 @@ Reverses `cogre-graph-pre-serialize'."
 ;;; Files
 ;;
 ;; Save and restore graphs to disk
-(defun cogre-save-graph-as (file)
-  "Save the current graph into FILE.
-This can change the current file assocaited with the current graph."
-  (interactive "fFile: ")
-  (oset cogre-graph file file)
-  (cogre-save cogre-graph))
 
-(defun cogre-save-graph (file)
-  "Save the current graph to FILE."
-  (interactive (list
-		(eieio-persistent-save-interactive cogre-graph
-						   "Save In: "
-						   (oref cogre-graph name))))
-  (cogre-save cogre-graph))
-
-(defmethod cogre-save ((graph cogre-graph))
+(defmethod cogre-save ((graph cogre-base-graph))
   "Save the current graph."
-  (cogre-map-elements 'cogre-element-pre-serialize)
+  (cogre-map-elements 'cogre-element-pre-serialize graph)
   (unwind-protect
-      (eieio-persistent-save cogre-graph)
-    (cogre-map-elements 'cogre-element-post-serialize))
-  )
-
-;;;###autoload
-(defun cogre-load-graph (file)
-  "Load a graph from FILE into a new graph buffer."
-  (interactive "fFile: ")
-  (let ((graph nil)
-	(cogre-loading-from-file t))
-    (setq graph (eieio-persistent-read file))
-    (oset graph file file)
-    (cogre (oref graph name))
-    (setq cogre-graph graph)
-    (cogre-map-elements 'cogre-element-post-serialize)
-    (cogre-render-buffer graph t)))
+      (eieio-persistent-save graph)
+    (cogre-map-elements 'cogre-element-post-serialize graph))
+  t)
 
 ;;; Low Level Rendering and status
 ;;
+(defun cogre-string-merge-faces (start end face string)
+  "Merge in new face with pre-existing faces on the string.
+START and END are positions to apply FACE in STRING."
+  (alter-text-property start end 'face
+		       (lambda (current-face)
+			 (let ((cf
+				(cond ((facep current-face)
+				       (list current-face))
+				      ((listp current-face)
+				       current-face)
+				      (t nil)))
+			       (nf
+				(cond ((facep face)
+				       (list face))
+				      ((listp face)
+				       face)
+				      (t nil))))
+			   (append cf nf)))
+		       string))
 
 (defun cogre-string-with-face (string face element &optional length align)
   "Using text STRING, apply FACE to that text.
@@ -879,22 +1057,8 @@ Return the new string."
 	))
   ;; Add our faces on.  Preserve previously applied faces.
   (when face
-    (alter-text-property 0 (length string) 'face
-			 (lambda (current-face)
-			   (let ((cf
-				  (cond ((facep current-face)
-					 (list current-face))
-					((listp current-face)
-					 current-face)
-					(t nil)))
-				 (nf
-				  (cond ((facep face)
-					 (list face))
-					((listp face)
-					 face)
-					(t nil))))
-			     (append cf nf)))
-			 string))
+    (cogre-string-merge-faces  0 (length string) face string)
+    )
   ;; Add on other properties.
   (add-text-properties 0 (length string)
 		       (list 'rear-nonsticky t

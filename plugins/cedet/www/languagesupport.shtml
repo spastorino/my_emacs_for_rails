@@ -2,8 +2,8 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>CEDET Supported Language</font></h2></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">CEDET Supported Languages</font></h2></td></tr>
 </table>
 
 <p>There are many levels of "support" that <b>CEDET</b> can give a
@@ -11,11 +11,18 @@
    support</a> page.  This table describes the current level of
    editing support for each of the languages.
 </p>
-<table cellspacing=1 border=1 class=DATA><tr class=DATA>
+
+<p>Slots in this table where a "?" appears indicates that it might
+   work, but no one has tried it.  If you use the listed langauge, try
+   out the feature
+   and <a href="http://lists.sourceforge.net/lists/listinfo/cedet-devel">let
+   me know</a>.
+</p>
+<table cellspacing="1" border="1" class="DATA"><tr class="DATA">
     <th>Langauge</th>
     <th>Grammar</th>
     <th>Basic<br>Overrides</th>
-    <th>EDE Support</th>
+    <th>Project Support</th>
     <th>Context Parsing</th>
     <th>Smart completion</th>
     <th>Symbol References</th>
@@ -29,7 +36,7 @@
     <td>Yes</td>
     <td>Yes</td>
     <td>With Tests</td>
-</tr><tr class=EVEN>
+</tr><tr class="EVEN">
     <td>Java</td>
     <td>LALR - Excellent</td>
     <td>Formatting</td>
@@ -47,7 +54,7 @@
     <td>No</td>
     <td>Grep only</td>
     <td>With Tests</td>
-</tr><tr class=EVEN>
+</tr><tr class="EVEN">
     <td>Make</td>
     <td>LL</td>
     <td>Basic</td>
@@ -55,7 +62,7 @@
     <td>-</td>
     <td>Custom/Simple</td>
     <td>?</td>
-    <td>EDE Generates makefiles</td>
+    <td>Generate makefiles</td>
 </tr><tr>
     <td>Scheme</td>
     <td>LL</td>
@@ -65,7 +72,7 @@
     <td>-</td>
     <td>?</td>
     <td>-</td>
-</tr><tr class=EVEN>
+</tr><tr class="EVEN">
     <td>Erlang</td>
     <td>LL</td>
     <td>-</td>
@@ -83,7 +90,7 @@
     <td>N/A</td>
     <td>?</td>
     <td>With Tests</td>
-</tr><tr class=EVEN>
+</tr><tr class="EVEN">
     <td>HTML</td>
     <td>Regexp/Custom</td>
     <td>No</td>
@@ -101,7 +108,7 @@
     <td>Custom/Simple</td>
     <td>?</td>
     <td>Some</td>
-</tr><tr class=EVEN>
+</tr><tr class="EVEN">
     <td>Awk</td>
     <td>LALR</td>
     <td>-</td>
@@ -119,7 +126,7 @@
     <td>-</td>
     <td>-</td>
     <td>-</td>
-</tr><tr class=EVEN>
+</tr><tr class="EVEN">
     <td>Javascript</td>
     <td>LALR</td>
     <td>-</td>
@@ -137,7 +144,7 @@
     <td>?</td>
     <td>?</td>
     <td>-</td>
-</tr><tr class=EVEN>
+</tr><tr class="EVEN">
     <td>C#</td>
     <td>LALR</td>
     <td>Yes</td>
@@ -155,7 +162,7 @@
     <td>?</td>
     <td>?</td>
     <td>-</td>
-</tr><tr class=EVEN>
+</tr><tr class="EVEN">
     <td>Ruby</td>
     <td>LALR</td>
     <td>-</td>
@@ -173,7 +180,7 @@
     <td>-</td>
     <td>-</td>
     <td>Yes</td>
-</tr><tr class=EVEN>
+</tr><tr class="EVEN">
     <td>Born Shell</td>
     <td>CTags</td>
     <td>-</td>
@@ -191,7 +198,7 @@
     <td>-</td>
     <td>-</td>
     <td>-</td>
-<!--/tr><tr class=EVEN>
+<!--/tr><tr class="EVEN">
     <td></td>
     <td></td>
     <td></td>

@@ -3,7 +3,7 @@
 ;;; Copyright (C) 1999, 2000, 2001, 2005, 2007, 2008, 2009 Eric M. Ludlam
 ;;
 ;; Author: <zappo@gnu.org>
-;; RCS: $Id: eieio-custom.el,v 1.27 2009/01/09 22:51:37 zappo Exp $
+;; RCS: $Id: eieio-custom.el,v 1.28 2009/03/17 00:50:59 zappo Exp $
 ;; Keywords: OO, lisp
 ;;                                                                          
 ;; This program is free software; you can redistribute it and/or modify
@@ -373,7 +373,7 @@ These groups are specified with the `:group' slot flag."
     ;; Now initialize the buffer
     (use-local-map widget-keymap)
     (widget-setup)
-					;(widget-minor-mode)
+    ;;(widget-minor-mode)
     (goto-char (point-min))
     (widget-forward 3)
     (make-local-variable 'eieio-co)
@@ -434,14 +434,14 @@ Must return the created widget."
       nil)))
 
 (defun eieio-object-abstract-to-value (widget value)
-  "For WIDGET, convert VALUE to an abstract /safe/ representation."
+  "For WIDGET, convert VALUE from an abstract /safe/ representation."
   value)
 
 
 ;;; customization group functions
 ;;
 ;; These functions provide the ability to create dynamic menus to
-;; customize specific sections of an object.  The do not hook directly
+;; customize specific sections of an object.  They do not hook directly
 ;; into a filter, but can be used to create easymenu vectors.
 (defmethod eieio-customize-object-group ((obj eieio-default-superclass))
   "Create a list of vectors for customizing sections of OBJ."

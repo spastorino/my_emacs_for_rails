@@ -3,7 +3,7 @@
 ;; Copyright (C) 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: srecode-map.el,v 1.14 2009/02/03 02:23:46 zappo Exp $
+;; X-RCS: $Id: srecode-map.el,v 1.15 2009/03/14 15:16:55 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -44,7 +44,8 @@
   "The current map for global SRecode templtes.")
 
 (defcustom srecode-map-save-file (expand-file-name "~/.srecode/srecode-map")
-  "The save location for SRecode's map file."
+  "The save location for SRecode's map file.
+If the save file is nil, then the MAP is not saved between sessions."
   :group 'srecode
   :type 'file)
 
@@ -264,29 +265,39 @@ If option FAST is non-nil, then only parse a file for the mode-string
 if that file is NEW, otherwise assume the mode has not changed."
   (interactive)
 
-  ;; 1) Do we even have a MAP or save file?
-  (when (and (not srecode-current-map)
-	     (not (file-exists-p srecode-map-save-file)))
-    (when (not (file-exists-p (file-name-directory srecode-map-save-file)))
-      ;; Only bother with this interactively, not during a build
-      ;; or test.
-      (when (not noninteractive)
-	;; No map, make the dir?
-	(if (y-or-n-p (format "Create dir %s? "
-			      (file-name-directory srecode-map-save-file)))
-	    (make-directory (file-name-directory srecode-map-save-file))
-	  ;; No make, change save file
-	  (customize-variable 'srecode-map-save-file)
-	  (error "Change your SRecode map file"))))
-    ;; Have a dir.  Make the object.
-    (setq srecode-current-map
-	  (srecode-map "SRecode Map"
-		       :file srecode-map-save-file)))
+  ;; When no map file, we are configured to not use a save file.
+  (if (not srecode-map-save-file)
+      ;; 0) Create a MAP when in no save file mode.
+      (when (not srecode-current-map)
+	(setq srecode-current-map (srecode-map "SRecode Map"))
+	(message "SRecode map created in non-save mode.")
+	)
+    
+    ;; 1) Do we even have a MAP or save file?
+    (when (and (not srecode-current-map)
+	       (not (file-exists-p srecode-map-save-file)))
+      (when (not (file-exists-p (file-name-directory srecode-map-save-file)))
+	;; Only bother with this interactively, not during a build
+	;; or test.
+	(when (not noninteractive)
+	  ;; No map, make the dir?
+	  (if (y-or-n-p (format "Create dir %s? "
+				(file-name-directory srecode-map-save-file)))
+	      (make-directory (file-name-directory srecode-map-save-file))
+	    ;; No make, change save file
+	    (customize-variable 'srecode-map-save-file)
+	    (error "Change your SRecode map file"))))
+      ;; Have a dir.  Make the object.
+      (setq srecode-current-map
+	    (srecode-map "SRecode Map"
+			 :file srecode-map-save-file)))
 
-  ;; 2) Do we not have a current map?  If so load.
-  (when (not srecode-current-map)
-    (setq srecode-current-map
-	  (eieio-persistent-read srecode-map-save-file))
+    ;; 2) Do we not have a current map?  If so load.
+    (when (not srecode-current-map)
+      (setq srecode-current-map
+	    (eieio-persistent-read srecode-map-save-file))
+      )
+
     )
 
   ;;
@@ -320,7 +331,8 @@ if that file is NEW, otherwise assume the mode has not changed."
 	  )))
     ;; Only do the save if we are dirty, or if we are in an interactive
     ;; Emacs.
-    (when (and dirty (not noninteractive))
+    (when (and dirty (not noninteractive)
+	       (slot-boundp srecode-current-map :file))
       (eieio-persistent-save srecode-current-map))
     ))
 

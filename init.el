@@ -483,7 +483,7 @@ makes)."
 
    (global-auto-complete-mode t)           ;enable global-mode
    (setq ac-auto-start t)                  ;automatically start
-   (setq ac-dwim t)                        ;Do what i mean
+   (setq ac-dwim 3)                        ;Do what i mean
    (setq ac-override-local-map nil)        ;don't override local map
 ;   (define-key ac-complete-mode-map "\t" 'ac-expand)
 ;   (define-key ac-complete-mode-map "\r" 'ac-complete)

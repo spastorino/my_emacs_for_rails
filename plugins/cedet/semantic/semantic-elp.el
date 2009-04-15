@@ -1,9 +1,9 @@
 ;;; semantic-elp.el --- Bind ELP to measure Semantic
 
-;; Copyright (C) 2008 Eric M. Ludlam
+;; Copyright (C) 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: semantic-elp.el,v 1.15 2008/12/21 01:08:15 zappo Exp $
+;; X-RCS: $Id: semantic-elp.el,v 1.16 2009/04/02 01:18:33 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -260,15 +260,15 @@ You may also need `semantic-elp-include-path-list'.")
 
 (defvar semantic-elp-analyze-list
   '(
+    semantic-analyze-current-symbol
     semantic-analyze-current-context
     semantic-analyze-dereference-metatype
-    semantic-analyze-find-tag-sequence
     semantic-analyze-find-tag-sequence
     semantic-analyze-interesting-tag
     semantic-analyze-pop-to-context
     semantic-analyze-select-best-tag
     semantic-analyze-tag-type
-    semantic-analyze-tag-type-to-name
+    semantic-analyze-type-to-name
     semantic-analyze-type-constraint
     semantic-analyze-scoped-type-parts
     semantic-cache-data-to-buffer
@@ -280,6 +280,20 @@ You may also need `semantic-elp-include-path-list'.")
   (semantic-elp-scope-enable)
   (elp-instrument-list semantic-elp-analyze-list)
   (elp-set-master 'semantic-analyze-current-context)
+  )
+
+(defvar semantic-elp-symref-list
+  '(
+    semantic-symref-hits-in-region
+    semantic-symref-test-count-hits-in-tag
+    )
+  "List of symref functions for profiling.")
+
+(defun semantic-elp-analyze-symref-hits ()
+  "Enable profiling for `semanticdb-analyze-current-context'."
+  (semantic-elp-analyze-enable)
+  (elp-instrument-list semantic-elp-symref-list)
+  (elp-set-master 'semantic-symref-test-count-hits-in-tag)
   )
 
 (defvar semantic-elp-complete-list
@@ -696,6 +710,49 @@ The expectation is that you will edit this fcn with different
 	(oset elpobj :file saveas)
 	(eieio-persistent-save elpobj)
 	)
+      )))
+
+(defun semantic-elp-symref-hit-count ()
+  "Run a `semantic-symref-test-count-hits-in-tag' with elp on."
+  (interactive)
+  (let ((elp-recycle-buffers-p nil)
+	(totalstart nil)
+	(totalstop nil)
+	ans time
+	)
+    ;; reset
+    (semantic-clear-toplevel-cache)
+    (semantic-fetch-tags)
+
+    ;; Build up caches so we get user use timings.
+    (semantic-analyze-current-context)
+
+    ;; Enable everything for analysis.
+    (semantic-elp-analyze-symref-hits)
+
+    ;; Do the analysis
+    (setq totalstart (current-time))
+
+    (setq ans (semantic-symref-test-count-hits-in-tag))
+
+    (setq totalstop (current-time))
+
+    (semantic-elp-results "")
+    (setq time semantic-elp-last-results)
+    (oset time :total (semantic-elapsed-time totalstart totalstop))
+    ;; build it
+    (let ((elpobj (semantic-elp-object
+		   "ELP"
+		   :total          (semantic-elapsed-time totalstart totalstop)
+		   :time	   time
+		   :answer         ans)))
+      (data-debug-show elpobj)
+      (setq semantic-elp-last-run elpobj)
+;;(let ((saveas (read-file-name "Save Profile to: " (expand-file-name "~/")
+;;				    "semantic.elp" nil "semantic.elp")))
+;;	(oset elpobj :file saveas)
+;;	(eieio-persistent-save elpobj)
+;;	)
       )))
 
 (defun semantic-elp-show-last-run ()

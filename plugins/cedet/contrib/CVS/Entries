@@ -1,7 +1,5 @@
 /INSTALL/1.4/Wed Aug 29 10:37:10 2007//
-/Project.ede/1.23/Thu Jan 29 03:07:12 2009//
 /cedet-contrib-load.el/1.2/Fri Sep 30 20:15:51 2005//
-/cedet-contrib.el/1.11/Thu Jan 29 02:55:57 2009//
 /eassist.el/1.5/Sat Feb 23 20:35:54 2008//
 /ede-gnustep.el/1.6/Mon Jan  5 23:42:07 2009//
 /semantic-tag-folding.el/1.12/Fri Sep 30 20:15:57 2005//
@@ -12,5 +10,7 @@
 /wisent-ruby.el/1.2/Fri Aug 31 20:17:22 2007//
 /wisent-ruby.wy/1.1/Sun Aug 26 03:07:13 2007//
 /.cvsignore/1.1/Thu Mar  5 18:43:20 2009//
-/Makefile/1.25/Tue Mar 10 20:51:56 2009//
+/Makefile/1.26/Wed Apr 15 19:02:46 2009//
+/Project.ede/1.24/Wed Apr 15 19:02:47 2009//
+/cedet-contrib.el/1.12/Wed Apr 15 19:02:47 2009//
 D

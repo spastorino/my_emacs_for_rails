@@ -1,22 +1,22 @@
 <!-- Generic footer for FSF related web pages -->
-<br clear=both>
+<br clear="both">
 <!-- This ends the table start in pagestart.php. -->
 </td></tr></table>
 
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 &nbsp
 </td></tr></table>
 
-<table align=right><tr><td>
+<table align="right"><tr><td>
 <a href="http://sourceforge.net/projects/cedet">
 <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=17886&type=12" width="120" height="30" border="0" alt="Get CEDET at SourceForge.net." /></a>
 <br>
 <a href="http://sourceforge.net/donate/index.php?group_id=17886">
 <IMG src="http://sourceforge.net/images/x-click-but7.gif"
-     width=72 height=29 alt="Donate With Paypal">
+     width="72" height="29" alt="Donate With Paypal">
 </a>
 </td></tr></table>
-<A HREF="index.php"><IMG SRC="minitreb.jpg" ALT="gnu" ALIGN=LEFT></A>
+<A HREF="index.php"><IMG SRC="minitreb.jpg" ALT="gnu" ALIGN="LEFT"></A>
 <A HREF="eric.shtml">Eric's homepage</A><BR>
 <A HREF="index.php">Return to CEDET.</A><BR>
 Send mail to
@@ -26,16 +26,16 @@ Visit
 <A HREF="http://www.siege-engine.com">Siege-engine.com</a>
 to see what I do in analog land.
 <br clear="both">
-<table width=100%><tr><td>
+<table width="100%"><tr><td>
 <hr>
-<FONT SIZE=-2>
+<FONT SIZE="-2">
 Copyright(C) 1997,98,99,2000,01,02,03,04,05,06,07,08,09 Eric M. Ludlam<BR>
 Verbatim copying and distribution is permitted in any medium,
 provided this notice is preserved.<BR>
 </FONT>
 </td></tr></table>
 
-<table cellspacing=0 border=0 width=100%><tr>
+<table cellspacing="0" border="0" width="100%"><tr>
    <td background="img-gen/cedet-bottom-left.png" width="779" height="50">&nbsp;</td>
    <td background="img-gen/cedet-bottom-middle.png" height="46">&nbsp;</td>
 </table>

@@ -2,9 +2,9 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>Linemark Compile</font></h2></td>
-<td><font color=black>Highlight compiler hits</font></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">Linemark Compile</font></h2></td>
+<td><font color="black">Highlight compiler hits</font></td></tr>
 </table>
 
 <p>Emacs has always been good about compiling code and going to the

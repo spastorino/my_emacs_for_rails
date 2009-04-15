@@ -1,9 +1,9 @@
 ;;; semantic-symref-list.el --- Symref Output List UI.
 
-;; Copyright (C) 2008 Eric M. Ludlam
+;; Copyright (C) 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: semantic-symref-list.el,v 1.6 2008/12/30 23:03:32 zappo Exp $
+;; X-RCS: $Id: semantic-symref-list.el,v 1.7 2009/03/28 12:45:48 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -63,11 +63,12 @@ Display the references in`semantic-symref-results-mode'"
 (defun semantic-symref-symbol (sym)
   "Find references to the symbol SYM.
 This command uses the currently configured references tool within the
-current project to find references to the input SYM. The
+current project to find references to the input SYM.  The
 references are the organized by file and the name of the function
 they are used in.
 Display the references in`semantic-symref-results-mode'"
-  (interactive "sSymbol: ")
+  (interactive (list (car (senator-jump-interactive "Symrefs for: " nil nil t)))
+	       )
   (semantic-fetch-tags)
   (let ((res nil)
 	)
@@ -133,6 +134,9 @@ RESULTS is an object of class `semantic-symref-results'."
        results)
   (semantic-symref-results-dump results)
   (goto-char (point-min))
+  (buffer-disable-undo)
+  (set (make-local-variable 'font-lock-global-modes) nil)
+  (font-lock-mode -1)
   (run-hooks 'semantic-symref-results-mode-hook)
   )
 

@@ -2,11 +2,11 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>Speedbar:</font></h2></td>
-<td><font color=black>"Floating Everything Browser."</font></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">Speedbar:</font></h2></td>
+<td><font color="black">"Floating Everything Browser."</font></td></tr>
 </table>
-<img src=speedbar-3.jpg align=right>
+<img src="img-gen/speedbar-3.png" align="right">
 
 
 <P>Speedbar is an <B>Emacs Lisp</B> program which allows you to create a
@@ -28,14 +28,14 @@ the mouse-2 click most emacs users are familiar with.</P>
 functions such as Rename/Copy/Delete, Loading lisp files, and
 compiling lisp files.</P>
 
-<table align=right>
+<table align="right">
 <td>
-<a href=speedbar-multi-2.jpg>
+<a href="speedbar-multi-2.jpg">
 <center>
-<img src=speedbar-multi-2.jpg alt=speedbar-multi-2.jpg width=100 height=100>
+<img src="speedbar-multi-2.jpg" alt="speedbar-multi-2.jpg" width="100" height="100">
 </a>
 <br>
-<font size=-2>
+<font size="-2">
 Different Modes for Speedbar
 </font>
 </center>
@@ -54,13 +54,13 @@ Different Modes for Speedbar
 </ul>
 </p>
 
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h2>About the picture</h2>
 </td></tr></table>
 
 <P>Starting with Speedbar 0.11, images are now supported to represent
   files and tags.  This screen shot was taken using Emacs 21, using
- <a href=semantic.shtml>Semantic</a> for tag generation.  Any version
+ <a href="semantic.shtml">Semantic</a> for tag generation.  Any version
  of XEmacs should generate a similar picture.
 </p>
 
@@ -69,15 +69,15 @@ Different Modes for Speedbar
   It also works with images for XEmacs 20.x, and 21.x.
 </p>
 
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h2>Read the docs:</h2>
 </td></tr></table>
 
 <P>You can read the 
-   <a href=info/speedbar.html>html documentation</a>
+   <a href="info/speedbar.html">html documentation</a>
    created from the texinfo file.</p>
 
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h2>Speedbar Enabled tools:</h2>
 </td></tr></table>
 
@@ -133,7 +133,7 @@ Different Modes for Speedbar
 
 <p>If you know of others, let me know and I'll add a link.</p>
 
-<br clear=both>
+<br clear="both">
 <!--#include file="download.php"-->
 
 <!--#include file="footer.fsf.shtml"-->

@@ -55,15 +55,15 @@ Add macros into the dictionary DICT based on the kill ring.
 ;;;***
 
 ;;;### (autoloads (srecode-compile-templates srecode-compile-file)
-;;;;;;  "srecode-compile" "srecode-compile.el" (18791 54690))
+;;;;;;  "srecode-compile" "srecode-compile.el" (18918 12121))
 ;;; Generated autoloads from srecode-compile.el
 
-(autoload (quote srecode-compile-file) "srecode-compile" "\
+(autoload 'srecode-compile-file "srecode-compile" "\
 Compile the templates from the file FNAME.
 
 \(fn FNAME)" nil nil)
 
-(autoload (quote srecode-compile-templates) "srecode-compile" "\
+(autoload 'srecode-compile-templates "srecode-compile" "\
 Compile a semantic recode template file into a mode-local variable.
 
 \(fn)" t nil)
@@ -127,16 +127,16 @@ Some useful context values used by the provided srecode templates are:
 
 ;;;### (autoloads (srecode-dictionary-dump srecode-adebug-dictionary
 ;;;;;;  srecode-create-dictionary) "srecode-dictionary" "srecode-dictionary.el"
-;;;;;;  (18834 8001))
+;;;;;;  (18918 12121))
 ;;; Generated autoloads from srecode-dictionary.el
 
-(eieio-defclass-autoload (quote srecode-dictionary) (quote nil) "srecode-dictionary" "Dictionary of symbols and what they mean.\nDictionaries are used to look up named symbols from\ntemplates to decide what to do with those symbols.")
+(eieio-defclass-autoload 'srecode-dictionary 'nil "srecode-dictionary" "Dictionary of symbols and what they mean.\nDictionaries are used to look up named symbols from\ntemplates to decide what to do with those symbols.")
 
-(eieio-defclass-autoload (quote srecode-dictionary-compound-value) (quote nil) "srecode-dictionary" "A compound dictionary value.\nValues stored in a dictionary must be a STRING,\na dictionary for showing sections, or an instance of a subclass\nof this class.\n\nCompound dictionary values derive from this class, and must\nprovide a sequence of method implementations to convert into\na string.")
+(eieio-defclass-autoload 'srecode-dictionary-compound-value 'nil "srecode-dictionary" "A compound dictionary value.\nValues stored in a dictionary must be a STRING,\na dictionary for showing sections, or an instance of a subclass\nof this class.\n\nCompound dictionary values derive from this class, and must\nprovide a sequence of method implementations to convert into\na string.")
 
-(eieio-defclass-autoload (quote srecode-dictionary-compound-variable) (quote (srecode-dictionary-compound-value)) "srecode-dictionary" "A compound dictionary value for template file variables.\nYou can declare a variable in a template like this:\n\nset NAME \"str\" macro \"OTHERNAME\"\n\nwith appending various parts together in a list.")
+(eieio-defclass-autoload 'srecode-dictionary-compound-variable '(srecode-dictionary-compound-value) "srecode-dictionary" "A compound dictionary value for template file variables.\nYou can declare a variable in a template like this:\n\nset NAME \"str\" macro \"OTHERNAME\"\n\nwith appending various parts together in a list.")
 
-(autoload (quote srecode-create-dictionary) "srecode-dictionary" "\
+(autoload 'srecode-create-dictionary "srecode-dictionary" "\
 Create a dictionary for BUFFER.
 If BUFFER-OR-PARENT is not specified, assume a buffer, and
 use the current buffer.
@@ -150,12 +150,14 @@ assocated with a buffer or parent.
 
 \(fn &optional BUFFER-OR-PARENT)" nil nil)
 
-(autoload (quote srecode-adebug-dictionary) "srecode-dictionary" "\
+(eieio-defclass-autoload 'srecode-field-value '(srecode-dictionary-compound-value) "srecode-dictionary" "When inserting values with editable field mode, a dictionary value.\nCompound values allow a field to be stored in the dictionary for when\nit is referenced a second time.  This compound value can then be\ninserted with a new editable field.")
+
+(autoload 'srecode-adebug-dictionary "srecode-dictionary" "\
 Run data-debug on this mode's dictionary.
 
 \(fn)" t nil)
 
-(autoload (quote srecode-dictionary-dump) "srecode-dictionary" "\
+(autoload 'srecode-dictionary-dump "srecode-dictionary" "\
 Dump a typical fabricated dictionary.
 
 \(fn)" t nil)
@@ -246,7 +248,7 @@ Insert get/set methods for the current class.
 ;;;***
 
 ;;;### (autoloads (srecode-field-utest) "srecode-fields" "srecode-fields.el"
-;;;;;;  (18870 53997))
+;;;;;;  (18918 12121))
 ;;; Generated autoloads from srecode-fields.el
 
 (eieio-defclass-autoload 'srecode-field '(srecode-overlaid) "srecode-fields" "Representation of one field.")
@@ -338,7 +340,7 @@ will be derived.
 ;;;***
 
 ;;;### (autoloads (srecode-insert-fcn srecode-insert srecode-insert-again)
-;;;;;;  "srecode-insert" "srecode-insert.el" (18870 53997))
+;;;;;;  "srecode-insert" "srecode-insert.el" (18918 12121))
 ;;; Generated autoloads from srecode-insert.el
 
 (autoload 'srecode-insert-again "srecode-insert" "\
@@ -354,8 +356,11 @@ DICT-ENTRIES are additional dictionary values to add.
 
 (autoload 'srecode-insert-fcn "srecode-insert" "\
 Insert TEMPLATE using DICTIONARY into STREAM.
+Optional SKIPRESOLVER means to avoid refreshing the tag list,
+or resolving any template arguments.  It is assumed the caller
+has set everything up already.
 
-\(fn TEMPLATE DICTIONARY &optional STREAM)" nil nil)
+\(fn TEMPLATE DICTIONARY &optional STREAM SKIPRESOLVER)" nil nil)
 
 ;;;***
 
@@ -374,16 +379,16 @@ FILENAME_AS_CLASS - file converted to a Java class name.
 ;;;***
 
 ;;;### (autoloads (srecode-adebug-maps srecode-get-maps) "srecode-map"
-;;;;;;  "srecode-map.el" (18823 43698))
+;;;;;;  "srecode-map.el" (18918 12121))
 ;;; Generated autoloads from srecode-map.el
 
-(autoload (quote srecode-get-maps) "srecode-map" "\
+(autoload 'srecode-get-maps "srecode-map" "\
 Get a list of maps relevant to the current buffer.
 Optional argument RESET forces a reset of the current map.
 
 \(fn &optional RESET)" t nil)
 
-(autoload (quote srecode-adebug-maps) "srecode-map" "\
+(autoload 'srecode-adebug-maps "srecode-map" "\
 Run ADEBUG on the output of `srecode-get-maps'.
 
 \(fn)" t nil)
@@ -417,21 +422,21 @@ If ARG is nil, then toggle.
 ;;;### (autoloads (srecode-semantic-insert-tag srecode-semantic-apply-tag-to-dict-default
 ;;;;;;  srecode-semantic-apply-tag-to-dict srecode-semantic-handle-:tagtype
 ;;;;;;  srecode-semantic-handle-:tag) "srecode-semantic" "srecode-semantic.el"
-;;;;;;  (18806 24958))
+;;;;;;  (18918 12121))
 ;;; Generated autoloads from srecode-semantic.el
 
-(autoload (quote srecode-semantic-handle-:tag) "srecode-semantic" "\
+(autoload 'srecode-semantic-handle-:tag "srecode-semantic" "\
 Add macroes into the dictionary DICT based on the current :tag.
 
 \(fn DICT)" nil nil)
 
-(autoload (quote srecode-semantic-handle-:tagtype) "srecode-semantic" "\
+(autoload 'srecode-semantic-handle-:tagtype "srecode-semantic" "\
 Add macroes into the dictionary DICT based on a tag of class type at point.
 Assumes the cursor is in a tag of class type.  If not, throw an error.
 
 \(fn DICT)" nil nil)
 
-(autoload (quote srecode-semantic-apply-tag-to-dict) "srecode-semantic" "\
+(autoload 'srecode-semantic-apply-tag-to-dict "srecode-semantic" "\
 Insert fewatures of TAGOBJ into the dictionary DICT.
 TAGOBJ is an object of class `srecode-semantic-tag'.  This class
 is a compound inserter value.
@@ -442,12 +447,12 @@ variable default values, and other things.
 
 \(fn TAGOBJ DICT)" nil nil)
 
-(autoload (quote srecode-semantic-apply-tag-to-dict-default) "srecode-semantic" "\
+(autoload 'srecode-semantic-apply-tag-to-dict-default "srecode-semantic" "\
 Insert features of TAGOBJ into dictionary DICT.
 
 \(fn TAGOBJ DICT)" nil nil)
 
-(autoload (quote srecode-semantic-insert-tag) "srecode-semantic" "\
+(autoload 'srecode-semantic-insert-tag "srecode-semantic" "\
 Insert TAG into a buffer useing srecode templates at point.
 
 Optional STYLE-OPTION is a list of minor configuration of styles,
@@ -629,7 +634,7 @@ Adds the following:
 
 ;;;### (autoloads nil nil ("srecode-document-vars.el" "srecode-extract.el"
 ;;;;;;  "srecode-load.el" "srecode-template-wy.el" "srecode.el")
-;;;;;;  (18870 54211 611542))
+;;;;;;  (18918 15195 714578))
 
 ;;;***
 

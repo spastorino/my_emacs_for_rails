@@ -2,11 +2,11 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>Code Generation</font></h2></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">Code Generation</font></h2></td></tr>
 </table>
 
-<p><img src="img-gen/srecode-fields.png" border=1 align=right>
+<p><img src="img-gen/srecode-fields.png" border="1" align="right">
    The template system in <b>CEDET</b> is a framework
    designed for code-generating application developers.  Even so, the
    base system and templates can also be used to insert small
@@ -20,14 +20,12 @@
    style comments fully filled out from the local context, or insert
    get/set methods for variables in a class.
 
-<p>The image to the right shows a simple class declaration inserted
-   with the experimental "fields" feature enabled.  Typing in one
-   field updates the others that match the same template dictionary
-   macro.
+<p>The image to the right shows a simple class declaration inserted.
+</p>
 
-<br clear=all>
+<br clear="all">
 <p>
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h3>How it works: Users view</h3>
 </td></tr></table>
 
@@ -86,13 +84,13 @@
    tag-ring using <tt>C-c , M-w</tt>, then you can "yank" that tag
    into a texinfo buffer as a texinfo defun using <tt>C-c , C-y</tt>.
 
-<br clear=all>
+<br clear="all">
 <p>
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h3>Overriding Templates</h3>
 </td></tr></table>
 
-<p><img src="img-gen/srecode-cpp-template.jpg" align=right border=1>
+<p><img src="img-gen/srecode-cpp-template.png" align="right" border="1">
 
    Every development project is different.  The default code
    generating templates won't fit everyone's code.  As a user, you can
@@ -116,7 +114,7 @@
    you do not need to answer questions when inserting these.
 
 <p>
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h3>How it works: Developer view</h3>
 </td></tr></table>
 

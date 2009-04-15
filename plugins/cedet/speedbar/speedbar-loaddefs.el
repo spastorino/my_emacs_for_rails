@@ -27,22 +27,22 @@ off the specialized speedbar mode.
 ;;;***
 
 ;;;### (autoloads (Info-speedbar-buttons Info-speedbar-browser) "sb-info"
-;;;;;;  "sb-info.el" (17563 42408))
+;;;;;;  "sb-info.el" (18918 12121))
 ;;; Generated autoloads from sb-info.el
 
-(autoload (quote Info-speedbar-browser) "sb-info" "\
+(autoload 'Info-speedbar-browser "sb-info" "\
 Initialize speedbar to display an info node browser.
 This will add a speedbar major display mode.
 
 \(fn)" t nil)
 
-(autoload (quote Info-speedbar-buttons) "sb-info" "\
+(autoload 'Info-speedbar-buttons "sb-info" "\
 Create a speedbar display to help navigation in an Info file.
 BUFFER is the buffer speedbar is requesting buttons for.
 
 \(fn BUFFER)" nil nil)
 
-(eval-after-load "info" (quote (require (quote sb-info))))
+(eval-after-load "info" '(require 'sb-info))
 
 ;;;***
 
@@ -72,12 +72,12 @@ Create speedbar buttons for the current web BUFFER displayed in w3 mode.
 ;;;***
 
 ;;;### (autoloads (speedbar-get-focus speedbar-frame-mode) "speedbar"
-;;;;;;  "speedbar.el" (18435 29472))
+;;;;;;  "speedbar.el" (18918 12121))
 ;;; Generated autoloads from speedbar.el
 
-(defalias (quote speedbar) (quote speedbar-frame-mode))
+(defalias 'speedbar 'speedbar-frame-mode)
 
-(autoload (quote speedbar-frame-mode) "speedbar" "\
+(autoload 'speedbar-frame-mode "speedbar" "\
 Enable or disable speedbar.  Positive ARG means turn on, negative turn off.
 A nil ARG means toggle.  Once the speedbar frame is activated, a buffer in
 `speedbar-mode' will be displayed.  Currently, only one speedbar is
@@ -87,7 +87,7 @@ supported at a time.
 
 \(fn &optional ARG)" t nil)
 
-(autoload (quote speedbar-get-focus) "speedbar" "\
+(autoload 'speedbar-get-focus "speedbar" "\
 Change frame focus to or from the speedbar frame.
 If the selected frame is not speedbar, then speedbar frame is
 selected.  If the speedbar frame is active, then select the attached frame.
@@ -98,7 +98,7 @@ selected.  If the speedbar frame is active, then select the attached frame.
 
 ;;;### (autoloads nil nil ("bigclock.el" "dframe.el" "fsum.el" "sb-ant.el"
 ;;;;;;  "sb-html.el" "sb-image.el" "sb-texinfo.el" "speedbar-load.el")
-;;;;;;  (18870 54199 493856))
+;;;;;;  (18918 15180 847458))
 
 ;;;***
 

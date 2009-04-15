@@ -2,35 +2,35 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>COGRE:</font></h2></td>
-<td><font color=black>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">COGRE:</font></h2></td>
+<td><font color="black">
 "Connected Graph Editor"</font></td></tr>
 </table>
-<table width=210 align=right>
+<table width="210" align="right">
 <td>
 <center>
-<a href=cogre.jpg>
-<img src=cogre.jpg width=100 height=100>
-<br><font size=-2>
+<a href="cogre.jpg">
+<img src="cogre.jpg" width="100" height="100">
+<br><font size="-2">
 A Connected Graph
 </font>
 </a>
 </td></tr>
 <tr><td>
 <center>
-<a href=cogre2.jpg>
-<img src=cogre2.jpg width=100 height=100>
-<br><font size=-2>
+<a href="cogre2.jpg">
+<img src="cogre2.jpg" width="100" height="100">
+<br><font size="-2">
 A UML Diagram
 </font>
 </a>
 </td></tr>
 <tr><td>
 <center>
-<a href=cogre3.jpg>
-<img src=cogre3.jpg width=100 height=100>
-<br><font size=-2>
+<a href="cogre3.jpg">
+<img src="cogre3.jpg" width="100" height="100">
+<br><font size="-2">
 An Auto Generated UML Diagram with source browser
 </font>
 </a>
@@ -68,12 +68,12 @@ An Auto Generated UML Diagram with source browser
 </p>
 
 
-<table width=100% class=BAR><tr><td>
+<table width="100%" class="BAR"><tr><td>
 <h2>Read the docs:</h2>
 </td></tr></table>
 
 <P>You can read the 
-   <a href=info/cogre.html>html documentation</a>
+   <a href="info/cogre.html">html documentation</a>
    created from the texinfo file.</p>
 
 <!--#include file="download.php"-->

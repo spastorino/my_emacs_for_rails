@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: semantic-scope.el,v 1.28 2009/03/09 00:29:44 zappo Exp $
+;; X-RCS: $Id: semantic-scope.el,v 1.31 2009/04/02 00:50:54 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -77,9 +77,12 @@ PROTECTION is a symbol representing the level of inheritance, such as 'private, 
    (fullscope :initform nil
 	      :documentation
 	      "All the other stuff on one master list you can search.")
+   (localargs :initform nil
+	      :documentation
+	      "The arguments to the function tag.")
    (localvar :initform nil
 	     :documentation
-	     "The local variables, function arguments, etc.")
+	     "The local variables.")
    (typescope :initform nil
 	      :documentation
 	      "Slot to save intermediate scope while metatypes are dereferenced.")
@@ -99,6 +102,7 @@ Saves scoping information between runs of the analyzer.")
   (oset obj parentinheritance nil)
   (oset obj scope nil)
   (oset obj fullscope nil)
+  (oset obj localargs nil)
   (oset obj localvar nil)
   (oset obj typescope nil)
   )
@@ -602,7 +606,7 @@ whose tags can be searched when needed, OR it may be a scope object."
 ;;;###autoload
 (defun semantic-calculate-scope (&optional point)
   "Calculate the scope at POINT.
-If POINT is not provided, then use the current location of `point'.
+If POINT is not provided, then use the current location of point.
 The class returned from the scope calculation is variable
 `semantic-scope-cache'."
   (interactive)
@@ -645,14 +649,28 @@ The class returned from the scope calculation is variable
 		   (scope (when (or scopetypes parents)
 			    (semantic-analyze-scoped-tags scopetypes scopecache))
 			  )
-		   (fullscope (append scopetypes scope parents))
 		   ;; Step 3:
+		   (localargs (semantic-get-local-arguments))
 		   (localvar (condition-case nil
 				 (semantic-get-all-local-variables)
 			       (error nil)))
 		   )
+
+	      ;; Try looking for parents again.
+	      (when (not parentinherited)
+		(setq parentinherited (semantic-analyze-scope-lineage-tags
+				       parents (append scopetypes scope)))
+		(when parentinherited
+		  (oset scopecache parentinheritance parentinherited)
+		  ;; Try calculating the scope again with the new inherited parent list.
+		  (setq scope (when (or scopetypes parents)
+				(semantic-analyze-scoped-tags scopetypes scopecache))
+			)))
+	      
+	      ;; Fill out the scope.
 	      (oset scopecache scope scope)
-	      (oset scopecache fullscope fullscope)
+	      (oset scopecache fullscope (append scopetypes scope parents))
+	      (oset scopecache localargs localargs)
 	      (oset scopecache localvar localvar)
 	      )))
 	;; Make sure we become dependant on the typecache.
@@ -673,31 +691,36 @@ hits in order, with the first tag being in the closest scope."
     ;; Is the passed in scope really a scope?  if so, look through
     ;; the options in that scope.
     (if (semantic-scope-cache-p scope)
-	(let* ((lv
+	(let* ((la
 		;; This should be first, but bugs in the
 		;; C parser will turn function calls into
 		;; assumed int return function prototypes.  Yuck!
+		(semantic-find-tags-by-name name (oref scope localargs)))
+	       (lv
 		(semantic-find-tags-by-name name (oref scope localvar)))
-	       (sc
-		(semantic-find-tags-by-name name (oref scope fullscope)))
+	       (fullscoperaw (oref scope fullscope))
+	       (sc (semantic-find-tags-by-name name fullscoperaw))
 	       (typescoperaw  (oref scope typescope))
-	       (tsc
-		(semantic-find-tags-by-name name typescoperaw))
+	       (tsc (semantic-find-tags-by-name name typescoperaw))
 	       )
 	  (setq ans
 		(if class
 		    ;; Scan out things not of the right class.
-		    (semantic-find-tags-by-class class (append lv sc tsc))
-		  (append lv sc tsc))
+		    (semantic-find-tags-by-class class (append la lv sc tsc))
+		  (append la lv sc tsc))
 		)
 
-	  (when (and (not ans) (oref scope typescope))
+	  (when (and (not ans) (or typescoperaw fullscoperaw))
 	    (let ((namesplit (semantic-analyze-split-name name)))
 	      (when (consp namesplit)
 		;; It may be we need to hack our way through type typescope.
 		(while namesplit
-		  (setq ans (semantic-find-tags-by-name (car namesplit)
-							typescoperaw))
+		  (setq ans (append
+			     (semantic-find-tags-by-name (car namesplit)
+							 typescoperaw)
+			     (semantic-find-tags-by-name (car namesplit)
+							 fullscoperaw)
+			     ))
 		  (if (not ans)
 		      (setq typescoperaw nil)
 		    (when (cdr namesplit)
@@ -727,6 +750,7 @@ hits in order, with the first tag being in the closest scope."
   (semantic-analyze-princ-sequence (oref context parents) "-> Parents: " )
   (semantic-analyze-princ-sequence (oref context scope) "-> Scope: " )
   ;;(semantic-analyze-princ-sequence (oref context fullscope) "Fullscope:  " )
+  (semantic-analyze-princ-sequence (oref context localargs) "-> Local Args: " )
   (semantic-analyze-princ-sequence (oref context localvar) "-> Local Vars: " )
   )
 

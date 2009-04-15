@@ -8,7 +8,7 @@
 ;;;;;;  ede-documentation-files ede-description ede-name project-make-dist
 ;;;;;;  project-compile-target project-compile-project project-edit-file-target
 ;;;;;;  ede-compile-target ede-remove-file global-ede-mode) "ede"
-;;;;;;  "ede.el" (18870 53997))
+;;;;;;  "ede.el" (18918 12120))
 ;;; Generated autoloads from ede.el
 
 (eieio-defclass-autoload 'ede-project-autoload 'nil "ede" "Class representing minimal knowledge set to run preliminary EDE functions.\nWhen more advanced functionality is needed from a project type, that projects\ntype is required and the load function used.")
@@ -220,7 +220,7 @@ based on `ede-locate-setup-options'.
 ;;;***
 
 ;;;### (autoloads (ede-make-check-version) "ede-make" "ede-make.el"
-;;;;;;  (18867 48975))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from ede-make.el
 
 (autoload 'ede-make-check-version "ede-make" "\
@@ -235,7 +235,7 @@ If NOERROR is nil, then throw an error on failure.  Return t otherwise.
 ;;;***
 
 ;;;### (autoloads (ede-pmake-varname) "ede-pmake" "ede-pmake.el"
-;;;;;;  (18870 53996))
+;;;;;;  (18918 12120))
 ;;; Generated autoloads from ede-pmake.el
 
 (autoload 'ede-pmake-varname "ede-pmake" "\
@@ -314,7 +314,7 @@ Argument NEWVERSION is the version number to use in the current project.
 ;;;;;;  "ede-proj-info.el" "ede-proj-maven2.el" "ede-proj-misc.el"
 ;;;;;;  "ede-proj-obj.el" "ede-proj-prog.el" "ede-proj-scheme.el"
 ;;;;;;  "ede-proj-shared.el" "ede-proj-skel.el" "ede-source.el" "ede-speedbar.el"
-;;;;;;  "ede-system.el" "project-am.el") (18870 54212 84972))
+;;;;;;  "ede-system.el" "project-am.el") (18918 15196 451869))
 
 ;;;***
 

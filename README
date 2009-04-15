@@ -30,6 +30,7 @@ ri-emacs
 rinari
 ruby-block
 ruby-mode
+toggle
 yaml-mode
 yasnippet
 yasnippets-rails

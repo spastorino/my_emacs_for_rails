@@ -84,4 +84,7 @@ main(void) {
     ;
   // #8# ( "fooTwoMember" )
 
+  v3->read_ref_member_two// @1@ 5
+    ;
+
 }

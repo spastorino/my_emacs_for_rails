@@ -2,8 +2,8 @@
 
 <!--#include file="pagestart.php"-->
 
-<table width=100% class=BAR>
-<tr><td><h2><font color=black>Add support for a new language</font></h2></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h2><font color="black">Add support for a new language</font></h2></td></tr>
 </table>
 
 <p>If you maintain support for a language mode in Emacs, or would like
@@ -24,8 +24,8 @@
    features provided by your efforts.
 
 <p>
-<table width=100% class=BAR>
-<tr><td><h3><font color=black>Step 0: Join the mailing list</font></h3></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h3><font color="black">Step 0: Join the mailing list</font></h3></td></tr>
 </table>
 
 <p>The first thing to do is to join
@@ -40,8 +40,8 @@
 </ol>
 
 <p>
-<table width=100% class=BAR>
-<tr><td><h3><font color=black>Step 1: Write a Grammar</font></h3></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h3><font color="black">Step 1: Write a Grammar</font></h3></td></tr>
 </table>
 
 <p>The most critical feature to start with is to write a tagging
@@ -110,8 +110,8 @@
    for an example of sh script support.
 
 <p>
-<table width=100% class=BAR>
-<tr><td><h3><font color=black>Step 2: Tune APIs with </tt>`mode-local'</tt></font></h3></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h3><font color="black">Step 2: Tune APIs with </tt>`mode-local'</tt></font></h3></td></tr>
 </table>
 
 <p>Once you have a good tagging system in place, many tools become
@@ -151,14 +151,37 @@ Optional PARENT and COLOR are ignored."
     ))
 </pre></tt>
 
+<p>Here are some functions you may need to override
+</p>
+<ul>
+<li><tt>semantic-format-tag-*</tt> - Many functions
+  in <tt>semantic-format.el</tt> are used throughout every tool in CEDET
+  for converting tags into readable text strings.  All the smart
+  completion and tools use them.
+<li><tt>semantic-tag-ls.el</tt> - This file is full of overloadable
+  functions for OO languages.  Doing special implementations for these
+  provides information about your OO language used by the formatting
+  functions and the smart completion engine.
+<li><tt>semantic-tag-include-filename</tt> - Include tags should store file
+  names in with the same text as appears in the sources.  This will
+  convert it to a live filename.  For example, in Java you might
+  convert <tt>"import java.lang.Foo;"</tt>
+  into <tt>"java/lang/Foo.java"</tt>
+<li><tt>semantic-obtain-foreign-tag, semantic-insert-foreign-tag</tt>
+  - These functions are used by tag copy/paste.  If your language
+  works closely with other languages, this lets you reformat tags from
+  one language in a different way in another language.  For example,
+  cut a function from C, and insert it into Texinfo.
+</ul>
+
 <p>There are a wide array of functions to override for your language.
    If you have a hard time getting your language tuned, join
    the <a href="http://lists.sourceforge.net/lists/listinfo/cedet-devel">cedet-devel</a>
    mailing list and find out more.
 
 <p>
-<table width=100% class=BAR>
-<tr><td><h3><font color=black>Step 3: EDE Support</font></h3></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h3><font color="black">Step 3: EDE Support</font></h3></td></tr>
 </table>
 
 <p>You may want to jump in and start getting
@@ -170,6 +193,9 @@ Optional PARENT and COLOR are ignored."
    The Smart Completion tool cannot work in a system involving
    multiple grouped directories if it cannot rely on EDE to provide
    this infrastructure.
+
+<p>If your language is typically used in a single directory, or if the
+  links between files are explicity, you may be able to skip this step.
 
 <p>There are three possible ways to involve EDE.
 
@@ -210,8 +236,8 @@ Optional PARENT and COLOR are ignored."
    build such a project.
 
 <p>
-<table width=100% class=BAR>
-<tr><td><h3><font color=black>Step 4: Context Parsing</font></h3></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h3><font color="black">Step 4: Context Parsing</font></h3></td></tr>
 </table>
 
 <p>You probably still want to jump to the Smart Completion?  Well, to
@@ -240,39 +266,57 @@ M-: (semantic-get-local-variables) RET
 (global-set-key "\M-:" 'data-debug-eval-expression)
 </pre></tt>
 
+<p>Some other functions that are handy to have working are:
+<ul>
+<li><tt>semantic-up-context</tt>
+<li><tt>semantic-beginning-of-context, semantic-end-of-context</tt>
+<li><tt>semantic-beginning-of-command, semantic-end-of-command</tt>
+</ul>
+
 <p>Another important function suite to get right are
    the <tt>current-symbol</tt> set of functions.  These are all core
    to the smart completion engine having something to complete.  Try
    them out using <tt>M-:</tt>.  The key ones are:
 
-<tt>
+
 <ul>
-<li>semantic-ctxt-current-symbol
-<li>semantic-ctxt-current-symbol-and-bounds
-<li>semantic-ctxt-current-assignment
-<li>semantic-ctxt-current-function
-<li>semantic-ctxt-current-argument
+<li><tt>semantic-ctxt-current-symbol</tt>
+<li><tt>semantic-ctxt-current-symbol-and-bounds</tt>
+<li><tt>semantic-ctxt-current-assignment</tt>
+<li><tt>semantic-ctxt-current-function</tt>
+<li><tt>semantic-ctxt-current-argument</tt>
 </ul>
-</tt>
 
 <p>Hopefully the logic in these key functions won't need to be
    overridden.  They will, however, lead to other smaller scoped
-   functions that you can override for your language.
+   functions that you can override for your language.  For example,
+   you may need to provide values for, or override these:
+
+<ul>
+<li><tt>semantic-type-relation-separator-character</tt> - For
+   structure dereferences.  In C it would be <tt>.</tt> and <tt>-&gt;</tt>.
+<li><tt>semantic-lex-syntax-table</tt> - You may have already
+   configured this for parsing.  Additional tweaks may be needed for
+   context parsing.
+</ul>
+
+
 
 <p>
-<table width=100% class=BAR>
-<tr><td><h3><font color=black>Step 5: Smart Completion</font></h3></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h3><font color="black">Step 5: Smart Completion</font></h3></td></tr>
 </table>
 
-<p><img src="img-gen/semantic-ia-complete-menu.png" border=1 align=right>The next
-   set of commands you may need to override for you language is
-   probably for the smart completion tool.  Getting this tool to work
-   for you language is a tricky proposition, and there are no hard and
-   fast rules.  You will need to try out the different parts of the
-   analyzer framework, and tune the output results as needed.
+<p><img src="img-gen/semantic-ia-complete-menu.png" border="1
+"   align="right">The next set of commands you may need to override for
+   you language is probably for the smart completion tool.  Getting
+   this tool to work for you language is a tricky proposition, and
+   there are no hard and fast rules.  You will need to try out the
+   different parts of the analyzer framework, and tune the output
+   results as needed.
 
 <p>The completion engine is made of two key parts.  There is
-   a <em>Context Analyzer</em>, and a </em<Possible Completions</em>
+   a <em>Context Analyzer</em>, and a <em>Possible Completions</em>
    engine.  The first thing is to try out the context analysis with
    the command:
 
@@ -305,10 +349,10 @@ Prefix Classes: 'function
 -> Local Vars: Foo this
 </pre></tt>
 
-<p>To get this information, it needs to derive <em>type cache</em> a
-   local <em>scope</em>.  The type cache collects all the datatypes
-   known for the buffer and sorts them together for fast lookups. It
-   can be queried like this:
+<p>To get this information, it needs to derive a <em>type cache</em>
+   and a local <em>scope</em>.  The type cache collects all the
+   datatypes known for the buffer and sorts them together for fast
+   lookups. It can be queried like this:
 
 <tt><pre>
 M-x semanticdb-typecache-dump
@@ -337,26 +381,26 @@ M-x semantic-analyze-debug-assist
    context, with suggestions as to why it cannot identify a symbol
    under point.
 
-<p>Each of the above tools has a wide range of over ridable
-   functions.  Some example functions that need customization for C
+<p>Each of the above tools has a wide range of functions that can be
+   overriden.  Some example functions that need customization for C
    that are used by the completion engine are:
 
 <tt>
 <ul>
-<li>semantic-find-tags-by-scope-protection
-<li>semantic-tag-protection
-<li>semantic-analyze-dereference-metatype
-<li>semantic-analyze-type-constants
-<li>semantic-analyze-split-name
-<li>semantic-analyze-unsplit-name
-<li>semantic-ctxt-scoped-types
-<li>semantic-get-local-variables
+<li><tt>semantic-find-tags-by-scope-protection</tt>
+<li><tt>semantic-tag-protection</tt>
+<li><tt>semantic-analyze-dereference-metatype</tt>
+<li><tt>semantic-analyze-type-constants</tt>
+<li><tt>semantic-analyze-split-name</tt>
+<li><tt>semantic-analyze-unsplit-name</tt>
+<li><tt>semantic-ctxt-scoped-types</tt>
+<li><tt>semantic-get-local-variables</tt>
 </ul>
 </tt>
 
 <p>
-<table width=100% class=BAR>
-<tr><td><h3><font color=black>Step 6: Code Generation</font></h3></td></tr>
+<table width="100%" class="BAR">
+<tr><td><h3><font color="black">Step 6: Code Generation</font></h3></td></tr>
 </table>
 
 <p>This step could also occur after your basic language parser is
@@ -368,7 +412,7 @@ M-x semantic-analyze-debug-assist
    tool uses template files to specify basic structure for recoding
    tags generated by your language grammar.
 
-<img src="img-gen/srecode-cpp-template.jpg" align=right border=1>
+<img src="img-gen/srecode-cpp-template.png" align="right" border="1">
 <h4>Use SRecode minor mode</h4>
 
 <p>Enable SRecode minor mode in your <tt>.emacs</tt> file.
@@ -404,7 +448,7 @@ M-x semantic-analyze-debug-assist
    arguments.  They map to Emacs Lisp functions
    called <tt>srecode-semantic-handle-:time</tt>
    and <tt>srecode-semantic-handle-:user</tt>.  These functions fill
-   in the dictionary we values calculated from the Emacs environment.
+   in the dictionary values calculated from the Emacs environment.
    Look at the argument handler <tt>srecode-semantic-handle-:cpp</tt>
    to learn more about how the <tt>FILENAME_SYMBOL</tt> is filled in
    as a C++ specific macro.

@@ -1,8 +1,4 @@
-(defun ac-complete-by-space ()
-  (interactive)
-  (insert " "))
-
-;;; auto-complete.el --- Auto completion with popup menu
+;;; auto-complete.el --- Inline auto completion
 
 ;; Copyright (C) 2008, 2009  MATSUYAMA Tomohiro
 
@@ -24,96 +20,81 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
-;; This extension provides a way to select a completion with
-;; popup menu.
 ;;
-;; I checked that this extension can work properly on GNU Emacs 22 or higher.
-
-;; To use this extension, locate this file to load-path directory,
-;; and add the following code to your .emacs.
-;; ------------------------------
-;; (require 'auto-complete)
-;; (global-auto-complete-mode t)
-;; ------------------------------
-
-;; After installation, you can try this:
+;; This extension provides a way to complete with popup menu like:
 ;;
-;; 1. Switch to emacs-lisp-mode buffer such as .emacs
-;; 2. Goto anywhere
-;; 3. Type "def"
-;; 4. You may see a pop menu after the cursor like:
-;;    def-!-
-;;    +-----------------+
-;;    |defun            |    <- highlight
-;;    |defvar           |
-;;    |defmacro         |
-;;    |       ...       |
-;;    +-----------------+
-;; 5. You can complete by seleting the menu item
-;;    by pressing TAB, <down>, <up>, and RET.
+;;     def-!-
+;;     +-----------------+
+;;     |defun::::::::::::|
+;;     |defvar           |
+;;     |defmacro         |
+;;     |       ...       |
+;;     +-----------------+
+;;
+;; You can complete by typing and selecting menu.
+;; Enjoy!
+
+;;; Qualification:
+;;
+;; This extension can work property on GNU Emacs 22 or higher.
+
+;;; Installation:
+;;
+;; To use this extension, locate all .el files of this package to your load-path directory.
+;;
+;;     $ cp auto-complete-x.x.x/*.el ~/.emacs.d/
+;;
+;; And write following code into your .emacs.
+;;
+;;     (require 'auto-complete)
+;;     (global-auto-complete-mode t)
 
 ;;; Tips:
 ;;
-;; ================================
 ;; Use C-n/C-p to select candidates
-;; ================================
+;; --------------------------------
 ;;
 ;; Add following code to your .emacs.
-;;
-;; ------------------------------
-;; (define-key ac-complete-mode-map "\C-n" 'ac-next)
-;; (define-key ac-complete-mode-map "\C-p" 'ac-previous)
-;; ------------------------------
+;; 
+;;     (define-key ac-complete-mode-map "\C-n" 'ac-next)
+;;     (define-key ac-complete-mode-map "\C-p" 'ac-previous)
 ;;
 ;;
-;; ====================================
 ;; Don't start completion automatically
-;; ====================================
+;; ------------------------------------
 ;;
 ;; Add following code to your .emacs.
 ;;
-;; ------------------------------
-;; (setq ac-auto-start nil)
-;; (global-set-key "\M-/" 'ac-start)
-;; ------------------------------
+;;     (setq ac-auto-start nil)
+;;     (global-set-key "\M-/" 'ac-start)
 ;;
-;; Or
+;; or
 ;;
-;; ------------------------------
-;; ;; start completion when entered 3 characters
-;; (setq ac-auto-start 3)
-;; ------------------------------
+;;     ;; start completion when entered 3 characters
+;;     (setq ac-auto-start 3)
 ;;
 ;;
-;; ===============
 ;; Stop completion
-;; ===============
+;; ---------------
 ;;
 ;; Add following code to your .emacs.
 ;;
-;; ------------------------------
-;; (define-key ac-complete-mode-map "\M-/" 'ac-stop)
-;; ------------------------------
+;;     (define-key ac-complete-mode-map "\M-/" 'ac-stop)
 ;;
 ;; Now you can stop completion by pressing M-/.
 ;;
 ;;
-;; =================
 ;; Completion by TAB
-;; =================
+;; -----------------
 ;;
 ;; Add following code to your .emacs.
 ;;
-;; ------------------------------
-;; (define-key ac-complete-mode-map "\t" 'ac-complete)
-;; (define-key ac-complete-mode-map "\r" nil)
-;; ------------------------------
+;;     (define-key ac-complete-mode-map "\t" 'ac-complete)
+;;     (define-key ac-complete-mode-map "\r" nil)
 ;;
 ;;
-;; ===================
 ;; Do What I Mean mode
-;; ===================
+;; -------------------
 ;;
 ;; If DWIM (Do What I Mean) mode is enabled,
 ;; the following features is available:
@@ -126,99 +107,86 @@
 ;;    complete a candidate.
 ;;
 ;; DWIM mode is enabled by default.
-;; You can disable this feature by
-;; setting `ac-dwim' to nil.
+;; You can enable this feature by
+;; setting `ac-dwim' to t.
+;;
+;;     (setq ac-dwim t)
 ;;
 ;;
-;; ======================
 ;; Change default sources
-;; ======================
+;; ----------------------
 ;;
-;; `ac-sources' is global local variable, so you have to
-;; call `set-default' to set default value to `ac-sources'.
-;;
-;; ------------------------------
-;; (set-default 'ac-sources '(ac-source-abbrev ac-source-words-in-buffer))
-;; ------------------------------
+;;     (setq-default ac-sources '(ac-source-abbrev ac-source-words-in-buffer))
 ;;
 ;;
-;; ==================================
 ;; Change sources for particular mode
-;; ==================================
+;; ----------------------------------
 ;;
-;; ------------------------------
-;; (add-hook 'emacs-lisp-mode-hook
-;;             (lambda ()
-;;               (setq ac-sources '(ac-source-words-in-buffer ac-source-symbols))))
-;; ------------------------------
-
-;; This extension is so simple that you can extend
-;; how Emacs find a prefix and how Emacs enumerate
-;; candidates.
-;; I don't have intention to implement heavy functions :-)
-;;
-;; Enjoy!
+;;     (add-hook 'emacs-lisp-mode-hook
+;;                 (lambda ()
+;;                   (setq ac-sources '(ac-source-words-in-buffer ac-source-symbols))))
 
 ;;; History:
-
-;; 2008-02-20 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
 ;;
+;; 2008-03-18
+;;      * auto-complete.el 0.2.0 released
+;;
+;; 2008-03-04
+;;      * fixed menu position bug
+;;
+;; 2008-03-02
+;;      * made a source be able to be just a function which returns candidates
+;;      * added ac-source-words-in-all-buffer
+;;
+;; 2008-03-01
+;;      * added basic cache facility
+;;
+;; 2008-02-20
 ;;      * fixed menu position bug at long line (thanks rubikitch <rubikitch@ruby-lang.org>)
 ;;      * made dictionary source generator (ac-define-dictionary-source)
 ;;      * devided into some files (auto-complete-ruby.el, auto-complete-yasnippet.el, etc)
 ;;
-;; 2008-02-19 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-02-19
 ;;      * added ac-trigger-commands switch
 ;;
-;; 2008-02-10 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-02-10
 ;;      * added ac-stop function (suggestion from Andy Stewart)
 ;;      * added ac-override-local-map switch (suggestion from Andy Stewart)
 ;;
-;; 2008-02-03 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-02-03
 ;;      * omni completion redesign
 ;;      * ac-sources is now buffer local for every buffer
 ;;      * fixed a menu position bug (thanks Andy Stewart)
 ;;      * fixed byte-compile warnings (thanks Andy Stewart)
 ;;
-;; 2008-01-22 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-01-22
 ;;      * added face/selection-face property for sources
 ;;      * supported menu scroll
 ;;
-;; 2008-01-20 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-01-20
 ;;      * omni completion
 ;;
-;; 2008-12-24 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-12-24
 ;;      * suppress errors on command hook
 ;;
-;; 2008-12-03 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-12-03
 ;;      * changed ac-dwim to nil by default
 ;;      * made menu to be able to adjust width
 ;;
-;; 2008-12-03 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-12-03
 ;;      * renamed ac-find-function to ac-prefix-function
 ;;      * renamed ac-target to ac-prefix
 ;;
-;; 2008-11-26 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-11-26
 ;;      * auto-complete.el 0.1.0 released
 ;;
-;; 2008-11-19 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-11-19
 ;;      * thanks for Taiki SUGAWARA <buzz.taiki@gmail.com>
 ;;      *   added source ac-source-abbrev
 ;;      *   added source ac-source-symbols
 ;;      * added ac-expand-common to expand common part
 ;;
-;; 2008-11-18 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-11-18
 ;;      * added ac-auto-start switch
 ;;      * added ac-dwim switch
 ;;      * changed menu popup behavior at end of window
@@ -227,8 +195,7 @@
 ;;      * changed to use overriding-local-map instead of minor mode map
 ;;      * changed default key bindings
 ;;
-;; 2008-11-16 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-11-16
 ;;      * supported candidates by using sources
 ;;      * added automatically start swtich
 ;;      * fixed some bug
@@ -240,8 +207,7 @@
 ;;      * ac-find-function and ac-candidate-function is not buffer local variable now
 ;;      * made candidates visible when you are end of line
 ;;
-;; 2008-11-11 MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-11-11
 ;;      * by reporting from rubikitch <rubikitch@ruby-lang.org>
 ;;      *   renamed hook name
 ;;      *   registered backward-delete-char as special command
@@ -249,8 +215,7 @@
 ;;      * made auto-complete disabled when isearch-mode enabled
 ;;      * added some major-mode into ac-modes
 ;;
-;; 2008-11-09  MATSUYAMA Tomohiro <t.matsuyama.pub@gmail.com>
-;;
+;; 2008-11-09
 ;;      * auto-complete.el 0.0.1 released
 ;;      * fixed double-width character displaying problem
 ;;      * fixed menu position following tab character
@@ -258,12 +223,17 @@
 
 ;;; TODO:
 ;;
+;; - test facility
+;; - support composed chars
+;; - fuzzy match
+;; - minibuffer completion
+;; - dictionary
+;; - documentation
 ;; - performance issue (cache issue)
 ;; - fix narrowing bug (reported by Yuto Hayamizu <y.hayamizu@gmail.com>)
 ;; - care about undo (buffer-disable-undo)
 ;; - scroll bar (visual)
 ;; - show description
-;; - dictionary
 ;; - semantic
 ;; - use cl
 ;; - icon
@@ -273,7 +243,7 @@
 
 ;;; Code:
 
-
+ 
 
 (defgroup auto-complete nil
   "Auto completion with popup menu"
@@ -321,14 +291,14 @@ If you specify `nil', never be started automatically."
 
 (defcustom ac-override-local-map nil
   "Non-nil mean use `ac-complete-mode-map' override local map.
-Please set it to non-nil only if you faced to some problem about
+Please set it to non-nil only if you faced to some problem about 
 minor-mode keymap conflicts."
   :type 'boolean
   :group 'auto-complete)
 
-(defface ac-menu-face
+(defface ac-candidate-face
   '((t (:background "lightgray" :foreground "black")))
-  "Face for candidate menu."
+  "Face for candidate."
   :group 'auto-complete)
 
 (defface ac-selection-face
@@ -361,6 +331,9 @@ Or, `ac-menu' grows backward.")
 (defvar ac-saved-window-hscroll nil
   "Saved window hscroll value for restore.")
 
+(defvar ac-buffer nil
+  "A buffer where auto-complete is started.")
+
 (defvar ac-point nil
   "Start point of prefix.")
 
@@ -382,6 +355,9 @@ Or, `ac-menu' grows backward.")
 
 (defvar ac-dwim-enable nil
   "Non-nil means DWIM completion will be allowed.")
+
+(defvar ac-setup-function 'ac-sources-setup
+  "This function will be called when `auto-complete-mode' is enabled.")
 
 (defvar ac-prefix-function 'ac-sources-prefix
   "When `auto-complete-mode' finds it can start completion
@@ -411,7 +387,7 @@ using the `TARGET' that is given as a first argument.")
   (let ((map (make-sparse-keymap)))
     (define-key map "\t" 'ac-expand)
     (define-key map "\r" 'ac-complete)
-
+    
     (define-key map [down] 'ac-next)
     (define-key map [up] 'ac-previous)
 
@@ -421,11 +397,11 @@ using the `TARGET' that is given as a first argument.")
 (defvar ac-saved-local-map nil
   "Old keymap before `auto-complete' activated.")
 
-
+ 
 
 ;;;; Auto completion
 
-(defun ac-setup (point width)
+(defun ac-setup-menu (point width)
   "Setup popup menu."
   (when ac-menu
     ;; reposition
@@ -444,7 +420,7 @@ using the `TARGET' that is given as a first argument.")
                          (max 1 (- (window-height)
                                    (if mode-line-format 1 0)
                                    (if header-line-format 1 0)))
-                         (1+ (count-lines (window-start) (point))))))
+                         (count-lines (window-start) (point)))))
                 -1
               1))
       (let ((window-width (window-width))
@@ -594,9 +570,8 @@ using the `TARGET' that is given as a first argument.")
          (ac-menu-show-line ac-menu i)
          (ac-menu-set-line-string ac-menu i candidate
                                   (if (= i ac-selection)
-                                      (or (ac-get-candidate-property 'selection-face candidate)
-                                          'ac-selection-face)
-                                    (ac-get-candidate-property 'menu-face candidate)))
+                                      (or (ac-get-candidate-property 'selection-face candidate) 'ac-selection-face)
+                                    (or (ac-get-candidate-property 'candidate-face candidate) 'ac-candidate-face)))
          (setq i (1+ i))))
      (nthcdr ac-menu-scroll ac-candidates))
     ;; ensure lines visible
@@ -605,7 +580,7 @@ using the `TARGET' that is given as a first argument.")
                    (max 1 (- (window-height)
                              (if mode-line-format 1 0)
                              (if header-line-format 1 0)))
-                   (1+ (count-lines (window-start) (point))))))
+                   (count-lines (window-start) (point)))))
         (recenter (- (1+ i))))
     (if (> i ac-menu-offset)
         (let ((window-width (window-width))
@@ -657,7 +632,8 @@ using the `TARGET' that is given as a first argument.")
     (let ((c1 (nth (+ (- ac-selection ac-menu-offset) ac-menu-scroll) ac-candidates))
           (c2 (nth (+ (- selection ac-menu-offset) ac-menu-scroll) ac-candidates)))
       (ac-menu-set-line-string ac-menu ac-selection c1
-                               (ac-get-candidate-property 'menu-face c1))
+                               (or (ac-get-candidate-property 'candidate-face c1)
+                                   'ac-candidate-face))
       (ac-menu-set-line-string ac-menu selection c2
                                (or (ac-get-candidate-property 'selection-face c2)
                                    'ac-selection-face))
@@ -670,6 +646,7 @@ using the `TARGET' that is given as a first argument.")
          (reposition (not (equal ac-point point))))
     (if (null point)
         (ac-abort)
+      (setq ac-buffer (current-buffer))
       (setq ac-point point)
       (when (not (equal ac-point ac-old-point))
         (setq ac-old-point point))
@@ -694,7 +671,7 @@ using the `TARGET' that is given as a first argument.")
                 (null ac-menu)
                 (> width current-width)
                 (< width (- current-width 10)))
-            (ac-setup point (* (ceiling (/ width 10.0)) 10)))
+            (ac-setup-menu point (* (ceiling (/ width 10.0)) 10)))
         (if (and ac-dwim
                  (= (length candidates) 1)
                  (equal (car candidates) ac-prefix)
@@ -744,6 +721,7 @@ using the `TARGET' that is given as a first argument.")
   :group 'auto-complete
   (if auto-complete-mode
       (progn
+        (funcall ac-setup-function)
         (add-hook 'post-command-hook 'ac-on-post-command nil t)
         (add-hook 'pre-command-hook 'ac-on-pre-command nil t)
         (run-hooks 'auto-complete-mode-hook))
@@ -755,14 +733,27 @@ using the `TARGET' that is given as a first argument.")
   auto-complete-mode auto-complete-mode-maybe
   :group 'auto-complete)
 
-
+ 
+
+;;;; Basic cache facility
+
+(defvar ac-clear-variables-after-save nil)
+
+(defun ac-clear-variable-after-save (variable)
+  (push variable ac-clear-variables-after-save))
+
+(defun ac-clear-variables-after-save ()
+  (dolist (variable ac-clear-variables-after-save)
+    (set variable nil)))
+
+ 
 
 ;;;; Sources implementation
 
 (defvar ac-sources '(ac-source-words-in-buffer)
   "Sources for completion.
 
-Source takes a form of alist:
+Source takes a form of just function which returns candidates or alist:
 
 init INIT-FUNC
   INIT-FUNC will be called before creating candidate every time.
@@ -779,7 +770,6 @@ limit LIMIT-NUM
 
 requires REQUIRES-NUM
   This source will be included when `ac-prefix' length is larger than REQUIRES-NUM.")
-
 (make-variable-buffer-local 'ac-sources)
 
 (defvar ac-sources-prefix-function 'ac-sources-prefix-default
@@ -793,19 +783,21 @@ You should override this variable instead of ac-prefix-function.")
   "An alist of REGEXP and SOURCES.
 If matched regexp, switch to omni-completion mode and
 use SOURCES as `ac-sources'.")
-
 (make-variable-buffer-local 'ac-omni-completion-sources)
 
 (defvar ac-sources-omni-completion nil
   "Non-nil means `auto-complete-mode' is now working on omni-completion.")
 
+(defun ac-sources-setup ()
+  "Implementation for `ac-setup-function' by sources."
+  (make-local-variable 'ac-clear-variables-after-save)
+  (add-hook 'after-save-hook 'ac-clear-variables-after-save nil t))
+
 (defun ac-sources-init ()
   "Implementation for `ac-init-function' by sources."
   (or ac-current-sources (setq ac-current-sources ac-sources))
   (dolist (source ac-current-sources)
-    (if (symbolp source)
-        (setq source (symbol-value source)))
-    (let ((init-function (assoc-default 'init source)))
+    (let ((init-function (ac-get-source-property 'init source)))
       (if init-function
           (funcall init-function)))))
 
@@ -839,10 +831,8 @@ use SOURCES as `ac-sources'.")
   "Implementation for `ac-cadidates-function' by sources."
   (let (candidates)
     (dolist (source ac-current-sources)
-      (if (symbolp source)
-          (setq source (symbol-value source)))
-      (let* ((ac-limit (or (assoc-default 'limit source) ac-limit))
-             (requires (assoc-default 'requires source))
+      (let* ((ac-limit (or (ac-get-source-property 'limit source) ac-limit))
+             (requires (ac-get-source-property 'requires source))
              cand)
         (when (or ac-sources-omni-completion
                   (>= (length ac-prefix)
@@ -853,18 +843,27 @@ use SOURCES as `ac-sources'.")
                 (delq nil
                       (mapcar (lambda (candidate)
                                 (ac-propertize-candidate candidate
-                                                         'action (assoc-default 'action source)
-                                                         'menu-face (assoc-default 'menu-face source)
-                                                         'selection-face (assoc-default 'selection-face source)))
-                              (funcall (assoc-default 'candidates source))))))
+                                                         'action (ac-get-source-property 'action source)
+                                                         'face (ac-get-source-property 'candidate-face source)
+                                                         'candidate-face (ac-get-source-property 'candidate-face source)
+                                                         'selection-face (ac-get-source-property 'selection-face source)))
+                              (funcall (ac-get-source-property 'candidates source))))))
         (if (and (> ac-limit 1)
                  (> (length cand) ac-limit))
             (setcdr (nthcdr (1- ac-limit) (copy-sequence cand)) nil))
         (setq candidates (append candidates cand))))
     (delete-dups candidates)))
 
+(defun ac-get-source-property (property source)
+  (if (symbolp source)
+      (setq source (symbol-value source)))
+  (if (and (functionp source)
+           (eq property 'candidates))
+      source
+    (if (consp source)
+        (assoc-default property source))))
 
-
+ 
 
 ;;;; Standard sources
 
@@ -896,7 +895,41 @@ use SOURCES as `ac-sources'.")
 
 (defvar ac-source-words-in-buffer
   '((candidates . ac-candidate-words-in-buffer))
-  "Simple source like dabbrev.")
+  "Source for completing words in current buffer.")
+
+(defvar ac-word-index nil
+  "Word index for individual buffer.")
+
+(ac-clear-variable-after-save 'ac-word-index)
+
+(defvar ac-source-words-in-all-buffer
+  '((init
+     . (lambda ()
+         (dolist (buffer (buffer-list))
+           (with-current-buffer buffer
+             (if (not (local-variable-p 'ac-word-index))
+                 (make-local-variable 'ac-word-index))
+             (if (eq buffer ac-buffer)
+                 (setq ac-word-index (ac-candidate-words-in-buffer))
+               (if (and (null ac-word-index)
+                        (< (buffer-size) 102400))
+                   (save-excursion
+                     (goto-char (point-min))
+                     (while (re-search-forward "\\b\\(\\s_\\|\\sw\\)+\\b" nil t)
+                       (let ((candidate (match-string-no-properties 0)))
+                         (if (not (member candidate ac-word-index))
+                             (push candidate ac-word-index))))
+                     (setq ac-word-index (nreverse ac-word-index)))))))))
+    (candidates
+     . (lambda ()
+         (let ((candidates)
+               (buffers (buffer-list)))
+           (while (and (< (length candidates) ac-limit)
+                       buffers)
+             (setq candidates (append candidates (all-completions ac-prefix (buffer-local-value 'ac-word-index (car buffers)))))
+             (setq buffers (cdr buffers)))
+           candidates))))
+  "Source for completing words in all buffer.")
 
 (defvar ac-source-symbols
   '((candidates
@@ -973,7 +1006,7 @@ This is useful if you just want to define a dictionary/keywords source."
   `(defvar ,name
      '((candidates . (lambda () (all-completions ac-prefix ,list))))))
 
-
+ 
 
 ;;;; Popup menu
 
@@ -1086,7 +1119,7 @@ This is useful if you just want to define a dictionary/keywords source."
                          (overlay-put overlay
                                       'after-string
                                       (concat (overlay-get overlay 'prefix)
-                                              (propertize (ac-menu-create-line-string menu string) 'face (or face 'ac-menu-face))
+                                              (propertize (ac-menu-create-line-string menu string) 'face face)
                                               (overlay-get overlay 'postfix)))))
           (aset overlays i overlay))
         (forward-line))

@@ -10,7 +10,7 @@ top=../
 ede_FILES=Project.ede Makefile
 
 Tests_MISC=test.c test.cpp templates.cpp test.make scopetest.cpp scopetest.java testdoublens.cpp testdoublens.hpp testsubclass.cpp testsubclass.hh testspp.c testsppreplace.c testsppreplaced.c testtypedefs.cpp testfriends.cpp testusing.hh testusing.cpp testtemplates.cpp testjavacomp.java testsppcomplete.c teststruct.cpp
-VERSION=2.0pre6
+VERSION=2.0pre7
 DISTDIR=$(top)semantic-$(VERSION)/tests
 
 

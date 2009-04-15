@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: semanticdb-typecache.el,v 1.38 2009/01/10 00:12:12 zappo Exp $
+;; X-RCS: $Id: semanticdb-typecache.el,v 1.39 2009/04/03 12:59:35 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -414,6 +414,7 @@ found tag to be loaded."
 	 (notdone t)
 	 (lastfile nil)
 	 (thisfile nil)
+	 (lastans nil)
 	 (calculated-scope nil)
 	 )
     ;; 1) Find first symbol in the two master lists and then merge
@@ -470,31 +471,40 @@ found tag to be loaded."
 	  (setq notdone nil)
 	(setq stream (semantic-tag-type-members ans)))
 
-      (setq type (cdr type)))
+      (setq lastans ans
+	    ans nil
+	    type (cdr type)))
 
-    (if (and find-file-match lastfile)
-	;; This won't liven up the tag since we have a copy, but
-	;; we ought to be able to get there and go to the right line.
-	(find-file-noselect lastfile)
-      ;; We don't want to find-file match, so instead lets
-      ;; push the filename onto the return tag.
-      (when ans
-	(setq ans (semantic-tag-copy ans nil lastfile))
-	;; We used to do the below, but we would erroneously be putting
-	;; attributes on tags being shred with other lists.
-	;;(semantic--tag-put-property ans :filename lastfile)
+    (if (or type (not notdone))
+	;; If there is stuff left over, then we failed.  Just return
+	;; nothing.
+	nil
+
+      ;; We finished, so return everything.
+
+      (if (and find-file-match lastfile)
+	  ;; This won't liven up the tag since we have a copy, but
+	  ;; we ought to be able to get there and go to the right line.
+	  (find-file-noselect lastfile)
+	;; We don't want to find-file match, so instead lets
+	;; push the filename onto the return tag.
+	(when lastans
+	  (setq lastans (semantic-tag-copy lastans nil lastfile))
+	  ;; We used to do the below, but we would erroneously be putting
+	  ;; attributes on tags being shred with other lists.
+	  ;;(semantic--tag-put-property lastans :filename lastfile)
+	  )
 	)
-      )
 
-    (if (and ans calculated-scope)
+      (if (and lastans calculated-scope)
 
-	;; Put our discovered scope into the tag if we have a tag
-	(semantic-scope-tag-clone-with-scope
-	 ans (reverse (cdr calculated-scope)))
+	  ;; Put our discovered scope into the tag if we have a tag
+	  (semantic-scope-tag-clone-with-scope
+	   lastans (reverse (cdr calculated-scope)))
 
-      ;; Else, just return
-      ans
-      )))
+	;; Else, just return
+	lastans
+	))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

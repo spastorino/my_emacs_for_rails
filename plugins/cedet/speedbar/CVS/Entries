@@ -1,5 +1,4 @@
 /INSTALL/1.7/Sun Feb 29 00:12:33 2004//
-/Project.ede/1.19/Sat Jan 26 02:42:47 2008//
 /bigclock.el/1.4/Fri Sep 30 20:25:35 2005//
 /dframe.el/1.29/Wed Dec  7 16:52:51 2005//
 /fsum.el/1.2/Fri Sep 30 20:25:43 2005//
@@ -18,7 +17,6 @@
 /sb-gud.el/1.11/Wed Sep 17 16:58:28 2003//
 /sb-html.el/1.4/Fri Sep 30 20:25:56 2005//
 /sb-image.el/1.11/Fri Sep 30 20:25:59 2005//
-/sb-info.el/1.20/Fri Jun 23 08:26:16 2006//
 /sb-info.xpm/1.1/Sat Mar 16 20:06:35 2002//
 /sb-label.xpm/1.2/Sat Mar 16 20:05:23 2002//
 /sb-mail.xpm/1.1/Wed Jan 31 18:50:51 2001//
@@ -38,8 +36,10 @@
 /sb-texinfo.el/1.9/Fri Sep 30 20:26:09 2005//
 /sb-w3.el/1.10/Fri Sep 30 20:26:13 2005//
 /speedbar-load.el/1.2/Fri Sep 30 20:26:23 2005//
-/speedbar.el/1.259/Mon Apr 14 15:07:12 2008//
 /speedbar.texi/1.19/Sat Oct 22 02:54:34 2005//
 /.cvsignore/1.1/Thu Mar  5 18:43:19 2009//
-/Makefile/1.16/Tue Mar 10 20:51:57 2009//
+/Makefile/1.17/Wed Apr 15 19:02:49 2009//
+/Project.ede/1.20/Wed Apr 15 19:02:49 2009//
+/sb-info.el/1.21/Wed Apr 15 19:02:49 2009//
+/speedbar.el/1.260/Wed Apr 15 19:02:49 2009//
 D

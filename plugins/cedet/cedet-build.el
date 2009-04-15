@@ -3,7 +3,7 @@
 ;; Copyright (C) 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: cedet-build.el,v 1.9 2009/03/08 12:50:50 zappo Exp $
+;; X-RCS: $Id: cedet-build.el,v 1.10 2009/03/19 00:41:27 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -222,8 +222,8 @@ OVERRIDE-CHECK to override cedet short-cicuit."
 				     (car ans) (cdr ans))
 		  (cedet-build-msg "done.\n"))
 		))
-	    )))
-      )))
+	    ))))
+    (cedet-build-msg "\n\nDone.\n")))
 
 
 (provide 'cedet-build)

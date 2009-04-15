@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: project, make
-;; RCS: $Id: ede-proj-elisp.el,v 1.36 2009/02/24 00:46:25 zappo Exp $
+;; RCS: $Id: ede-proj-elisp.el,v 1.37 2009/03/17 01:11:48 zappo Exp $
 
 ;; This software is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -106,9 +106,16 @@ Lays claim to all .elc files that match .el files in this target."
     (while packages
       (or (setq ldir (locate-library (car packages)))
 	  (error "Cannot find package %s" (car packages)))
-      (setq paths (cons (file-relative-name (file-name-directory ldir))
-			paths)
-	    packages (cdr packages)))
+      (let* ((fnd (file-name-directory ldir))
+	     (rel (file-relative-name fnd))
+	     (full nil)
+	     )
+	;; Make sure the relative name isn't to far off
+	(when (string-match "^\\.\\./\\.\\./\\.\\./\\.\\." rel)
+	  (setq full fnd))
+	;; Do the setup.
+	(setq paths (cons (or full rel) paths)
+	      packages (cdr packages))))
     paths))
 
 (defmethod project-compile-target ((obj ede-proj-target-elisp))

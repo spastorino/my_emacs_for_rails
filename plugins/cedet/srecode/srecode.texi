@@ -1,6 +1,6 @@
 \input texinfo   @c -*-texinfo-*-
 @c
-@c $Id: srecode.texi,v 1.15 2009/02/11 02:35:59 zappo Exp $
+@c $Id: srecode.texi,v 1.16 2009/03/29 16:11:37 zappo Exp $
 @c
 @c %**start of header
 @setfilename srecode.info
@@ -239,10 +239,10 @@ applications have their own template files and logic needed to fill in
 dictionaries or position a cursor.
 
 @section Field Editing
-If the variable @code{srecode-insert-with-fields-p} is set, then
-variables that would normally ask a question, will instead create
-``fields'' in the buffer.  A field-editing layer provides simple
-interaction through the fields.
+If the variable @code{srecode-insert-ask-variable-method} is set to
+'field, then variables that would normally ask a question, will
+instead create ``fields'' in the buffer.  A field-editing layer
+provides simple interaction through the fields.
 
 @node SRecode Minor Mode
 @chapter SRecode Minor Mode
@@ -280,13 +280,18 @@ to fill in a part of the template, then the minibuffer is used to
 query for that information.  SRecode also supports a field-edting mode
 that can be used instead.  To enable it set:
 
-@defvar srecode-insert-with-fields-p
-@anchor{srecode-insert-with-fields-p}
-Non-@code{nil} means to insert editable fields with the template.
-When this is @code{nil}, then questions are asked in the mini-buffer.
-When fields are used, areas are shown with overlays that can
-be TABbed between for quick inline-editing.
-@end defvar
+@defun srecode-insert-ask-variable-method
+@anchor{srecode-insert-ask-variable-method}
+Determine how to ask for a dictionary value when inserting a template.
+Only the @var{ASK} style inserter will query the user for a value.
+Dictionary value references that ask begin with the ? character.
+Possible values are:
+  @code{'ask}   - Prompt in the minibuffer as the value is inserted.
+  @code{'field} - Use the dictionary macro name as the inserted value,
+           and place a field there.  Matched fields change together.
+
+@var{NOTE}: The field feature does not yet work with XEmacs.
+@end defun
 
 Field editing mode is supported in newever versions of Emacs.  You
 will not be prompted to fill in values while the template is

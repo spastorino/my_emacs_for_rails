@@ -65,8 +65,8 @@
     (shell-command
      (rct-debuglog (format "%s %s > %s" command input-rb output-rb))
      t " *rct-error*")
-    (and buffer (set-buffer buffer))
-    (insert-file-contents output-rb nil nil nil t)
+    (with-current-buffer (or buffer (current-buffer))
+      (insert-file-contents output-rb nil nil nil t))
     (delete-file input-rb)
     (delete-file output-rb)))
 
@@ -155,7 +155,12 @@ See also `rct-interactive'."
     (rct-shell-command
      (format "%s %s %s --line=%d --column=%d %s"
              command opt (or rct-option-local "")
-             (rct-current-line) (current-column)
+             (rct-current-line)
+             ;; specify column in BYTE
+             (string-bytes
+              (encode-coding-string
+               (buffer-substring (point-at-bol) (point))
+               buffer-file-coding-system))
              (if rct-use-test-script (rct-test-script-option-string) ""))
      eval-buffer)
     (message "")
@@ -170,8 +175,10 @@ See also `rct-interactive'."
       ""
     (let ((test-buf (rct-find-test-script-buffer))
           (bfn buffer-file-name)
-          t-opt test-filename)
-      (if test-buf
+          bfn2 t-opt test-filename)
+      (if (and test-buf
+               (setq bfn2 (buffer-local-value 'buffer-file-name test-buf))
+               (file-exists-p bfn2))
           ;; pass test script's filename and lineno
           (with-current-buffer test-buf
             (setq t-opt (format "%s@%s" buffer-file-name (rct-current-line)))
@@ -241,11 +248,24 @@ Rct-fork makes xmpfilter and completion MUCH FASTER because it pre-loads heavy l
 When rct-fork is running, the mode-line indicates it to avoid unnecessary run.
 To kill rct-fork process, use \\[rct-fork-kill].
 "
-  (interactive "srct-fork options (-e CODE -I LIBDIR -r LIB): ")
+  (interactive (list
+                (read-string "rct-fork options (-e CODE -I LIBDIR -r LIB): "
+                             (rct-fork-default-options))))
   (rct-fork-kill)
   (rct-fork-minor-mode 1)
   (start-process-shell-command
    "rct-fork" "*rct-fork*" rct-fork-command-name options))
+
+(defun rct-fork-default-options ()
+  "Default options for rct-fork by collecting requires."
+  (mapconcat
+   (lambda (lib) (format "-r %s" lib))
+   (save-excursion
+     (goto-char (point-min))
+     (loop while (re-search-forward "\\<require\\> ['\"]\\([^'\"]+\\)['\"]" nil t)
+           collect (match-string-no-properties 1)))
+   " "))
+
 (defun rct-fork-kill ()
   "Kill rct-fork process invoked by \\[rct-fork]."
   (interactive)

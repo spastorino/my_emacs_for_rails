@@ -1,5 +1,5 @@
 ;;; anything-rcodetools.el --- accurate Ruby method completion with anything
-;; $Id: anything-rcodetools.el,v 1.6 2008/01/14 17:59:34 rubikitch Exp $
+;; $Id: anything-rcodetools.el,v 1.12 2009/04/18 10:12:02 rubikitch Exp $
 
 ;;; Copyright (c) 2007 rubikitch
 
@@ -20,9 +20,39 @@
 ;;       ;; See docs
 ;;       (define-key anything-map "\C-z" 'anything-execute-persistent-action)
 
+;;; Commands:
+;;
+;; Below are complete command list:
+;;
+;;
+;;; Customizable Options:
+;;
+;; Below are customizable option list:
+;;
+
 ;;; History:
 
 ;; $Log: anything-rcodetools.el,v $
+;; Revision 1.12  2009/04/18 10:12:02  rubikitch
+;; Adjust to change of `use-anything-show-completion'
+;;
+;; Revision 1.11  2009/04/17 20:21:47  rubikitch
+;; * require anything
+;; * require anything-show-completion.el if available
+;;
+;; Revision 1.10  2009/04/17 20:11:03  rubikitch
+;; removed old code
+;;
+;; Revision 1.9  2009/04/17 20:07:52  rubikitch
+;; * use --completion-emacs-anything option
+;; * New implementation of `anything-c-source-complete-ruby-all'
+;;
+;; Revision 1.8  2009/04/15 10:25:25  rubikitch
+;; Set `anything-execute-action-at-once-if-one' t
+;;
+;; Revision 1.7  2009/04/15 10:24:23  rubikitch
+;; regexp bug fix
+;;
 ;; Revision 1.6  2008/01/14 17:59:34  rubikitch
 ;; * uniform format (anything-c-source-complete-ruby, anything-c-source-complete-ruby-all)
 ;; * rename command: anything-c-ri -> anything-rct-ri
@@ -46,49 +76,21 @@
 
 ;;; Code:
 
+(require 'anything)
 (require 'rcodetools)
+(when (require 'anything-show-completion nil t)
+  (use-anything-show-completion 'rct-complete-symbol--anything
+                                '(length pattern)))
 
-;;;; Compatibility code
-(unless (fboundp 'anything-execute-persistent-action)
-  (defun anything-execute-persistent-action ()
-    "If a candidate was selected then perform the associated action without quitting anything."
-    (interactive)
-    (save-selected-window
-      (select-window (get-buffer-window anything-buffer))
-      (select-window (setq minibuffer-scroll-window
-                           (if (one-window-p t) (split-window) (next-window (selected-window) 1))))
-      (let* ((anything-window (get-buffer-window anything-buffer))
-             (selection (if anything-saved-sources
-                            ;; the action list is shown
-                            anything-saved-selection
-                          (anything-get-selection)))
-             (default-action (anything-get-action))
-             (action (assoc-default 'persistent-action (anything-get-current-source))))
-        (setq action (or action default-action))
-        (if (and (listp action)
-                 (not (functionp action))) ; lambda
-            ;; select the default action
-            (setq action (cdar action)))
-        (set-window-dedicated-p anything-window t)
-        (unwind-protect
-            (and action selection (funcall action selection))
-          (set-window-dedicated-p anything-window nil))))))
+(defun anything-rct-ri (meth)
+  (ri (get-text-property 0 'desc meth)))
 
-(unless (boundp 'anything-current-buffer)
-  (defvar anything-current-buffer nil)
-  (defadvice anything (before get-current-buffer activate)
-    (setq anything-current-buffer (current-buffer))))
-
-;;;; Main code
-(defun anything-rct-ri (pair)
-  (ri (substring (cadr (split-string pair "\t")) 1 -1)))
-
-(defun anything-rct-complete  (pair)
+(defun anything-rct-complete  (meth)
   (save-excursion
     (set-buffer anything-current-buffer)
     (search-backward pattern)
     (delete-char (length pattern)))
-  (insert (car (split-string pair "\t"))))
+  (insert meth))
 
 (setq rct-complete-symbol-function 'rct-complete-symbol--anything)
 (defvar anything-c-source-complete-ruby
@@ -97,7 +99,7 @@
     (init
      . (lambda ()
          (condition-case x
-             (rct-exec-and-eval rct-complete-command-name "--completion-emacs-icicles")
+             (rct-exec-and-eval rct-complete-command-name "--completion-emacs-anything")
            ((error) (setq rct-method-completion-table nil)))))
     (action
      ("Completion" . anything-rct-complete)
@@ -106,34 +108,37 @@
     (persistent-action . anything-rct-ri)))
 
 (defvar rct-get-all-methods-command "PAGER=cat fri -l")
-(defun rct-get-all-methods ()
-  (interactive)
-  (setq rct-all-methods
-        (mapcar (lambda (fullname)
-                  (replace-regexp-in-string "^.+[:#.]\\([^:#.]+\\)$"
-                                            "\\1\t[\\&]" fullname))
-                (split-string (shell-command-to-string rct-get-all-methods-command) "\n"))))
-
-(defvar rct-all-methods (rct-get-all-methods))
 (defvar anything-c-source-complete-ruby-all
   '((name . "Ruby Method Completion (ALL)")
-    (candidates
+    (init
      . (lambda ()
-        (let ((case-fold-search nil)
-              (re (format "[:#.]%s" (with-current-buffer anything-current-buffer
-                                   (symbol-at-point)))))
-          (remove-if-not
-           (lambda (meth) (string-match re meth))
-           rct-all-methods))))
+         (unless (anything-candidate-buffer)
+           (with-current-buffer (anything-candidate-buffer 'global)
+             (call-process-shell-command rct-get-all-methods-command nil t)
+             (goto-char 1)
+             (while (re-search-forward "^.+[:#.]\\([^:#.]+\\)$" nil t)
+               (replace-match "\\1\t[\\&]"))))))
+    (candidates-in-buffer
+     . (lambda ()
+         (let ((anything-pattern (format "^%s.*%s" (regexp-quote pattern) anything-pattern)))
+           (anything-candidates-in-buffer))))
+    (display-to-real
+     . (lambda (line)
+         (if (string-match "\t\\[\\(.+\\)\\]$" line)
+             (propertize (substring line 0 (match-beginning 0))
+                         'desc (match-string 1 line))
+           line)))
     (action
      ("Completion" . anything-rct-complete)
      ("RI" . anything-rct-ri))
     (persistent-action . anything-rct-ri)))
 
+
 (defun rct-complete-symbol--anything ()
   (interactive)
-  (let ((anything-sources (list anything-c-source-complete-ruby anything-c-source-complete-ruby-all)))
-    (anything)))
+  (let ((anything-execute-action-at-once-if-one t))
+    (anything '(anything-c-source-complete-ruby
+                anything-c-source-complete-ruby-all))))
 
 (provide 'anything-rcodetools)
 

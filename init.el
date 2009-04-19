@@ -204,7 +204,7 @@ LIST defaults to all existing live buffers."
 ;;       ;; See docs
 ;; (define-key ruby-mode-map "\M-\C-i" 'rct-complete-symbol)
 (define-key anything-map "\C-z" 'anything-execute-persistent-action)
-(rct-get-all-methods)
+;(rct-get-all-methods)
 
 
 ;; Interactively Do Things (highly recommended, but not strictly required)

@@ -1820,7 +1820,7 @@ handle the end-of-buffer error fired in it by calling
     (save-window-excursion
       (unwind-protect
           (let ((candidate-count (length candidates))
-                done key selidx)
+                done key (selidx 0))
             (while (not done)
               (unless (dropdown-list-at-point candidates selidx)
                 (switch-to-buffer (setq temp-buffer (get-buffer-create "*selection*"))
@@ -1836,10 +1836,10 @@ handle the end-of-buffer error fired in it by calling
                           (<= (aref key 0) (+ ?0 (min 9 candidate-count))))
                      (setq selection (- (aref key 0) ?1)
                            done      t))
-                    ((member key `(,(char-to-string ?\C-p) [up]))
+                    ((member key `(,(char-to-string ?\C-p) [up] "p"))
                      (setq selidx (mod (+ candidate-count (1- (or selidx 0)))
                                        candidate-count)))
-                    ((member key `(,(char-to-string ?\C-n) [down]))
+                    ((member key `(,(char-to-string ?\C-n) [down] "n"))
                      (setq selidx (mod (1+ (or selidx -1)) candidate-count)))
                     ((member key `(,(char-to-string ?\f))))
                     ((member key `(,(char-to-string ?\r) [return]))

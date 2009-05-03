@@ -84,8 +84,8 @@ Forrest Chang, Ryan Davis, Paul Stickne, and others
 @b{R}inari @b{I}s @b{N}ot @b{A} @b{R}uby @b{I}DE.
 
 Well, OK it kind of is. Rinari is a set of Emacs Lisp functions aimed
-towards making Emacs into a top-notch Ruby on Rails development
-environment.
+towards making Emacs (or XEmacs) into a top-notch Ruby on Rails
+development environment.
 
 Currently Rinari focuses on the core functionality most everyone would
 use when working on a Rails applications including...

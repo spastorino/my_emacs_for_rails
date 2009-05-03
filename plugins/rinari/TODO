@@ -1,14 +1,16 @@
 # -*- mode: org -*-
-# 
 #+TITLE:     TODO
 #+SEQ_TODO:  TODO WAITING | DONE CANCELLED MAYBE PARTIAL
 #+DRAWERS:   SNIP
 #+CATEGORY:  rinari
 
-List of pending/completed tasks for rinari
+List of tasks for rinari
 
+for documentation see [[http://rinari.rubyforge.org/]]
 for background see http://groups.google.com/group/emacs-on-rails
 
+* TODO Document changing jump keybindings
+* TODO Document Xemacs support
 * TODO full test coverage (ERT) [0/2]
 - [ ] movement tests
   - [ ] controller
@@ -25,12 +27,7 @@ for background see http://groups.google.com/group/emacs-on-rails
 
 switch from using elunit.el to ert.el for testing
 
-* TODO create a screencast
-promotion!!
-
-- [[http://www.emacswiki.org/cgi-bin/wiki/EmacsScreencasts]]
-
-* TODO Merb support [1/4]
+* TODO Merb support [2/4]
   :PROPERTIES:
   :suggested-by: Jorge Calás Lozano
   :END:
@@ -41,7 +38,7 @@ I think it's better to rely on config/init.rb that file should be on
 every merb project, merb.thor doesn't, in fact my "library" project
 doesn't have it.
 
-** TODO pull into rinari-merb
+** DONE pull into rinari-merb
 rinari-merb (minami? why not just rinari-merb? what if someone create a
 rinari version for sinatra? sinasi?)
 
@@ -69,7 +66,16 @@ In the current merb you don't don't have spec/controllers or spec/views
 (although you can, of course) but spec/requests is encourage. So
 app/controllers/assets.rb should map spec/requests/assets_spec.rb
 
-* TODO add find-by context
+* DONE submit to ELPA
+get rinari (and all of it's dependencies) into [[http://tromey.com/elpa/][ELPA]] the Emacs Lisp
+Package Archive
+
+* DONE create a screencast
+promotion!!
+
+now up with the online documentation [[http://rinari.rubyforge.org/]]
+
+* DONE add find-by context
   :PROPERTIES:
   :suggested-by: vylu
   :END:
@@ -90,7 +96,7 @@ Follow any of the following within two lines (up or down)
 - submit_tag
 - render
 
-* TODO improvements to finders
+* DONE improvements to finders
   :PROPERTIES:
   :suggested-by: vylu
   :END:
@@ -157,7 +163,7 @@ Thanks for the suggestion -- Eric
 need to add =git submodule init; git submodule update= to clone the
 submodules as well
 
-* PARTIAL windows support
+* MAYBE windows support
   :PROPERTIES:
   :tested-by: Darren Syzling
   :END:
@@ -205,18 +211,7 @@ comp-buffer-name) (let* ... ...)) comp-buffer-name)
   call-interactively(rinari-rake)
 #+END_EXAMPLE
 
-* PARTIAL bundles
-** DONE rhtml (from original rinari)
-see
-- [[http://rinari.rubyforge.org/rhtml_002dMode.html#rhtml_002dMode]]
-- [[http://github.com/eschulte/rhtml/tree/master]]
-
-** rdebug
-- [[http://bashdb.sourceforge.net/ruby-debug.html#SEC_Top]]
-** DONE snippets
-see http://github.com/eschulte/yasnippets-rails/tree/master
-
-* MAYBE inf-ruby enhancement
+* MAYBE inf-ruby missing errors
 
 found an example of an error that the
 `inferior-ruby-error-regexp-alist' in inf-ruby.el doesn't match
@@ -227,7 +222,7 @@ this was the error line
 SyntaxError: /home/eschulte/united/org/work/arf/arf/lib/cluster.rb:35: syntax error, unexpec
 :END:
 
-* MAYBE ruby-compilation enhancement
+* MAYBE ruby-compilation missing errors
   
 found a line which didn't match the error-regexp-alist
 
@@ -526,6 +521,17 @@ easy enough
 
 
  LocalWords:  elsif elseif keybinding
+
+* CANCELLED bundles
+** DONE rhtml (from original rinari)
+see
+- [[http://rinari.rubyforge.org/rhtml_002dMode.html#rhtml_002dMode]]
+- [[http://github.com/eschulte/rhtml/tree/master]]
+
+** rdebug
+- [[http://bashdb.sourceforge.net/ruby-debug.html#SEC_Top]]
+** DONE snippets
+see http://github.com/eschulte/yasnippets-rails/tree/master
 * CANCELLED adjust eshell/shell environment to highlight ruby errors
 not sure this is possible, at least not easily
 

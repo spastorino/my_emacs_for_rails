@@ -27,6 +27,9 @@
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message nil)
 
+(setq default-frame-alist '((font . "inconsolata")))
+;; (setq default-frame-alist '((font . "terminus")))
+
 ;; Get back font antialiasing
 (push '(font-backend xft x) default-frame-alist)
 

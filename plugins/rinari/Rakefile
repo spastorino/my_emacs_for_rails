@@ -5,6 +5,24 @@ MYDIR  = File.dirname(__FILE__)
 DOCDIR = "#{MYDIR}/doc"
 TESTDIR = "#{MYDIR}/test"
 
+desc "extract and clean files for submission to ELPA"
+task :elpa do
+  elpa_dir = File.join(MYDIR, "ELPA")
+  FileUtils.rm_rf(elpa_dir) if File.exists?(elpa_dir)
+  FileUtils.mkdir(elpa_dir)
+  ["rinari.el",
+   File.join("util", "ruby-mode.el"),
+   File.join("util", "inf-ruby.el"),
+   File.join("util", "ruby-compilation.el")].each do |file|
+    FileUtils.cp(file, elpa_dir)
+    file = File.join(elpa_dir, File.basename(file))
+    contents = File.read(file)
+    File.open(file, 'w') do |f|
+      f.write(contents.gsub(/;;;\#\#\#begin-elpa-ignore[\s\S]+;;;\#\#\#end-elpa-ignore[\r\n]/m, ''))
+    end
+  end
+end
+
 namespace "test" do
   
   desc "Run tests using `emacs-snapshot'"

@@ -7,6 +7,8 @@
 ;; Version: 2.0
 ;; Created: 2008-08-21
 ;; Keywords: project, convenience, navigation
+;; Package-Requires: ((findr "0.7")
+;;                    (inflections "1.0"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -62,9 +64,14 @@
 ;;   'ruby-add-log-current-method)
 
 ;;; Code:
+(if (featurep 'xemacs)
+  (add-to-list 'load-path (file-name-as-directory (or load-file-name buffer-file-name))))
 (require 'which-func)
 (require 'findr)
 (require 'inflections)
+
+;; ido-mode must be defined (only an issue with Xemacs)
+(unless (fboundp 'ido-mode) (defvar ido-mode nil))
 
 (defvar jump-ignore-file-regexp ;; TODO actually start using this
   "\\(.*\\.\\(git\\|svn\\|cvs\\).*\\|.*~\\|.*\\#.*\\#\\)"
@@ -74,7 +81,9 @@
   "if `ido-mode' is turned on use ido speedups completing the read"
   (if ido-mode
       (ido-completing-read prompt choices predicate require-match initial-input hist def)
-    (completing-read prompt choices predicate require-match initial-input hist def)))
+    (if (featurep 'xemacs)
+        (completing-read prompt (mapcar 'list choices) predicate require-match initial-input hist def)
+      (completing-read prompt choices predicate require-match initial-input hist def))))
 
 (defun jump-find-file-in-dir (dir)
   "if `ido-mode' is turned on use ido speedups finding the file"
@@ -241,6 +250,7 @@ MAKE to create the target file."
 	((equal t spec) t)
 	(t (message (format "unrecognized jump-from specification format %s")))))
 
+;;;###autoload
 (defun defjump (name specs root &optional doc make method-command)
   "Define NAME as a function with behavior determined by SPECS.
 SPECS should be a list of cons cells of the form
@@ -277,10 +287,15 @@ find the current method which defaults to `which-function'."
 	 for spec in (quote ,(mapcar
 			      (lambda (spec)
 				(if (stringp (car spec))
-				    (cons (replace-regexp-in-string
-					   "\\\\[[:digit:]]+" "\\\\(.*?\\\\)"
-					   (car spec)) (cdr spec))
-				  spec))
+				    ;;xemacs did not understand :digit: class
+				    (if (featurep 'xemacs)
+					(cons (replace-regexp-in-string
+					       "\\\\[0-9]+" "\\\\(.*?\\\\)"
+					       (car spec)) (cdr spec))
+                                      (cons (replace-regexp-in-string
+                                             "\\\\[[:digit:]]+" "\\\\(.*?\\\\)"
+                                             (car spec)) (cdr spec)))
+                                  spec))
 			      specs))
 	 ;; don't stop until both the front and the back match
 	 ;;

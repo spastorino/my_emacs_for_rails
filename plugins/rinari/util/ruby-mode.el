@@ -6,7 +6,7 @@
 ;; URL: http://www.emacswiki.org/cgi-bin/wiki/RubyMode
 ;; Created: Fri Feb  4 14:49:13 JST 1994
 ;; Keywords: languages ruby
-;; Version: 1.0
+;; Version: 1.1
 
 ;; This file is not yet part of GNU Emacs.
 
@@ -1056,6 +1056,12 @@ With ARG, do it many times. Negative ARG means move forward."
         ((error)))
       i)))
 
+(defun ruby-insert-end ()
+  (interactive)
+  (insert "end")
+  (ruby-indent-line t)
+  (end-of-line))
+
 (defun ruby-mark-defun ()
   "Put mark at end of this Ruby function, point at beginning."
   (interactive)
@@ -1391,7 +1397,7 @@ See `font-lock-syntax-table'.")
    '("\\(^\\|[[ \t\n<+(,=]\\)\\(%[xrqQwW]?\\([^<[{(a-zA-Z0-9 \n]\\)[^\n\\\\]*\\(\\\\.[^\n\\\\]*\\)*\\(\\3\\)\\)"
      (2 font-lock-string-face))
    ;; constants
-   '("\\(^\\|[^_:]\\)\\b\\([A-Z]+\\(\\w\\|_\\)*\\)"
+   '("\\(^\\|[^_]\\)\\b\\([A-Z]+\\(\\w\\|_\\)*\\)"
      2 font-lock-type-face)
    ;; symbols
    '("\\(^\\|[^:]\\)\\(:\\([-+~]@?\\|[/%&|^`]\\|\\*\\*?\\|<\\(<\\|=>?\\)?\\|>[>=]?\\|===?\\|=~\\|\\[\\]=?\\|\\(\\w\\|_\\)+\\([!?=]\\|\\b_*\\)\\|#{[^}\n\\\\]*\\(\\\\.[^}\n\\\\]*\\)*}\\)\\)"
@@ -1411,11 +1417,12 @@ See `font-lock-syntax-table'.")
 (add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
 
 ;;;###autoload
-(add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
-(add-to-list 'interpreter-mode-alist '("rbx" . ruby-mode))
-(add-to-list 'interpreter-mode-alist '("jruby" . ruby-mode))
-(add-to-list 'interpreter-mode-alist '("ruby1.9" . ruby-mode))
-(add-to-list 'interpreter-mode-alist '("ruby1.8" . ruby-mode))
+(progn
+  (add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
+  (add-to-list 'interpreter-mode-alist '("rbx" . ruby-mode))
+  (add-to-list 'interpreter-mode-alist '("jruby" . ruby-mode))
+  (add-to-list 'interpreter-mode-alist '("ruby1.9" . ruby-mode))
+  (add-to-list 'interpreter-mode-alist '("ruby1.8" . ruby-mode)))
 
 (provide 'ruby-mode)
 ;;; ruby-mode.el ends here

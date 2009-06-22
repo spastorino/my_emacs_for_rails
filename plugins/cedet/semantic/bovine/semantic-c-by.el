@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Eric M. Ludlam
 
-;; Author:  <santiago@debian>
-;; Created: 2009-04-15 16:53:54-0300
+;; Author:  <santiago@localhost>
+;; Created: 2009-06-21 05:45:39-0300
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
@@ -93,10 +93,8 @@
      ("double" . DOUBLE)
      ("bool" . BOOL)
      ("_P" . UNDERP)
-     ("__P" . UNDERUNDERP)
-     ("__attribute__" . __ATTRIBUTE__))
-   '(("__attribute__" summary "<cdecl> __attribute__ ((<attributeoption>))")
-     ("__P" summary "Common macro to eliminate prototype compatibility on some compilers")
+     ("__P" . UNDERUNDERP))
+   '(("__P" summary "Common macro to eliminate prototype compatibility on some compilers")
      ("_P" summary "Common macro to eliminate prototype compatibility on some compilers")
      ("bool" summary "Primitive boolean type")
      ("double" summary "Primitive floating-point type (double-precision 64-bit IEEE 754)")
@@ -567,15 +565,6 @@
       )
      ) ;; end opt-name
 
-    (opt-class-declmods
-     (symbol
-      declespec
-      semantic-list)
-     (symbol)
-     ( ;;EMPTY
-      )
-     ) ;; end opt-class-declmods
-
     (typesimple
      (struct-or-class
       opt-class
@@ -701,7 +690,6 @@
 
     (type
      (typesimple
-      opt-attribute
       punctuation
       "\\`[;]\\'"
       ,(semantic-lambda
@@ -725,18 +713,6 @@
 	 (nth 1 vals) nil))
       )
      ) ;; end type
-
-    (opt-attribute
-     (__ATTRIBUTE__
-      semantic-list
-      ,(semantic-lambda
-	(list nil))
-      )
-     ( ;;EMPTY
-      ,(semantic-lambda
-	(list nil))
-      )
-     ) ;; end opt-attribute
 
     (using
      (USING
@@ -2001,8 +1977,7 @@
      ) ;; end function-pointer
 
     (fun-or-proto-end
-     (opt-attribute
-      punctuation
+     (punctuation
       "\\`[;]\\'"
       ,(semantic-lambda
 	(list t))

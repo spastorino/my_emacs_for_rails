@@ -2,16 +2,36 @@
 ;;
 ;; Author: Lennart Borgman (lennart O borgman A gmail O com)
 ;; Created: Sat Apr 21 2007
-(defconst nxhtml-menu:version "1.76") ;;Version:
-;; Last-Updated: 2009-12-31 Wed
+(defconst nxhtml-menu:version "1.81") ;;Version:
+;; Last-Updated: 2009-05-29 Fri
 ;; URL:
 ;; Keywords:
 ;; Compatibility:
 ;;
 ;; Features that might be required by this library:
 ;;
-  ;; `compile', `flymake', `flymake-js', `flymake-php', `css-color',
-  ;; `tool-bar', `xhtml-help'.
+  ;; `appmenu', `appmenu-fold', `apropos', `backquote', `button',
+  ;; `bytecomp', `cl', `comint', `compile', `css-color', `cus-edit',
+  ;; `cus-face', `cus-load', `cus-start', `dired', `easymenu',
+  ;; `ediff', `ediff-diff', `ediff-help', `ediff-init', `ediff-merg',
+  ;; `ediff-mult', `ediff-util', `ediff-wind', `ffip', `flymake',
+  ;; `flymake-js', `flymake-php', `flyspell', `fold-dwim', `gimp',
+  ;; `grep', `help-mode', `hideshow', `html-imenu', `html-quote',
+  ;; `html-site', `html-upl', `ido', `ietf-drums', `imenu', `ispell',
+  ;; `loadhist', `mail-parse', `mail-prsvr', `mailcap', `mlinks',
+  ;; `mm-util', `mumamo', `nxhtml-mode', `nxml-enc', `nxml-glyph',
+  ;; `nxml-mode', `nxml-ns', `nxml-outln', `nxml-parse', `nxml-rap',
+  ;; `nxml-util', `ourcomments-util', `outline', `popcmp', `qp',
+  ;; `recentf', `rfc2045', `rfc2047', `rfc2231', `ring', `rng-dt',
+  ;; `rng-loc', `rng-match', `rng-nxml', `rng-parse', `rng-pttrn',
+  ;; `rng-uri', `rng-util', `rng-valid', `rngalt', `rx',
+  ;; `setup-helper', `sgml-mode', `tidy-xhtml', `time-date', `timer',
+  ;; `timezone', `tls', `tool-bar', `tree-widget', `typesetter',
+  ;; `udev', `udev-cedet', `udev-ecb', `udev-rinari', `url',
+  ;; `url-auth', `url-c', `url-cookie', `url-expand', `url-gw',
+  ;; `url-history', `url-http', `url-methods', `url-parse',
+  ;; `url-privacy', `url-proxy', `url-util', `url-vars', `view',
+  ;; `w32-reg-iface', `w32-regdat', `wid-edit', `xmltok'.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -191,12 +211,14 @@
                                 (assoc key nxhtml-validation-headers)))
                          (header (cdr rec)))
                     header)
-                (goto-char (point-min))
-                (save-match-data
-                  (let ((body (re-search-forward "<body[^>]*>")))
-                    (if body
-                        (buffer-substring-no-properties (point-min) (match-end 0))
-                      "")))))
+                (if (and doit-anyway (not start))
+                    ""
+                  (goto-char (point-min))
+                  (save-match-data
+                    (let ((body (re-search-forward "<body[^>]*>")))
+                      (if body
+                          (buffer-substring-no-properties (point-min) (match-end 0))
+                        ""))))))
         (setq content
               (if start
                   (buffer-substring-no-properties start end)
@@ -262,6 +284,10 @@
         (list 'menu-item "Tools" tools-map
               :visible `(not (derived-mode-p 'dired-mode))
               ))
+      (define-key tools-map [nxhtml-last-resort]
+        (list 'menu-item "Last Resort" 'n-back-game))
+      (define-key tools-map [nxhtml-last-resort-separator]
+        (list 'menu-item "--" nil))
       (let ((fill-map (make-sparse-keymap)))
         (define-key tools-map [nxhtml-filling]
           (list 'menu-item "Writing Text" fill-map))
@@ -399,9 +425,11 @@
         (list 'menu-item "--" nil))
       (define-key tools-map [nxhtml-tidy-map]
         (list 'menu-item "Tidy XHTML" 'tidy-menu-symbol
+              :filter 'nxhtml-insert-menu-dynamically
               :visible '(and (fboundp 'tidy-build-menu)
                              (tidy-build-menu))
               :enable '(and (fboundp 'tidy-build-menu)
+                            (tidy-build-menu)
                             (or (derived-mode-p 'html-mode)
                                 (nxhtml-nxhtml-in-buffer)))))
       (define-key tools-map [nxhtml-flymake]
@@ -473,6 +501,11 @@
                 :enable '(and (fboundp 'nxml-where-mode)
                               (or (derived-mode-p 'nxml-mode)
                                   (nxhtml-nxhtml-in-buffer)))))
+        (define-key where-map [nxhtml-nxml-where-cust]
+          (list 'menu-item "Customize display of XML Path"
+                (lambda () (interactive)
+                  (customize-group-other-window 'nxml-where))))
+        (define-key where-map [where-separator-2] (list 'menu-item "--"))
         (define-key where-map [nxml-where-id]
           (list 'menu-item "Show tag ids in path" 'nxml-where-tag+id-toggle
                 :enable '(boundp 'nxml-where-tag+id)
@@ -517,8 +550,9 @@
                   :filter 'nxhtml-insert-menu-dynamically)))
         (define-key sometoc-map [nxhtml-html-pagetoc]
           (list 'menu-item "For Page" 'html-pagetoc-menu-map
+                :enable (boundp 'html-pagetoc-menu-map)
                 :filter 'nxhtml-insert-menu-dynamically
-                :enable '(featurep 'html-pagetoc)))
+                ))
         (define-key quick-map [nxhtml-sometoc-map]
           (list 'menu-item "Table of Contents" sometoc-map
                 :visible '(or (derived-mode-p 'html-mode)
@@ -545,7 +579,8 @@
     (let ((upl-map (make-sparse-keymap "html-upl")))
       (define-key map [nxhtml-upl-map]
         (list 'menu-item "File Transfer" upl-map
-              :enable '(featurep 'html-upl)))
+              ;;:enable '(featurep 'html-upl)))
+              :enable '(fboundp 'html-upl-upload-file)))
       (define-key upl-map [nxhtml-upl-remote-dired]
         (list 'menu-item "Remote Dired" 'html-upl-remote-dired))
       (define-key upl-map [nxhtml-upl-dired-sep] (list 'menu-item "--"))
@@ -719,10 +754,22 @@
             ))
     (let ((chunk-map (make-sparse-keymap)))
       (define-key map [nxhtml-chunk-map]
-        (list 'menu-item "Chunk" chunk-map
+        (list 'menu-item "Chunks" chunk-map
               :visible `(not (derived-mode-p 'dired-mode))
               :enable '(and (boundp 'mumamo-multi-major-mode)
                             mumamo-multi-major-mode)))
+      (let ((region-map (make-sparse-keymap)))
+        (define-key chunk-map [nxhtml-region-map]
+          (list 'menu-item "Region Chunks" region-map))
+        (define-key region-map [mumamo-clear-all-regions]
+          (list 'menu-item "Clear Region Chunks"
+                'mumamo-clear-all-regions
+                :enable '(fboundp 'mumamo-clear-all-regions)))
+        (define-key region-map [mumamo-add-region]
+          (list 'menu-item "Add Region Chunk"
+                'mumamo-add-region)))
+      (define-key chunk-map [nxhtml-region-separator]
+        (list 'menu-item "--" nil))
       (define-key chunk-map [mumamo-mark-chunk]
         (list 'menu-item "Mark Chunk"
               'mumamo-mark-chunk))
@@ -777,6 +824,12 @@
 ;;;           (list 'menu-item "Allow attr=\"<?php...?>\" etc"
 ;;;                 'nxhtml-strval-mode
 ;;;                 :button '(:toggle . nxhtml-strval-mode)))
+        (define-key val-map [mumamo-alt-php-tags]
+          (list 'menu-item "Use <?php -> (?php"
+                'mumamo-alt-php-tags-mode
+                :button '(:toggle . mumamo-alt-php-tags-mode)
+                ))
+        (define-key val-map [mumamo-alt-tags-separator] (list 'menu-item "--"))
         (define-key val-map [nxhtml-toggle-warnings]
           (list 'menu-item "Hide Validation Errors"
                 'nxhtml-toggle-visible-warnings
@@ -951,6 +1004,7 @@ See `nxhtml-minor-mode-modes'."
 (defun nxhtml-docfile-url ()
   (concat "file://" (nxhtml-docfile)))
 
+;;;###autoload
 (defun nxhtml-overview ()
   "Show a HTML page with an overview of nXhtml."
   (interactive)

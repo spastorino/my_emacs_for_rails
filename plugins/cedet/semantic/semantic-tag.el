@@ -2,7 +2,7 @@
 
 ;;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009 Eric M. Ludlam
 
-;; X-CVS: $Id: semantic-tag.el,v 1.69 2009/04/03 12:57:40 zappo Exp $
+;; X-CVS: $Id: semantic-tag.el,v 1.70 2009/05/29 00:49:03 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -754,7 +754,11 @@ struct or union."
   "Return the documentation of TAG.
 That is the value defined by the `:documentation' attribute.
 Optional argument BUFFER indicates where to get the text from.
-If not provided, then only the POSITION can be provided."
+If not provided, then only the POSITION can be provided.
+
+If you want to get documentation for languages that do not store
+the documentation string in the tag itself, use
+`semantic-documentation-for-tag' instead."
   (let ((p (semantic-tag-get-attribute tag :documentation)))
     (cond
      ((stringp p) p) ;; it is the doc string.

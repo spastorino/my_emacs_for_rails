@@ -1,9 +1,9 @@
 ;;; semantic-scm-by.el --- Generated parser support file
 
-;; Copyright (C) 2001, 2003 Eric M. Ludlam
+;; Copyright (C) 2001, 2003, 2009 Eric M. Ludlam
 
 ;; Author:  <santiago@localhost>
-;; Created: 2009-02-16 04:33:21-0200
+;; Created: 2009-06-21 05:45:39-0300
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
@@ -179,6 +179,7 @@
      (symbol)
      (semantic-list)
      (string)
+     (number)
      ) ;; end expression
     )
   "Parser table.")

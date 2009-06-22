@@ -24,7 +24,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: tree-buffer.el,v 1.174 2009/04/15 14:22:35 berndl Exp $
+;; $Id: tree-buffer.el,v 1.186 2009/06/20 05:07:30 berndl Exp $
 
 ;;; Commentary:
 
@@ -63,9 +63,13 @@
 (silentcomp-defun valid-image-instantiator-format-p)
 (silentcomp-defvar modeline-map)
 ;; Emacs
+(silentcomp-defvar header-line-format)
 (silentcomp-defvar message-log-max)
 (silentcomp-defvar message-truncate-lines)
 (silentcomp-defun posn-window)
+(silentcomp-defun window-fringes)
+(silentcomp-defun frame-parameter)
+(silentcomp-defun frame-char-width)
 (silentcomp-defun event-start)
 (silentcomp-defun posn-point)
 (silentcomp-defun event-basic-type)
@@ -79,8 +83,7 @@
 (silentcomp-defun delete-itimer)
 (silentcomp-defun start-itimer)
 
-(defconst tree-buffer-running-xemacs
-  (string-match "XEmacs\\|Lucid" emacs-version))
+(defconst tree-buffer-running-xemacs (featurep 'xemacs))
 
 ;; miscellaneous differences
 
@@ -91,6 +94,8 @@
         (memq face (face-list)))
       (defalias 'tree-buffer-line-beginning-pos 'point-at-bol)
       (defalias 'tree-buffer-line-end-pos 'point-at-eol)
+      (defun tree-buffer-frame-char-width (&optional frame)
+        (/ (frame-pixel-width frame) (frame-width frame)))
       (defalias 'tree-buffer-window-display-height 'window-displayed-height)
       (defun tree-buffer-event-to-key (event)
         (typecase event
@@ -102,6 +107,8 @@
            ;; wrong-type-argument error.
            (ignore-errors (event-key event)))))
       (defalias 'tree-buffer-event-window 'event-window)
+      (defun tree-buffer-event-buffer (event)
+        (window-buffer (tree-buffer-event-window event)))
       (defalias 'tree-buffer-event-point 'event-point)
       ;; stolen from dframe.el of the speedbar-library.
       (defun tree-buffer-mouse-set-point (e)
@@ -125,9 +132,12 @@
   ;; char of the buffer) then these empty-lines are not counted. But in the
   ;; situations this function is used (only in tree-buffer-recenter) this
   ;; doesn't matter.
+  (defalias 'tree-buffer-frame-char-width 'frame-char-width)
   (defalias 'tree-buffer-window-display-height 'window-text-height)
   (defun tree-buffer-event-window (event)
     (posn-window (event-start event)))
+  (defun tree-buffer-event-buffer (event)
+    (window-buffer (tree-buffer-event-window event)))
   (defun tree-buffer-event-point (event)
     (posn-point (event-start event)))
   (defalias 'tree-buffer-mouse-set-point 'mouse-set-point)
@@ -228,6 +238,23 @@ compare ITEM with the elements of SEQ."
             (throw 'found i)))
       nil)))
 
+(defun tree-buffer-last (seq)
+  "Return the last elem of the sequence SEQ."
+  (if (listp seq)
+      (car (last seq))
+    (if (> (length seq) 0)
+        (aref seq (1- (length seq)))
+      nil)))
+
+(defun tree-buffer-first (seq)
+  "Return the first elem of the sequence SEQ."
+  (if (listp seq)
+      (car seq)
+    (if (> (length seq) 0)
+        (aref seq 0)
+      nil)))
+  
+
 (defun tree-buffer-set-elt (seq n val)
   "Set VAL as new N-th element of SEQ. SEQ can be any sequence. SEQ will be
 changed because this is desctructive function. SEQ is returned."
@@ -274,6 +301,18 @@ changed because this is desctructive function. SEQ is returned."
   "Return the current line-number - the first line in a buffer has number 1."
   (+ (count-lines 1 (point)) (if (= (current-column) 0) 1 0)))
 
+(defun tree-buffer-goto-line (line)
+  "Goto LINE, counting from line 1 at beginning of buffer.
+
+This function doesn't set the mark."
+  ;; Move to the specified line number in that buffer.
+  (save-restriction
+    (widen)
+    (goto-char 1)
+    (if (eq selective-display t)
+        (re-search-forward "[\n\C-m]" nil 'end (1- line))
+      (forward-line (1- line)))))
+
 ;; debugging
 
 (defvar tree-buffer-debug-mode nil
@@ -291,6 +330,23 @@ Do nothing if `tree-buffer-debug-mode' is nil!"
 
 ;; tree-node
 
+;; Klaus Berndl <klaus.berndl@sdm.de>: hmmm, we can not uses this in
+;; tree-node-new if we want an own id-gen for each tree-buffer (reason: not
+;; all tree-node-new are called with the tree-buffer the current buffer, e.g.
+;; ecb-add-tags runs not with method-buffer as current tree-buffer)...we can
+;; it use if we use one id-gen for all tree-buffers....
+(defvar tree-node-id nil)
+
+(defconst tree-node-id-init-value -268435456)
+
+(defun tree-node-id-init ()
+  (setq tree-node-id tree-node-id-init-value))
+
+(tree-node-id-init)
+
+(defsubst tree-node-id-next ()
+  (setq tree-node-id (1+ tree-node-id)))
+
 (defstruct (tree-node
             (:constructor -tree-node-new)
             (:copier nil)
@@ -301,13 +357,15 @@ Do nothing if `tree-buffer-debug-mode' is nil!"
   children
   parent
   shrink-name
+  shrink-name-spec
   expandable
   expanded
   displayed-name
-  indentstr)
+  indentstr
+  id)
 
 (defun tree-node-new (name type data &optional not-expandable parent
-                           shrink-name)
+                           shrink-name shrink-name-spec)
   "Create a new tree-node which can be displayed in a tree-buffer.
 A tree-node can have the following slots:
 
@@ -326,11 +384,24 @@ A tree-node can have the following slots:
   SHRINK-NAME: Decides if the NAME can be shortened when displayed in a
   narrow tree buffer window. The following values are valid:
   - beginning: The NAME is truncated at the beginning so the end is always
-    visible.
+    visible. The shrinking can be specified in more detail with
+    SHRINK-NAME-SPEC \(s.b.)
   - end: The NAME is truncated at the end. If the tree-node is EXPANDABLE the
     name is truncated so that the expand symbol is visible.
   - nil: The NAME is never truncated. In this case DISPLAYED-NAME is equal to
     NAME.
+
+  SHRINK-NAME-SPEC: nil or a 3 element-list which defines exactly
+  how to shrink the node-name from beginning. The first element
+  is a 0-based starting position in the NAME where shrinking
+  should start if the name has to be shrinked from beginning
+  \(see SHRINK-NAME) - if nil then 0 is used, i.e. shrinking
+  starts at beginning of NAME. The second element is a string
+  which is used as token to indicate the shrinking \(e.g.
+  \"-->\") - if nil then \"...\" is used. The third element is
+  the number of chars of the node-name which should remain as
+  visible \(counted from the end of node-name) - if nil then 5 is
+  used. This slot is ignored if SHRINK-NAME is 'end or nil.
 
   CHILDREN: List of children tree-nodes.
 
@@ -348,16 +419,20 @@ slot-list above. If the first optional argument NOT-EXPANDABLE is set to not
 nil then the slot EXPANDABLE will be set to nil; otherwise to t.
 
 See Info node `(ecb)tree-buffer' for all details of using tree-nodes."
-  (let ((n (-tree-node-new :name name
-                           :type type
-                           :data data
-                           :expandable (not not-expandable)
-                           :parent parent
-                           :shrink-name shrink-name
-                           :children nil
-                           :expanded nil
-                           :displayed-name nil
-                           :indentstr nil)))
+  (let* ((new-id (tree-node-id-next))
+         (n (-tree-node-new :id new-id
+                            :name name
+                            :type type
+                            :data data
+                            :expandable (not not-expandable)
+                            :parent parent
+                            :shrink-name shrink-name
+                            :shrink-name-spec (or shrink-name-spec
+                                                  '(0 "..." 5))
+                            :children nil
+                            :expanded nil
+                            :displayed-name nil
+                            :indentstr nil)))
     (when (and parent (tree-node-p parent))
       (tree-node-add-children parent n))
     n))
@@ -484,22 +559,68 @@ CHILD-NAME and must match."
       (when (equal (tree-node->name child) child-name)
         (throw 'exit child)))))
 
-(defun tree-node-search-subtree-by-data/name (start-node data &optional name)
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: if the version with map-subtree
+;; is too slow reuse the following code
+;; (defun tree-node-search-subtree-by-data (start-node data)
+;;   "Search the full subtree of START-NODE for the first \(sub-)node with DATA.
+;; The \"full subtree\" means the START-NODE itself, its children, their grandchildren
+;; etc. The search is done by a depth-first-search. Data-comparison is performed
+;; with `tree-buffer-node-data-equal-p'."
+;;   (if (tree-buffer-node-data-equal-p data (tree-node->data start-node))
+;;       start-node
+;;     (catch 'exit
+;;       (dolist (child (tree-node->children start-node))
+;; 	(let ((n (tree-node-search-subtree-by-data child data)))
+;; 	  (when n
+;; 	    (throw 'exit n)))))))
+
+(defun tree-node-search-subtree-by-data (start-node data)
   "Search the full subtree of START-NODE for the first \(sub-)node with DATA.
-If NAME is set then not only the data but also the name must match.
 The \"full subtree\" means the START-NODE itself, its children, their grandchildren
 etc. The search is done by a depth-first-search. Data-comparison is performed
-with `tree-buffer-node-data-equal-p', name-comparison with `string='."
-  (if (and (tree-buffer-node-data-equal-p data (tree-node->data start-node))
-           (or (null name) (string= name (tree-node->name start-node))))
-      start-node
-    (catch 'exit
-      (dolist (child (tree-node->children start-node))
-	(let ((n (tree-node-search-subtree-by-data/name child data name)))
-	  (when n
-	    (throw 'exit n)))))))
+with `tree-buffer-node-data-equal-p'."
+  (car (delq nil
+             (tree-node-map-subtree start-node
+                                    (function
+                                     (lambda (n)
+                                       (if (tree-buffer-node-data-equal-p
+                                            data
+                                            (tree-node->data n))
+                                           n)))))))
 
-;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: add this to texi
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: if the version with map-subtree
+;; is too slow reuse the following code
+;; (defun tree-node-search-subtree-by-id (start-node node-id)
+;;   "Search the full subtree of START-NODE for the first \(sub-)node with NODE-ID.
+;; The \"full subtree\" means the START-NODE itself, its children, their grandchildren
+;; etc. The search is done by a depth-first-search."
+;;   (if (= node-id (tree-node->id start-node))
+;;       start-node
+;;     (catch 'exit
+;;       (dolist (child (tree-node->children start-node))
+;; 	(let ((n (tree-node-search-subtree-by-id child node-id)))
+;; 	  (when n
+;; 	    (throw 'exit n)))))))
+
+(defun tree-node-search-subtree-by-id (start-node node-id)
+  "Search the full subtree of START-NODE for the first \(sub-)node with NODE-ID.
+The \"full subtree\" means the START-NODE itself, its children, their grandchildren
+etc. The search is done by a depth-first-search."
+  (car (delq nil
+             (tree-node-map-subtree start-node
+                                    (function (lambda (n)
+                                                (if (= node-id (tree-node->id n))
+                                                    n)))))))
+
+;; (defun tree-buffer-map-test ()
+;;   (let ((id (ecb-overlay-get
+;;              (ecb--semantic-tag-overlay
+;;               (ecb--semantic-current-tag)) 'ECB-tree-node-id)))
+;;     (ecb-exec-in-window ecb-methods-buffer-name
+;;       (message (tree-node->name (tree-node-search-subtree-by-id
+;;                                  (tree-buffer-get-root)
+;;                                  id))))))
+    
 (defun tree-node-map-subtree (start-node map-fcn)
   "Apply MAP-FCN to full subtree of START-NODE and make a list of the results.
 MAP-FCN is a function which gets a node of this subtree as argument.
@@ -702,6 +823,11 @@ The value is buffer-local in current tree-buffer.")
   "Current value of horizontal tree-buffer-scrolling'.
 The value is buffer-local in current tree-buffer.")
 
+(defvar tree-buffer-sticky-parent-node-function nil
+  "Function used to get that parent node which should be sticky.
+This function gets as argument a node and should either return nil \(if there
+is not suitable parent node) or node. This node will be display as sticky in
+the header-line of the tree-buffer.")
 
 ;; tree-buffer specification
 
@@ -713,6 +839,9 @@ The value is buffer-local in current tree-buffer.")
   (menu-creator nil :read-only t)
   (menu-titles nil :read-only t)
   (modeline-menu-creator :read-only t)
+  (sticky-parent-p :read-only t)
+  (sticky-indent-string :read-only t)
+  (sticky-parent-fn :read-only t)
   (type-facer nil :read-only t)
   (expand-symbol-before-p nil :read-only t)
   (mouse-action-trigger nil :read-only t)
@@ -742,6 +871,9 @@ The value is buffer-local in current tree-buffer.")
                               menu-creator
                               menu-titles
                               modeline-menu-creator
+                              sticky-parent-p
+                              sticky-indent-string
+                              sticky-parent-fn
                               type-facer
                               expand-symbol-before-p
                               mouse-action-trigger
@@ -778,6 +910,9 @@ See `tree-buffer-create' for a description of the arguments."
     (-tree-buffer-spec-new :menu-creator menu-creator
                            :menu-titles menu-titles
                            :modeline-menu-creator modeline-menu-creator
+                           :sticky-parent-p sticky-parent-p
+                           :sticky-indent-string sticky-indent-string
+                           :sticky-parent-fn sticky-parent-fn
                            :type-facer type-facer
                            :mouse-action-trigger mouse-action-trigger
                            :is-click-valid-fn is-click-valid-fn
@@ -871,12 +1006,22 @@ get the data.")
   "Alist with car is one of the names in
 `tree-buffer-tree-image-names' and cdr is an associated image-object.")
 
-(defconst tree-buffer-images-can-be-used
-  (and (or (fboundp 'defimage)
-           (fboundp 'make-image-specifier))
-       (if (fboundp 'display-images-p)
-           (display-images-p)
-         window-system)))
+(defvar tree-buffer-images-can-be-used nil
+  "INTERNAL - DO NOT USE AND CHANGE!")
+(defvar tree-buffer-images-can-be-used-init-p nil
+  "INTERNAL - DO NOT USE AND CHANGE!")
+
+(defun tree-buffer-images-can-be-used ()
+  "Not nil if images can be used with current Emacs setup."
+  (if tree-buffer-images-can-be-used-init-p
+      tree-buffer-images-can-be-used
+    (setq tree-buffer-images-can-be-used-init-p t)
+    (setq tree-buffer-images-can-be-used
+          (and (or (fboundp 'defimage)
+                   (fboundp 'make-image-specifier))
+               (if (fboundp 'display-images-p)
+                   (display-images-p)
+                 window-system)))))
 
 (defvar tree-buffer-image-properties-emacs
   '(:ascent center :mask (heuristic t))
@@ -890,7 +1035,25 @@ get the data.")
   tree-buffer-running-xemacs
   "If true then tree-buffer tries to deal best with the XEmacs-bug to display
 adjacent images not correctly. Set this to nil if your XEmacs-version has fixed
-this bug.")
+this bug.
+
+This bug can be reproduced with XEmacs without active
+tree-buffers - just copy the following code to the *scratch*
+buffer and evaluate it:
+
+\(progn
+  \(pop-to-buffer \(get-buffer-create \"*test*\"))
+  \(let \(\(str1 \"abc\") 
+        \(str2 \"def\") 
+        \(glyph1 \(make-glyph \"X\")) 
+        \(glyph2 \(make-glyph \"Y\"))) 
+    \(add-text-properties 0 3 `\(end-glyph ,glyph1 invisible t) str1) 
+    \(add-text-properties 0 3 `\(end-glyph ,glyph2 invisible t) str2) 
+    \(insert str1) \(insert str2)))
+
+If the bug is still there then there is only a Y being displayed but the correct
+behavior would be displaying XY. Only in the latter case this variable should
+be set to nil!")
 
 (defconst tree-buffer-image-formats
   '((xpm ".xpm") (png ".png") (gif ".gif") (jpeg ".jpg" ".jpeg")
@@ -927,7 +1090,7 @@ related to the names.")
       (defsubst tree-buffer-image-type-available-p (type)
         "Return non-nil if image type TYPE is available.
 Image types are symbols like `xbm' or `jpeg'."
-      (valid-image-instantiator-format-p type)))
+        (valid-image-instantiator-format-p type)))
   (defsubst tree-buffer-create-image (file type)
     (apply 'create-image
            `(,file ,type nil
@@ -945,7 +1108,7 @@ If the optional arg STYLE is not nil then this is used instead of the slot
 STYLE of `tree-buffer-spec'. Allowed values of STYLE are nil, 'image,
 'ascii-guides, ascii-no-guides."
   (let ((my-style (or style (tree-buffer-spec->style tree-buffer-spec))))
-    (if tree-buffer-images-can-be-used
+    (if (tree-buffer-images-can-be-used)
         my-style
       (if (equal my-style 'image)
           'ascii-guides
@@ -1120,7 +1283,7 @@ image-object for TREE-IMAGE-NAME."
                              (current-buffer) linenr)
     (when linenr
       (save-excursion
-        (goto-line linenr)
+        (tree-buffer-goto-line linenr)
         (beginning-of-line)
         (+ (point) (tree-buffer-get-node-name-start-column node))))))
 
@@ -1163,7 +1326,7 @@ image-object for TREE-IMAGE-NAME."
     (if p (goto-char p))
     (tree-buffer-nth-displayed-node (1- (tree-buffer-current-line)))))
 
-(defun tree-buffer-select (mouse-button shift-pressed control-pressed meta-pressed)
+(defun tree-buffer-select (mouse-button additional-key-list)
   "If the callback-function in slot IS-CLICK-VALID-FN of `tree-buffer-spec'
 returns nil then nothing is done. Otherwise: If either the MOUSE-BUTTON is 0
 or point is as the node-name then the callback-function in slot
@@ -1172,53 +1335,58 @@ NODE-SELECTED-FN is called with the needed arguments \(see
 the expansion-state either the callback in slot NODE-EXPANDED-FN or
 NODE-COLLAPSED-FN is called \(for parameters see again `tree-buffer-create').
 None of these callbacks must modify the slot EXPANDED of the passed node
-because this is done automatically by this function."
+because this is done automatically by this function.
+ADDITIONAL-KEY-LIST is either nil or a list of additonal keys pressed. If not
+nil only the symbols 'shift, 'control and 'meta are recognized."
   (unless (not (equal (selected-frame) tree-buffer-frame))
-    (when (and (tree-buffer-spec->is-click-valid-fn tree-buffer-spec)
-               (funcall (tree-buffer-spec->is-click-valid-fn tree-buffer-spec)
-                        mouse-button shift-pressed control-pressed meta-pressed
-                        (buffer-name)))
-      (tree-buffer-debug-error "tree-buffer-select-1: Cur-buf: %s"
-                               (current-buffer))
-      (let ((node (tree-buffer-get-node-at-point)))
-        (when node
-          (tree-buffer-debug-error "tree-buffer-select-2: Cur-buf: %s"
-                                   (current-buffer))
-          ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: Is this the right place
-          ;; for this? probably it can cause some erros...... Yep - it causes
-          ;; serious XEmacs-sideeffects: clicking into tree-buffer doesn't
-          ;; work anymore when doing this during an active isearch! Seems that
-          ;; isearch-exit switches the current buffer so the buffer after the
-          ;; isearch-exit is not the same as before!! So we comment this out!!
-;;           (ignore-errors
-;;             (let ((search-nonincremental-instead nil))
-;;               (isearch-exit)))
-          (tree-buffer-debug-error "tree-buffer-select-3: Cur-buf: %s"
-                                   (current-buffer))
-          (cond ((or (= mouse-button 0)
-                     (tree-buffer-point-at-node-name-p node (point)))
-                 (setq tree-buffer-incr-searchpattern "")
-                 (when (tree-buffer-spec->node-selected-fn tree-buffer-spec)
-                   (funcall (tree-buffer-spec->node-selected-fn tree-buffer-spec)
-                            node mouse-button shift-pressed control-pressed meta-pressed
-                            (buffer-name))))
-                ((tree-buffer-point-at-expand-symbol-p node (point))
-                 (when (and (not (tree-node->expanded node))
-                            (tree-buffer-spec->node-expanded-fn tree-buffer-spec))
-                   (funcall (tree-buffer-spec->node-expanded-fn tree-buffer-spec)
-                            node mouse-button
-                            shift-pressed control-pressed meta-pressed
-                            (buffer-name)))
-                 (when (tree-node->expandable node)
-                   (when (and (tree-node->expanded node)
-                              (tree-buffer-spec->node-collapsed-fn tree-buffer-spec))
-                     (funcall (tree-buffer-spec->node-collapsed-fn tree-buffer-spec)
+    (let ((shift-pressed (member 'shift additional-key-list))
+          (control-pressed (member 'control additional-key-list))
+          (meta-pressed (member 'meta additional-key-list)))
+      (when (and (tree-buffer-spec->is-click-valid-fn tree-buffer-spec)
+                 (funcall (tree-buffer-spec->is-click-valid-fn tree-buffer-spec)
+                          mouse-button shift-pressed control-pressed meta-pressed
+                          (buffer-name)))
+        (tree-buffer-debug-error "tree-buffer-select-1: Cur-buf: %s"
+                                 (current-buffer))
+        (let ((node (tree-buffer-get-node-at-point)))
+          (when node
+            (tree-buffer-debug-error "tree-buffer-select-2: Cur-buf: %s"
+                                     (current-buffer))
+            ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: Is this the right place
+            ;; for this? probably it can cause some erros...... Yep - it causes
+            ;; serious XEmacs-sideeffects: clicking into tree-buffer doesn't
+            ;; work anymore when doing this during an active isearch! Seems that
+            ;; isearch-exit switches the current buffer so the buffer after the
+            ;; isearch-exit is not the same as before!! So we comment this out!!
+            ;;           (ignore-errors
+            ;;             (let ((search-nonincremental-instead nil))
+            ;;               (isearch-exit)))
+            (tree-buffer-debug-error "tree-buffer-select-3: Cur-buf: %s"
+                                     (current-buffer))
+            (cond ((or (= mouse-button 0)
+                       (tree-buffer-point-at-node-name-p node (point)))
+                   (setq tree-buffer-incr-searchpattern "")
+                   (when (tree-buffer-spec->node-selected-fn tree-buffer-spec)
+                     (funcall (tree-buffer-spec->node-selected-fn tree-buffer-spec)
+                              node mouse-button shift-pressed control-pressed meta-pressed
+                              (buffer-name))))
+                  ((tree-buffer-point-at-expand-symbol-p node (point))
+                   (when (and (not (tree-node->expanded node))
+                              (tree-buffer-spec->node-expanded-fn tree-buffer-spec))
+                     (funcall (tree-buffer-spec->node-expanded-fn tree-buffer-spec)
                               node mouse-button
                               shift-pressed control-pressed meta-pressed
                               (buffer-name)))
-                   (tree-node-toggle-expanded node))
-                 ;; Update the tree-buffer with optimized display of NODE
-                 (tree-buffer-update node))))))))
+                   (when (tree-node->expandable node)
+                     (when (and (tree-node->expanded node)
+                                (tree-buffer-spec->node-collapsed-fn tree-buffer-spec))
+                       (funcall (tree-buffer-spec->node-collapsed-fn tree-buffer-spec)
+                                node mouse-button
+                                shift-pressed control-pressed meta-pressed
+                                (buffer-name)))
+                     (tree-node-toggle-expanded node))
+                   ;; Update the tree-buffer with optimized display of NODE
+                   (tree-buffer-update node)))))))))
 
 
 (defun tree-buffer-node-data-equal-p (node-data-1 node-data-2)
@@ -1246,6 +1414,20 @@ to test NODE-DATA-1 and NODE-DATA-2 for equality."
          (< (- (current-column) (window-hscroll window))
             (window-width window)))))
 
+(defun tree-buffer-get-event-column (e &optional include-fringe-scrollbar)
+  "Return the clicked column on a char-base."
+  (let* ((x-point (car (nth 2 (car (cdr e)))))
+	 (pixels-per-10-col (/ (* 10 (frame-pixel-width))
+			       (frame-width)))
+	 (click-col (+ (/ (* 10 x-point) pixels-per-10-col)
+                       (if include-fringe-scrollbar
+                           (length (save-excursion
+                                     (set-buffer (tree-buffer-event-buffer e))
+                                     (tree-buffer-spec->sticky-indent-string
+                                      tree-buffer-spec)))
+                         0))))
+    click-col))
+
 (defun tree-buffer-hscroll (amount)
   (ignore-errors
     (let ((current-prefix-arg amount))
@@ -1260,17 +1442,15 @@ to test NODE-DATA-1 and NODE-DATA-2 for equality."
 If the mouse is being clicked on the far left, or far right of the
 mode-line.  This is only useful for non-XEmacs"
   (interactive "e")
-  (let* ((x-point (car (nth 2 (car (cdr e)))))
-	 (pixels-per-10-col (/ (* 10 (frame-pixel-width))
-			       (frame-width)))
-	 (click-col (1+ (/ (* 10 x-point) pixels-per-10-col)))
-	 )
-    (cond ((< click-col 3)
-	   (tree-buffer-hscroll (- (tree-buffer-spec->hor-scroll-step tree-buffer-spec))))
-	  ((> click-col (- (window-width) 4))
-	   (tree-buffer-hscroll (tree-buffer-spec->hor-scroll-step tree-buffer-spec)))
-          (t (tree-buffer-nolog-message
-	      "Click on the edge of the modeline to scroll left/right")))
+  (let* ((click-col (tree-buffer-get-event-column e t)))
+    (save-selected-window
+      (select-window (tree-buffer-event-window e))
+      (cond ((< click-col 4)
+             (tree-buffer-hscroll (- (tree-buffer-spec->hor-scroll-step tree-buffer-spec))))
+            ((> click-col (- (window-width) 4))
+             (tree-buffer-hscroll (tree-buffer-spec->hor-scroll-step tree-buffer-spec)))
+            (t (tree-buffer-nolog-message
+                "Click on the edge of the modeline to scroll left/right"))))
     ))
 
 (defun tree-buffer-count-subnodes-to-display (node)
@@ -1305,7 +1485,7 @@ If NODE is expanded then recenter the WINDOW so as much as possible subnodes
 of NODE will be visible. If NODE is not expandable then WINDOW is always
 displayed without empty-lines at the end, means WINDOW is always best filled."
   (let* ((node-points (save-excursion
-                        (goto-line (tree-buffer-displayed-node-linenr node))
+                        (tree-buffer-goto-line (tree-buffer-displayed-node-linenr node))
                         (cons (tree-buffer-line-beginning-pos)
                               (tree-buffer-line-end-pos))))
          (node-point (car node-points))
@@ -1388,8 +1568,8 @@ displayed without empty-lines at the end, means WINDOW is always best filled."
                                     (goto-char (window-start window))
                                     (forward-line (- full-lines-in-window w-height))
                                     (tree-buffer-line-beginning-pos)))))))
-    (if (not tree-buffer-running-xemacs)
-        (ignore-errors (tree-buffer-hscroll -1000)))
+    (unless tree-buffer-running-xemacs
+      (ignore-errors (tree-buffer-hscroll -1000)))
     ;; KB: testcode
 ;;     (if (and (not tree-buffer-running-xemacs)
 ;;              (not (tree-buffer-pos-hor-visible-p (cdr node-points) window)))
@@ -1461,10 +1641,14 @@ tree-node. This is only used with GNU Emacs 21!"
            (funcall (tree-buffer-spec->node-mouse-over-fn tree-buffer-spec)
                     node window 'no-print)))))
 
-(defun tree-buffer-merge-face-into-text (face start end &optional text)
-  "Merge FACE to the already precolored TEXT so the values of all
-face-attributes of FACE take effect and the values of all face-attributes
-of TEXT which are not set by FACE are preserved."
+(defun tree-buffer-merge-face (face start end &optional text)
+  "Merge FACE either to a buffer-part or to TEXT.
+In both cases START and END define the region which should be
+faced. The FACE is merged, i.e. the values of all face-attributes
+of FACE take effect and the values of all face-attributes of the
+buffer-part or TEXT which are not set by FACE are preserved.
+
+If always returns TEXT \(if not nil then modified with FACE)."
   (if (null face)
       text
     (if tree-buffer-running-xemacs
@@ -1484,7 +1668,11 @@ of TEXT which are not set by FACE are preserved."
                                      (otherwise nil))))
                              ;; we must add the new-face in front of
                              ;; current-face to get the right merge!
-                             (append nf cf))
+                              (if (member face cf)
+                                  cf
+                                (append nf cf)
+                                )
+                              )
                            text)
       (alter-text-property start end 'face
                            (lambda (current-face)
@@ -1500,11 +1688,12 @@ of TEXT which are not set by FACE are preserved."
                                       (otherwise nil))))
                                ;; we must add the new-face in front of
                                ;; current-face to get the right merge!
-                               (append nf cf)))
-                           text))))
+                               (if (member face cf)
+                                   cf
+                                 (append nf cf))))
+                           text))
+    text))
 
-;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: try to insert first and then add
-;; text-properties... 
 (defun tree-buffer-insert-text (text &optional facer help-echo mouse-highlight)
   "Insert TEXT at point and faces it with FACER. FACER can be a face then the
 text gets this face or it can be a function-symbol which is called to face the
@@ -1521,38 +1710,74 @@ inserted and the TEXT itself"
       (if facer
           (if (functionp facer)
               (funcall facer p text)
-            (tree-buffer-merge-face-into-text facer p (point))))
+            (tree-buffer-merge-face facer p (point))))
       )))
-
 
 (defun tree-buffer-node-display-name (node)
   "Computes that string which is used to display the name of NODE. The
 display-name will be set in the slot DISPLAYED-NAME of NODE and also
 returned."
   (let* ((ww (window-width))
-	 (display-name (tree-node->name node))
-	 (width (+ (tree-node-indentlength node)
-		   (length display-name)
-		   (if (tree-node->expandable node) 4 0))))
+	 (name (concat (tree-node->name node)))
+         (display-name name)
+         (shrink-token (or (nth 1 (tree-node->shrink-name-spec node))
+                           "..."))
+         (shrink-token-length (length shrink-token))
+         (expand-length (if (tree-node->expandable node)
+                            (+ (if (eq (tree-buffer-real-style) 'image)
+                                   1
+                                 tree-buffer-expand-symbol-length)
+                               1)
+                          0))
+         (indent-length (if (eq (tree-buffer-real-style) 'image)
+                            (floor (tree-node-indentlength node)
+                                   (if (tree-buffer-spec->expand-symbol-before-p tree-buffer-spec)
+                                       tree-buffer-indent-w/o-images-before-min
+                                     tree-buffer-indent-w/o-images-after-min))
+                          (tree-node-indentlength node)))
+         (name-shrink-start-pos (or (nth 0 (tree-node->shrink-name-spec node))
+                                    0))
+         (remaining-chars (or (nth 2 (tree-node->shrink-name-spec node))
+                              5))
+         (new-end-of-before-shrink-part name-shrink-start-pos)
+         (width (+ indent-length expand-length (length name))))
+;;     (when (and (equal (buffer-name) ecb-history-buffer-name)
+;;                (= ecb-history-nodetype-bucket (tree-node->type node)))
+;;       (message "node-disp: node:%s,name-l:%d,\nww:%d,ind-l:%d,exp-l:%d,start-p:%d,width:%d"
+;;                name (length name) ww indent-length expand-length name-shrink-start-pos width)
+;;       )
     ;; Truncate name if necessary
-    (when (and (>= width ww)
-               (> (length display-name)
-                  (+ (if tree-buffer-running-xemacs 5 4) ;; for the "..." + space
-                     (- width ww)
-                     3))) ;; there should at least remain 3 visible chars of name
+    (when (and (>= (- ww indent-length expand-length) (+ shrink-token-length
+                                                         remaining-chars))
+               (> width ww)
+               ;; there should at least remain 5 visible chars of name
+               (> (length name) (+ shrink-token-length (- width ww) remaining-chars)))
       (if (eq 'beginning (tree-node->shrink-name node))
-	  (setq display-name
-                (concat "..."
-                        (substring display-name (+ (if tree-buffer-running-xemacs 5 4)
-                                                   (- width ww)))))
+          (progn
+            (when (> name-shrink-start-pos 0)
+              (when (< (- ww indent-length expand-length name-shrink-start-pos)
+                       (+ shrink-token-length remaining-chars))
+                (setq new-end-of-before-shrink-part
+                      (- ww indent-length expand-length shrink-token-length remaining-chars))
+                ;; now name-shrink-start-pos is exactly set so 3 + 5 chars can
+                ;; be displayed from the rest
+                (when (< new-end-of-before-shrink-part 3)
+                  (setq new-end-of-before-shrink-part 0))))
+            (setq display-name
+                  (concat (substring name 0 new-end-of-before-shrink-part)
+                          shrink-token
+                          (substring name (max name-shrink-start-pos
+                                               (+ (- width ww)
+                                                  new-end-of-before-shrink-part
+                                                  shrink-token-length))))))
 	(if (and (not (tree-buffer-spec->expand-symbol-before-p tree-buffer-spec))
 		 (tree-node->expandable node)
 		 (eq 'end (tree-node->shrink-name node)))
 	    (setq display-name
-                  (concat (substring display-name 0
-                                     (- (+ (if tree-buffer-running-xemacs 5 4)
+                  (concat (substring name 0
+                                     (- (+ shrink-token-length
                                            (- width ww))))
-                          "...")))))
+                          shrink-token)))))
     (setf (tree-node->displayed-name node) display-name)
     display-name))
   
@@ -1756,7 +1981,7 @@ is called after updating all needed nodes."
     (tree-node-update my-node name type data expandable shrink-name)
     (when node-line ;; we want a redisplay
       (save-excursion
-        (goto-line node-line)
+        (tree-buffer-goto-line node-line)
         (beginning-of-line)
         (delete-region (tree-buffer-line-beginning-pos)
                        (tree-buffer-line-end-pos))
@@ -1789,7 +2014,7 @@ is called after updating all needed nodes."
   "Remove NODE from current tree-buffer. If NODE is nil then the node at
 current point will be removed. If NODE equal the node returned by
 `tree-buffer-get-root' then nothing will be done. If first optional arg
-REDISLAY is not nil then NODE will be also completely remove from the
+REDISLAY is not nil then NODE will be also completely removed from the
 tree-display otherwise only from the internal tree-structure. If second
 optional arg EMPTY-PARENT-TYPES is not nil and a list of node-types \(see
 `tree-buffer-create') and if the node-type of the parent of NODE is contained
@@ -1814,7 +2039,7 @@ parent is recursively removed too."
                                  (tree-buffer-current-line)))))
               (when node-line
                 (save-excursion
-                  (goto-line node-line)
+                  (tree-buffer-goto-line node-line)
                   (beginning-of-line)
                   (delete-region (tree-buffer-line-beginning-pos)
                                  (1+ (tree-buffer-line-end-pos))))
@@ -2013,17 +2238,18 @@ ONLY-PREFIX is not nil then only common prefix is returned."
         res alist)
     (setq res
           (mapcar (function (lambda (word)
-                              (if (string-match change-word-sub word)
-                                  (substring word
-                                             (match-beginning
-                                              (if (and only-prefix
-                                                       (cdr (tree-buffer-spec->incr-search-additional-pattern
-                                                             tree-buffer-spec)))
-                                                  (1+ (cdr (tree-buffer-spec->incr-search-additional-pattern
-                                                            tree-buffer-spec)))
-                                                1)))
-                                ;; else no match
-                                nil)))
+                              (save-match-data
+                                (if (string-match change-word-sub word)
+                                    (substring word
+                                               (match-beginning
+                                                (if (and only-prefix
+                                                         (cdr (tree-buffer-spec->incr-search-additional-pattern
+                                                               tree-buffer-spec)))
+                                                    (1+ (cdr (tree-buffer-spec->incr-search-additional-pattern
+                                                              tree-buffer-spec)))
+                                                  1)))
+                                  ;; else no match
+                                  nil))))
                   lis))
     (setq res (delq nil res)) ;; remove any nil elements (shouldn't happen)
     (setq alist (mapcar (function (lambda (r)
@@ -2466,14 +2692,147 @@ functionality is done with the `help-echo'-property and the function
              (beginning-of-line)
              (re-search-forward tree-buffer-incr-searchpattern-indent-prefix nil t))))))))
 
+
+;; headerline stuff
+;; stolen from cedets stickyfunc-minor-mode - thanks to Eric ;-)
+
+(defun tree-buffer-sticky-default-indent-string ()
+  (if (and window-system (not tree-buffer-running-xemacs))
+      (concat
+       (condition-case nil
+	   ;; Test scroll bar location
+	   (let ((charwidth (tree-buffer-frame-char-width))
+		 (scrollpos (frame-parameter (selected-frame)
+					     'vertical-scroll-bars))
+		 )
+	     (if (or (eq scrollpos 'left)
+		     ;; Now wait a minute.  If you turn scroll-bar-mode
+		     ;; on, then off, the new value is t, not left.
+		     ;; Will this mess up older emacs where the default
+		     ;; was on the right?  I don't think so since they don't
+		     ;; support a header line.
+		     (eq scrollpos t))
+		 (let ((w (when (boundp 'scroll-bar-width)
+			    (symbol-value 'scroll-bar-width))))
+		 
+		   (if (not w)
+		       (setq w (frame-parameter (selected-frame)
+						'scroll-bar-width)))
+
+		   ;; in 21.2, the frame parameter is sometimes empty
+		   ;; so we need to get the value here.
+		   (if (not w)
+		       (setq w (+ (get 'scroll-bar-width 'x-frame-parameter)
+				  ;; In 21.4, or perhaps 22.1 the x-frame
+				  ;; parameter is different from the frame
+				  ;; parameter by only 1 pixel.
+				  1)))
+
+		   (if (not w)
+		       "   "
+		     (setq w (+ charwidth w))   ; Some sort of border around
+					        ; the scrollbar.
+		     (make-string (/ w charwidth) ? )))
+	       ""))
+	 (error ""))
+       (condition-case nil
+	   ;; Test fringe size.
+	   (let* ((f (window-fringes))
+		  (fw (car f))
+		  (numspace (/ fw (tree-buffer-frame-char-width)))
+		  )
+	     (make-string numspace ? ))
+	 (error
+	  ;; Well, the fancy new Emacs functions failed.  Try older
+	  ;; tricks.
+	  (condition-case nil
+	      ;; I'm not so sure what's up with the 21.1-21.3 fringe.
+	      ;; It looks to be about 1 space wide.
+	      (if (get 'fringe 'face)
+		  " "
+		"")
+	    (error ""))))
+       )
+    ;; Not Emacs or a window system means no scrollbar or fringe,
+    ;; and perhaps not even a header line to worry about.
+    ""))
+
+
+(defconst tree-buffer-stickynode-header-line-format
+  (cond (tree-buffer-running-xemacs
+	 nil)
+;; 	((>= emacs-major-version 22)
+;; 	 '(:eval (list
+;; 		  ;; Magic bit I found on emacswiki.
+;; 		  (propertize " "
+;;                               'display
+;;                               '((space :align-to 0)))
+;; 		  (tree-buffer-stickynode-fetch-stickyline))))
+	((>= emacs-major-version 21)
+	 '(:eval (list (tree-buffer-spec->sticky-indent-string tree-buffer-spec)
+		       (tree-buffer-stickynode-fetch-stickyline))))
+	(t nil))
+  "The header line format used by sticky func mode.")
+
+(defun tree-buffer-goto-sticky-node ()
+  "Go in current tree-buffer to that node which should be sticky.
+Returns the line-number of the sticky node."
+  (goto-char (window-start))
+  (forward-line -1)
+  (end-of-line)
+  ;; This is the node under the header-line
+  (let* ((node-under-header-line (tree-buffer-get-node-at-point))
+         (node-at-window-start (save-excursion
+                                 (forward-line 1)
+                                 (tree-buffer-get-node-at-point)))
+         (parent-node (and node-at-window-start
+                           (tree-node->parent node-at-window-start)))
+         (node-to-go (if (eq parent-node (tree-buffer-get-root))
+                         node-under-header-line
+                       parent-node)))
+    ;; we must go the node itself so we can get the whole
+    ;; line - otherwise we would not get the right icons etc...
+    (tree-buffer-goto-line (tree-buffer-displayed-node-linenr node-to-go)))
+  (tree-buffer-current-line))
+
+
+(defun tree-buffer-stickynode-fetch-stickyline ()
+  "Make the parent-node at the top of the current tree-window sticky."
+  (let ((str
+         (if (= 0 (count-lines (point-min) (window-start)))
+             ""
+           (save-excursion
+             ;; here we have at least one node under the header-line
+             (tree-buffer-goto-sticky-node)
+             (buffer-substring (tree-buffer-line-beginning-pos) (tree-buffer-line-end-pos)))))
+	(start 0))
+    ;; we must handle the special sign % of head-line-format!
+    (save-match-data
+      (while (string-match "%" str start)
+        (setq str (replace-match "%%" t t str 0)
+              start (1+ (match-end 0)))
+        ))
+    ;; In 21.4 (or 22.1) the heder doesn't expand tabs.  Hmmmm.
+    ;; We should replace them here.
+    ;;
+    ;; This hack assumes that tabs are kept smartly at tab boundaries
+    ;; instead of in a tab boundary where it might only represent 4 spaces.
+    (save-match-data
+      (while (string-match "\t" str start)
+        (setq str (replace-match "        " t t str 0))))
+    str))
+
+
 ;; tree-buffer creation
 
-(defun tree-buffer-create-mouse-key (button trigger &optional modifier)
+(defun tree-buffer-create-mouse-key (button trigger &optional modifier key-qualifier)
   "Create a mouse-key which can be bound to a command via `define-key'.
 BUTTON is the number of the mouse-button which can be 1, 2 or 3. TRIGGER
 determines when the command is triggered, values can be 'button-press and
-'button-release. The optional modifier can be one of the symbols 'shift,
-'control or 'meta."
+'button-release. The third optional modifier can be one of the symbols 'shift,
+'control or 'meta. The fourth optional argument KEY-QUALIFIER is only used by
+GUN Emacs and can be an additional key-qualifier symbol like 'mode-line or
+'header-line."
   (let ((mouse-button (if tree-buffer-running-xemacs
                           (format "button%d%s"
                                   button
@@ -2494,7 +2853,9 @@ determines when the command is triggered, values can be 'button-press and
                            (otherwise "")))))
     (if tree-buffer-running-xemacs
         (delete nil (list modifier-elem (intern mouse-button)))
-      (make-vector 1 (intern (concat modifier-elem mouse-button))))))
+      (if (and key-qualifier (symbolp key-qualifier))
+          (vector key-qualifier (intern (concat modifier-elem mouse-button)))
+        (vector (intern (concat modifier-elem mouse-button)))))))
 
 (defun* tree-buffer-create (name
                             &key
@@ -2512,6 +2873,9 @@ determines when the command is triggered, values can be 'button-press and
                             menu-creator
                             menu-titles
                             modeline-menu-creator
+                            sticky-parent-p
+                            sticky-indent-string
+                            sticky-parent-fn
                             trunc-lines
                             read-only
                             tree-indent
@@ -2670,6 +3034,21 @@ MODELINE-MENU-CREATOR: Nil or a function which has to return nil or a menu in
                        this menu will be displayed when the user clicks with
                        mouse-button 3 at the modeline of the tree-buffer. The
                        menu-title will be \"Tree-buffer modeline-menu\".
+STICKY-PARENT-P: If not nil then with GNU Emacs >= 21 the tree-buffer displays
+                 in its header-line the unvisible parent-node if there is any.
+                 STICKY-PARENT-FN is used to get this parent node.
+STICKY-INDENT-STRING: String used for indendation of the sticky node in the
+                      header-line so it matches the tree-display.
+STICKY-PARENT-FN: Function used to get that parent node which should be sticky.
+                  This function gets as argument a node and
+                  should either return nil \(if there is not
+                  suitable parent node) or a node. This node will
+                  be displayed as sticky in the header-line of the
+                  tree-buffer. If nil is returned and STICKY-PARENT-P is not
+                  nil then just the node under the header-line is displayed.
+                  If this argument is nil and STICKY-PARENT-P is not nil then
+                  always the next unvisible parent node will be displayed in
+                  the header-line.
 TRUNC-LINES: Should lines in this tree buffer be truncated \(not nil).
 READ-ONLY: Should the treebuffer be read-only \(not nil).
 TREE-INDENT: Spaces subnodes should be indented. Ignored if TREE-STYLE is
@@ -2835,6 +3214,9 @@ See Info node `(ecb)tree-buffer' for all details of using tree-buffers."
                                 :menu-creator menu-creator
                                 :menu-titles menu-titles
                                 :modeline-menu-creator modeline-menu-creator
+                                :sticky-parent-p sticky-parent-p
+                                :sticky-indent-string sticky-indent-string
+                                :sticky-parent-fn sticky-parent-fn
                                 :type-facer type-facer
                                 :expand-symbol-before-p expand-symbol-before-p
                                 :mouse-action-trigger mouse-action-trigger
@@ -2912,23 +3294,23 @@ See Info node `(ecb)tree-buffer' for all details of using tree-buffers."
     (define-key tree-buffer-key-map (kbd "<RET>")
       (function (lambda ()
                   (interactive)
-                  (tree-buffer-select 0 nil nil nil))))
-    (define-key tree-buffer-key-map (kbd "<C-return>")
-      (function (lambda ()
-                  (interactive)
-                  (tree-buffer-select 0 nil t nil))))
+                  (tree-buffer-select 0 nil))))
     (define-key tree-buffer-key-map (kbd "<S-return>")
       (function (lambda ()
                   (interactive)
-                  (tree-buffer-select 0 t nil nil))))
+                  (tree-buffer-select 0 '(shift)))))
+    (define-key tree-buffer-key-map (kbd "<C-return>")
+      (function (lambda ()
+                  (interactive)
+                  (tree-buffer-select 0 '(control)))))
     (define-key tree-buffer-key-map (kbd "<M-return>")
       (function (lambda ()
                   (interactive)
-                  (tree-buffer-select 0 nil nil t))))
+                  (tree-buffer-select 0 '(meta)))))
     (define-key tree-buffer-key-map (kbd "<C-S-return>")
       (function (lambda ()
                   (interactive)
-                  (tree-buffer-select 0 t t nil))))
+                  (tree-buffer-select 0 '(shift control)))))
     
     (define-key tree-buffer-key-map (kbd "TAB") 'tree-buffer-tab-pressed)
 
@@ -2941,96 +3323,120 @@ See Info node `(ecb)tree-buffer' for all details of using tree-buffers."
     (define-key tree-buffer-key-map (kbd "M-m")
       'tree-buffer-show-node-menu-keyboard)
 
-    ;; mouse-1
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 1 mouse-action-trigger nil)
-      (function (lambda(e)
-                  (interactive "e")
-                  (tree-buffer-mouse-set-point e)
-                  (tree-buffer-select 1 nil nil nil))))
-  
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 1 mouse-action-trigger 'shift)
-      (function (lambda(e)
-		  (interactive "e")
-                  (tree-buffer-mouse-set-point e)
-                  (tree-buffer-select 1 t nil nil))))
+;;     (mapc (function
+;;            (lambda (key)
+;;              (tree-buffer-define-mouse-key 1 key)))
+;;           '(nil shift control meta))
 
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 1 mouse-action-trigger 'control)
-      (function (lambda(e)
-		  (interactive "e")
-                  (tree-buffer-mouse-set-point e)
-                  (tree-buffer-select 1 nil t nil))))
+    (macrolet ((tbc-define-mouse-key-1/2 (button key)
+                `(progn
+                   (define-key tree-buffer-key-map
+                     (tree-buffer-create-mouse-key ,button mouse-action-trigger ,key)
+                     (function (lambda(e)
+                                 (interactive "e")
+                                 (tree-buffer-mouse-set-point e)
+                                 (tree-buffer-select ,button (list ,key)))))
+                   (define-key tree-buffer-key-map
+                     (tree-buffer-create-mouse-key ,button mouse-action-trigger-not ,key)
+                     nop)))
+               (tbc-define-mouse-key-1/2-header
+                (button key)
+                `(progn
+                   (define-key tree-buffer-key-map
+                     (tree-buffer-create-mouse-key ,button mouse-action-trigger ,key 'header-line)
+                     (function (lambda(e)
+                                 (interactive "e")
+                                 (tree-buffer-mouse-set-point e)
+                                 (when (< 0 (count-lines (point-min) (window-start)))
+                                   ;; we have at least one node under the header-line
+                                   (let ((click-col (tree-buffer-get-event-column e)))
+                                     ;; go to the sticky node
+                                     (tree-buffer-goto-sticky-node)
+                                     ;; go to beginning of current line
+                                     (forward-line 0)
+                                     ;; move right
+                                     (forward-char click-col))
+                                   (tree-buffer-select ,button (list ,key))))))
+                   (define-key tree-buffer-key-map
+                     (tree-buffer-create-mouse-key ,button mouse-action-trigger-not ,key 'header-line)
+                     nop))))
 
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 1 mouse-action-trigger 'meta)
-      (function (lambda(e)
-		  (interactive "e")
-                  (tree-buffer-mouse-set-point e)
-                  (tree-buffer-select 1 nil nil t))))
+      ;; mouse-1
+      (tbc-define-mouse-key-1/2 1 nil)
+      (tbc-define-mouse-key-1/2 1 'shift)
+      (tbc-define-mouse-key-1/2 1 'control)
+      (tbc-define-mouse-key-1/2 1 'meta)
+      (define-key tree-buffer-key-map [drag-mouse-1] nop)
+      (define-key tree-buffer-key-map [double-mouse-1] nop)
+      (define-key tree-buffer-key-map [triple-mouse-1] nop)
 
-    (define-key tree-buffer-key-map [drag-mouse-1] nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 1 mouse-action-trigger-not nil) nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 1 mouse-action-trigger-not 'shift) nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 1 mouse-action-trigger-not 'control) nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 1 mouse-action-trigger-not 'meta) nop)
-    (define-key tree-buffer-key-map [double-mouse-1] nop)
-    (define-key tree-buffer-key-map [triple-mouse-1] nop)
+      ;; mouse-2
+      (tbc-define-mouse-key-1/2 2 nil)
+      (tbc-define-mouse-key-1/2 2 'shift)
+      (tbc-define-mouse-key-1/2 2 'control)
+      (tbc-define-mouse-key-1/2 2 'meta)
+      (define-key tree-buffer-key-map [double-mouse-2] nop)
+      (define-key tree-buffer-key-map [triple-mouse-2] nop)
 
-    ;; mouse-2
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 2 mouse-action-trigger nil)
-      (function (lambda(e)
-		  (interactive "e")
-                  (tree-buffer-mouse-set-point e)
-                  (tree-buffer-select 2 nil nil nil))))
-
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 2 mouse-action-trigger 'shift)
-      (function (lambda(e)
-		  (interactive "e")
-                  (tree-buffer-mouse-set-point e)
-                  (tree-buffer-select 2 t nil nil))))
-
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 2 mouse-action-trigger 'control)
-      (function (lambda(e)
-		  (interactive "e")
-                  (tree-buffer-mouse-set-point e)
-                  (tree-buffer-select 2 nil t nil))))
-
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 2 mouse-action-trigger 'meta)
-      (function (lambda(e)
-		  (interactive "e")
-                  (tree-buffer-mouse-set-point e)
-                  (tree-buffer-select 2 nil nil t))))
-
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 2 mouse-action-trigger-not nil) nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 2 mouse-action-trigger-not 'shift) nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 2 mouse-action-trigger-not 'control) nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 2 mouse-action-trigger-not 'meta) nop)
-    (define-key tree-buffer-key-map [double-mouse-2] nop)
-    (define-key tree-buffer-key-map [triple-mouse-2] nop)
-
-    ;; mouse-3
+      (when (and (not tree-buffer-running-xemacs) sticky-parent-p)
+        (setq header-line-format
+              tree-buffer-stickynode-header-line-format)
+        ;; mouse-1 header-line
+        (tbc-define-mouse-key-1/2-header 1 nil)
+        (tbc-define-mouse-key-1/2-header 1 'shift)
+        (tbc-define-mouse-key-1/2-header 1 'control)
+        (tbc-define-mouse-key-1/2-header 1 'meta)
+        
+        ;; mouse-2 header-line
+        (tbc-define-mouse-key-1/2-header 2 nil)
+        (tbc-define-mouse-key-1/2-header 2 'shift)
+        (tbc-define-mouse-key-1/2-header 2 'control)
+        (tbc-define-mouse-key-1/2-header 2 'meta)
+        )
+      )
+    
+    ;; mouse-3 - here we use hard button-press because this is consitent to
+    ;; standard popup-behavior of (X)Emacs
     (define-key tree-buffer-key-map
       (tree-buffer-create-mouse-key 3 'button-press nil)
       (function (lambda(e)
 		  (interactive "e")
                   (tree-buffer-mouse-set-point e)
                   (tree-buffer-show-node-menu e))))
+    (when (and (not tree-buffer-running-xemacs) sticky-parent-p)
+      (define-key tree-buffer-key-map
+        (tree-buffer-create-mouse-key 3 'button-press nil 'header-line)
+        (function (lambda(e)
+                    (interactive "e")
+                    (tree-buffer-mouse-set-point e)
+                    (let ((click-col (tree-buffer-get-event-column e)))
+                      ;; go to the sticky node
+                      (tree-buffer-goto-sticky-node)
+                      ;; go to beginning of current line
+                      (forward-line 0)
+                      ;; move right
+                      (forward-char click-col))
+                    (tree-buffer-show-node-menu e)))))
 
-;;     (when modeline-menu-creator
+    (define-key tree-buffer-key-map
+      (tree-buffer-create-mouse-key 3 'button-press 'shift) nop)
+    (define-key tree-buffer-key-map
+      (tree-buffer-create-mouse-key 3 'button-press 'control) nop)
+    (define-key tree-buffer-key-map
+      (tree-buffer-create-mouse-key 3 'button-press 'meta) nop)
+    (define-key tree-buffer-key-map
+      (tree-buffer-create-mouse-key 3 'button-release nil) nop)
+    (define-key tree-buffer-key-map
+      (tree-buffer-create-mouse-key 3 'button-release 'shift) nop)
+    (define-key tree-buffer-key-map
+      (tree-buffer-create-mouse-key 3 'button-release 'control) nop)
+    (define-key tree-buffer-key-map
+      (tree-buffer-create-mouse-key 3 'button-release 'meta) nop)
+    (define-key tree-buffer-key-map [double-mouse-3] nop)
+    (define-key tree-buffer-key-map [triple-mouse-3] nop)
+
+    ;; modeline bindings....here we use hard coded button-press too - s.a.
+    
     (if tree-buffer-running-xemacs
         (progn
           (set (make-local-variable 'modeline-map)
@@ -3051,35 +3457,21 @@ See Info node `(ecb)tree-buffer' for all details of using tree-buffers."
             (tree-buffer-create-mouse-key 1 'button-press nil)
             'mouse-drag-modeline)
           )
-      (define-key tree-buffer-key-map [mode-line mouse-3]
+      (define-key tree-buffer-key-map
+        (tree-buffer-create-mouse-key 3 'button-press nil 'mode-line)
         (function (lambda (e)
                     (interactive "e")
                     (tree-buffer-mouse-set-point e)
                     (tree-buffer-show-modeline-menu e)))))
-;;       )
     
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 3 mouse-action-trigger-not 'shift) nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 3 mouse-action-trigger-not 'control) nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 3 mouse-action-trigger-not 'meta) nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 3 mouse-action-trigger 'shift) nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 3 mouse-action-trigger 'control) nop)
-    (define-key tree-buffer-key-map
-      (tree-buffer-create-mouse-key 3 mouse-action-trigger 'meta) nop)
-    (define-key tree-buffer-key-map [double-mouse-3] nop)
-    (define-key tree-buffer-key-map [triple-mouse-3] nop)
-
     ;; scrolling horiz.
     (when (and (not tree-buffer-running-xemacs) hor-scroll-step)
       ;; This lets the GNU Emacs user scroll as if we had a horiz.
       ;; scrollbar...
       (define-key tree-buffer-key-map
-        [mode-line mouse-1] 'tree-buffer-mouse-hscroll))
-      
+        (tree-buffer-create-mouse-key 1 'button-release nil 'mode-line)
+        'tree-buffer-mouse-hscroll))
+
     (use-local-map tree-buffer-key-map)
 
     (setq tree-buffers (cons (current-buffer) tree-buffers))

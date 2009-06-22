@@ -1,9 +1,9 @@
 ;;; scheme.by -- Scheme BNF language specification
 ;;
-;; Copyright (C) 2001, 2003 Eric M. Ludlam
+;; Copyright (C) 2001, 2003, 2009 Eric M. Ludlam
 ;;
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
-;; X-RCS: $Id: scheme.by,v 1.9 2005/09/30 20:22:04 zappo Exp $
+;; X-RCS: $Id: scheme.by,v 1.10 2009/05/14 01:39:18 zappo Exp $
 ;;
 ;; This is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -81,6 +81,7 @@ sequence : expression sequence
 expression : symbol
 	   | semantic-list
 	   | string
+	   | number
 	   ;
 
 ;;; scheme.by ends here

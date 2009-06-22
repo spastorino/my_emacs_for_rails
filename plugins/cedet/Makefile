@@ -40,7 +40,7 @@ contrib \
 tests
 
 ## Path to your Emacs
-EMACS=emacs
+EMACS=/mnt/respaldo/Progs/emacs/bin/emacs
 EMACSFLAGS=-batch --no-site-file
 
 ## Your shell (On Windows/Cygwin I recommend to use bash)

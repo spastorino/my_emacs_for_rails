@@ -371,12 +371,6 @@ To create a menu item something similar to this can be used:
       (major-modep value)))
 
 ;;;###autoload
-(defun multi-major-modep (value)
-  "Return t if VALUE is a multi major mode function."
-  (and (fboundp value)
-       (rassq value mumamo-defined-turn-on-functions)))
-
-;;;###autoload
 (defun major-modep (value)
   "Return t if VALUE is a major mode function."
   (let ((sym-name (symbol-name value)))
@@ -479,7 +473,8 @@ line."
   (interactive "p")
   (or arg (setq arg 1))
   (let ((pos (point))
-        vis-pos)
+        vis-pos
+        eol-pos)
     (when line-move-visual
       (let (last-command) (line-move-visual 1 t))
       (end-of-line)
@@ -488,9 +483,12 @@ line."
     (call-interactively 'end-of-line arg)
     (when (and vis-pos
                (= vis-pos (point)))
+      (setq eol-pos (point))
       (beginning-of-line)
       (let (last-command) (line-move-visual 1 t))
-      (backward-char))
+      ;; move backwards if we moved to a new line
+      (unless (= (point) eol-pos)
+        (backward-char)))
     (when (= pos (point))
       (if (= (line-end-position) (point))
           (skip-chars-backward " \t")
@@ -885,6 +883,10 @@ the left margin."
   :group 'convenience)
 
 (defun wrap-to-fill-set-prefix (min max)
+  ;;(wrap-to-fill-set-prefix-1 min max)
+  )
+
+(defun wrap-to-fill-set-prefix-1 (min max)
   "Set `wrap-prefix' text property from point MIN to MAX."
   ;; Fix-me: If first word gets wrapped we have a problem.
   ;;(message "wrap-to-fill-set-prefix here")
@@ -927,6 +929,8 @@ the left margin."
        (forward-line)))
     (goto-char here)))
 
+(defvar wrap-to-fill-after-change-range nil)
+
 (defun wrap-to-fill-after-change (min max old-len)
   "For `after-change-functions'.
 See the hook for MIN, MAX and OLD-LEN."
@@ -936,6 +940,21 @@ See the hook for MIN, MAX and OLD-LEN."
     (setq min (line-beginning-position))
     (goto-char max)
     (setq max (line-end-position))
+    ;;(wrap-to-fill-set-prefix min max)
+    (wrap-to-fill-save-min-max min max)
+    ))
+
+(defun wrap-to-fill-save-min-max (min max)
+  (let* ((old-min (car wrap-to-fill-after-change-range))
+         (old-max (cdr wrap-to-fill-after-change-range))
+         (new-min (if old-min (min old-min min) min))
+         (new-max (if old-max (max old-max max) max)))
+    (setq wrap-to-fill-after-change-range (cons new-min new-max))))
+
+(defun wrap-to-fill-post-command ()
+  (let* ((min (car wrap-to-fill-after-change-range))
+         (max (cdr wrap-to-fill-after-change-range)))
+    (setq wrap-to-fill-after-change-range nil)
     (wrap-to-fill-set-prefix min max)))
 
 (defun wrap-to-fill-scroll-fun (window start-pos)
@@ -943,7 +962,8 @@ See the hook for MIN, MAX and OLD-LEN."
 See the hook for WINDOW and START-POS."
   (let ((min (or start-pos (window-start window)))
         (max (window-end window t)))
-    (wrap-to-fill-set-prefix min max)))
+    (wrap-to-fill-save-min-max min max)))
+    ;;(wrap-to-fill-set-prefix min max)))
 
 (defun wrap-to-fill-wider ()
   "Increase `fill-column' with 10."
@@ -993,6 +1013,8 @@ Key bindings added by this minor mode:
         (add-hook 'window-configuration-change-hook 'wrap-to-fill-set-values nil t)
         (add-hook 'after-change-functions 'wrap-to-fill-after-change nil t)
         (add-hook 'window-scroll-functions 'wrap-to-fill-scroll-fun nil t)
+        (add-hook 'post-command-hook 'wrap-to-fill-post-command nil t)
+        ;;(add-hook 'post-command-hook window-scroll-functions 'wrap-to-fill-scroll-fun nil t)
         (if (fboundp 'visual-line-mode)
             (visual-line-mode 1)
           (longlines-mode 1))
@@ -1545,24 +1567,86 @@ function."
   (setq ourcomments-ido-visit-method 'raise-frame)
   (call-interactively 'ido-exit-minibuffer))
 
+(defun ourcomments-ido-switch-buffer-or-next-entry ()
+  (interactive)
+  (if (active-minibuffer-window)
+      (ido-next-match)
+    (ido-switch-buffer)))
+
 (defun ourcomments-ido-mode-advice()
+  (message "ourcomments-ido-mode-advice running")
   (when (memq ido-mode '(both buffer))
     (let ((the-ido-minor-map (cdr ido-minor-mode-map-entry)))
-      (define-key the-ido-minor-map [(control tab)] 'ido-switch-buffer))
-    (let ((map ido-buffer-completion-map))
-      (define-key map [(control tab)]       'ido-next-match)
-      (define-key map [(control shift tab)] 'ido-prev-match)
-      (define-key map [(control backtab)]   'ido-prev-match)
-      (define-key map [(shift return)]   'ourcomments-ido-buffer-other-window)
-      (define-key map [(control return)] 'ourcomments-ido-buffer-other-frame)
-      (define-key map [(meta return)]   'ourcomments-ido-buffer-raise-frame))))
+      ;;(define-key the-ido-minor-map [(control tab)] 'ido-switch-buffer))
+      (define-key the-ido-minor-map [(control tab)] 'ourcomments-ido-switch-buffer-or-next-entry))
+    (dolist (the-map (list ido-buffer-completion-map ido-completion-map ido-common-completion-map))
+      (when the-map
+        (let ((map the-map))
+          (define-key map [(control tab)]       'ido-next-match)
+          (define-key map [(control shift tab)] 'ido-prev-match)
+          (define-key map [(control backtab)]   'ido-prev-match)
+          (define-key map [(shift return)]   'ourcomments-ido-buffer-other-window)
+          (define-key map [(control return)] 'ourcomments-ido-buffer-other-frame)
+          (define-key map [(meta return)]   'ourcomments-ido-buffer-raise-frame))))))
+
+;; (defun ourcomments-ido-setup-completion-map ()
+;;   "Set up the keymap for `ido'."
+
+;;   (ourcomments-ido-mode-advice)
+
+;;   ;; generated every time so that it can inherit new functions.
+;;   (let ((map (make-sparse-keymap))
+;; 	(viper-p (if (boundp 'viper-mode) viper-mode)))
+
+;;     (when viper-p
+;;       (define-key map [remap viper-intercept-ESC-key] 'ignore))
+
+;;     (cond
+;;      ((memq ido-cur-item '(file dir))
+;;       (when ido-context-switch-command
+;; 	(define-key map "\C-x\C-b" ido-context-switch-command)
+;; 	(define-key map "\C-x\C-d" 'ignore))
+;;       (when viper-p
+;; 	(define-key map [remap viper-backward-char] 'ido-delete-backward-updir)
+;; 	(define-key map [remap viper-del-backward-char-in-insert] 'ido-delete-backward-updir)
+;; 	(define-key map [remap viper-delete-backward-word] 'ido-delete-backward-word-updir))
+;;       (set-keymap-parent map
+;; 			 (if (eq ido-cur-item 'file)
+;; 			     ido-file-completion-map
+;; 			   ido-file-dir-completion-map)))
+
+;;      ((eq ido-cur-item 'buffer)
+;;       (when ido-context-switch-command
+;; 	(define-key map "\C-x\C-f" ido-context-switch-command))
+;;       (set-keymap-parent map ido-buffer-completion-map))
+
+;;      (t
+;;       (set-keymap-parent map ido-common-completion-map)))
+
+;;     ;; ctrl-tab etc
+;;     (define-key map [(control tab)]       'ido-next-match)
+;;     (define-key map [(control shift tab)] 'ido-prev-match)
+;;     (define-key map [(control backtab)]   'ido-prev-match)
+;;     (define-key map [(shift return)]   'ourcomments-ido-buffer-other-window)
+;;     (define-key map [(control return)] 'ourcomments-ido-buffer-other-frame)
+;;     (define-key map [(meta return)]   'ourcomments-ido-buffer-raise-frame)
+
+;;     (setq ido-completion-map map)))
+
+;; (defadvice ido-setup-completion-map (around
+;;                                      ourcomments-advice-ido-setup-completion-map
+;;                                      disable)
+;;   (setq ad-return-value (ourcomments-ido-setup-completion-map))
+;;   )
 
 ;;(add-hook 'ido-setup-hook 'ourcomments-ido-mode-advice)
 ;;(remove-hook 'ido-setup-hook 'ourcomments-ido-mode-advice)
 (defvar ourcomments-ido-adviced nil)
 (unless ourcomments-ido-adviced
 (defadvice ido-mode (after
-                     ourcomments-ido-add-ctrl-tab
+                     ourcomments-advice-ido-mode
+                     ;;activate
+                     ;;compile
                      disable)
   "Add C-tab to ido buffer completion."
   (ourcomments-ido-mode-advice)
@@ -1572,7 +1656,9 @@ function."
 ;; (ad-deactivate 'ido-mode)
 
 (defadvice ido-visit-buffer (before
-                             ourcomments-ido-visit-buffer-other
+                             ourcomments-advice-ido-visit-buffer
+                             ;;activate
+                             ;;compile
                              disable)
   "Advice to show buffers in other window, frame etc."
   (when ourcomments-ido-visit-method
@@ -1582,20 +1668,27 @@ function."
 (setq ourcomments-ido-adviced t)
 )
 
+(message "after advising ido")
 ;;(ad-deactivate 'ido-visit-buffer)
 ;;(ad-activate 'ido-visit-buffer)
 
 (defvar ourcomments-ido-old-state ido-mode)
 
 (defun ourcomments-ido-ctrl-tab-activate ()
+  (message "ourcomments-ido-ctrl-tab-activate running")
   ;;(ad-update 'ido-visit-buffer)
-  (ad-enable-advice 'ido-visit-buffer 'before
-                    'ourcomments-ido-visit-buffer-other)
-  (ad-activate 'ido-visit-buffer)
+  ;;(unless (ad-get-advice-info 'ido-visit-buffer)
+  ;; Fix-me: The advice must be enabled before activation. Send bug report.
+  (ad-enable-advice 'ido-visit-buffer 'before 'ourcomments-advice-ido-visit-buffer)
+  (unless (cdr (assoc 'active (ad-get-advice-info 'ido-visit-buffer)))
+    (ad-activate 'ido-visit-buffer))
+  ;; (ad-enable-advice 'ido-setup-completion-map 'around 'ourcomments-advice-ido-setup-completion-map)
+  ;; (unless (cdr (assoc 'active (ad-get-advice-info 'ido-setup-completion-map)))
+  ;;   (ad-activate 'ido-setup-completion-map))
   ;;(ad-update 'ido-mode)
-  (ad-enable-advice 'ido-mode 'after
-                    'ourcomments-ido-add-ctrl-tab)
-  (ad-activate 'ido-mode)
+  (ad-enable-advice 'ido-mode 'after 'ourcomments-advice-ido-mode)
+  (unless (cdr (assoc 'active (ad-get-advice-info 'ido-mode)))
+    (ad-activate 'ido-mode))
   (setq ourcomments-ido-old-state ido-mode)
   (ido-mode (or ido-mode 'buffer)))
 
@@ -1622,9 +1715,9 @@ of those in for example common web browsers."
          (if val
              (ourcomments-ido-ctrl-tab-activate)
            (ad-disable-advice 'ido-visit-buffer 'before
-                              'ourcomments-ido-visit-buffer-other)
+                              'ourcomments-advice-ido-visit-buffer)
            (ad-disable-advice 'ido-mode 'after
-                              'ourcomments-ido-add-ctrl-tab)
+                              'ourcomments-advice-ido-mode)
            ;; For some reason this little complicated construct is
            ;; needed. If they are not there the defadvice
            ;; disappears. Huh.
@@ -1664,9 +1757,9 @@ If there is no buffer file start with `dired'."
     ;;(unless file (error "No buffer file name"))
     (if file
         (progn
-          (call-process (ourcomments-find-emacs) nil 0 nil file)
+          (call-process (ourcomments-find-emacs) nil 0 nil "--no-desktop" file)
           (message "Started 'emacs buffer-file-name' - it will be ready soon ..."))
-      (call-process (ourcomments-find-emacs) nil 0 nil "--eval"
+      (call-process (ourcomments-find-emacs) nil 0 nil "--no-desktop" "--eval"
                     (format "(dired \"%s\")" default-directory)))))
 
 ;;;###autoload
@@ -1674,6 +1767,12 @@ If there is no buffer file start with `dired'."
   (interactive)
   (call-process (ourcomments-find-emacs) nil 0 nil "--debug-init")
   (message "Started 'emacs --debug-init' - it will be ready soon ..."))
+
+;;;###autoload
+(defun emacs--no-desktop()
+  (interactive)
+  (call-process (ourcomments-find-emacs) nil 0 nil "--no-desktop")
+  (message "Started 'emacs --no-desktop' - it will be ready soon ..."))
 
 ;;;###autoload
 (defun emacs-Q()

@@ -6,7 +6,7 @@
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Author: David Ponce <david@dponce.com>
 ;; Keywords: syntax
-;; X-RCS: $Id: semantic-util-modes.el,v 1.69 2009/03/08 16:16:23 zappo Exp $
+;; X-RCS: $Id: semantic-util-modes.el,v 1.70 2009/04/23 21:44:07 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -848,7 +848,7 @@ Use the command `semantic-stickyfunc-mode' to change this variable.")
 	   ;; Test fringe size.
 	   (let* ((f (window-fringes))
 		  (fw (car f))
-		  (numspace (/ fw charwidth))
+		  (numspace (/ fw (frame-char-width)))
 		  )
 	     (make-string numspace ? ))
 	 (error

@@ -1,10 +1,10 @@
 ;;; semantic-tag-file.el --- Routines that find files based on tags.
 
-;;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2008 Eric M. Ludlam
+;;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: syntax
-;; X-RCS: $Id: semantic-tag-file.el,v 1.32 2008/12/13 17:22:47 zappo Exp $
+;; X-RCS: $Id: semantic-tag-file.el,v 1.33 2009/05/08 20:45:00 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -82,7 +82,7 @@ PARENT can also be a `semanticdb-table' object."
 	 ((semantic-tag-get-attribute tag :line)
 	  ;; The tag has a line number in it.  Go there.
 	  (goto-line (semantic-tag-get-attribute tag :line)))
-	 ((semantic-tag-get-attribute parent :line)
+	 ((and (semantic-tag-p parent) (semantic-tag-get-attribute parent :line))
 	  ;; The tag has a line number in it.  Go there.
 	  (goto-line (semantic-tag-get-attribute parent :line))
 	  (re-search-forward (semantic-tag-name tag) nil t)

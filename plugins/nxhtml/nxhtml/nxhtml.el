@@ -48,6 +48,7 @@
   "Customization of `nxhtml-mode'."
   :group 'nxml)
 
+;;;###autoload
 (defun nxhtml-customize ()
   "Customize nXhtml."
   (interactive)

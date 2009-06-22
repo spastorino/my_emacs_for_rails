@@ -5,7 +5,7 @@
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
 ;;         Jan Moringen <scymtym@users.sourceforge.net>
-;; X-RCS: $Id: srecode-cpp.el,v 1.4 2009/01/20 23:44:26 scymtym Exp $
+;; X-RCS: $Id: srecode-cpp.el,v 1.5 2009/05/16 11:19:02 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -46,7 +46,7 @@ HEADER - Shown section if in a header file."
 	(case-fold-search t))
 
     ;; Are we in a header file?
-    (if (string-match "\\.\\(h\\|hh\\|hpp\\|h++\\)$" fsym)
+    (if (string-match "\\.\\(h\\|hh\\|hpp\\|h\\+\\+\\)$" fsym)
 	(srecode-dictionary-show-section dict "HEADER")
       (srecode-dictionary-show-section dict "NOTHEADER"))
 

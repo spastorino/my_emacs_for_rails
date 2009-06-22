@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: oop, uml
-;; X-RCS: $Id: cogre-uml.el,v 1.29 2009/04/11 12:54:32 zappo Exp $
+;; X-RCS: $Id: cogre-uml.el,v 1.30 2009/04/23 03:26:59 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -187,12 +187,12 @@ this node.  Optional argument TEXT is a preformatted string."
 	      )))
 	;; disable images during the format.  Images will mess up
 	;; the fancy formatting.
-	(let ((semantic-format-use-images-flag nil)
-	      (major-mode mm)
-	      (parent (and (class-p 'cogre-peer-semantic)
-			   (cogre-peer-semantic-child-p peer)
-			   (oref peer :tag))))
-	  (semantic-format-tag-uml-concise-prototype stoken parent t)))
+	(with-mode-local-symbol mm
+	  (let ((semantic-format-use-images-flag nil)
+		(parent (and (class-p 'cogre-peer-semantic)
+			     (cogre-peer-semantic-child-p peer)
+			     (oref peer :tag))))
+	    (semantic-format-tag-uml-concise-prototype stoken parent t))))
     (error "Unknown element cogre-class node attribute or method.")))
 
 (defmethod cogre-node-slots ((class cogre-class))
@@ -211,7 +211,7 @@ Argument CLASS is the class whose slots are referenced."
      ((= detail 3)
       ;; Show nothing.
       (list nil nil))
-     ((or (= detail 1) (= detail 2))
+     ((memq detail '(1 2))
       ;; Strip out redundant entries from the method and attribute lists.
       (let ((name (oref class :object-name))
 	    (attr (oref class attributes))
@@ -241,9 +241,10 @@ Argument CLASS is the class whose slots are referenced."
 			    meth))))))
 	;; Heuristic 3 - Strip out anything private or protected!
 	;; But only if less detail is desired.
-	(when (= detail 2)
-	  nil
-	  )
+;	(when (= detail 2)
+;	  ;; @TODO
+;	  nil
+;	  )
 	;; Heuristic 4 - Get clever.
 	
 	(list
@@ -302,6 +303,9 @@ The `start' node is the owner of the aggregation, the `end' node is
 the item being aggregated.
 This is supposed to infer that START contains END.")
 
+;;; UNICODE SUPPORT
+;;
+
 ;;;###autoload
 (defun cogre-uml-enable-unicode ()
   "Enable use of UNICODE symbols to create COGRE graphs.
@@ -337,6 +341,98 @@ cogre chart a little screwy somteims.  Your mileage may vary."
   (setq picture-rectangle-cbl ?\u2514)
   (setq picture-rectangle-cbr ?\u2518)
   )
+
+;;; SORTED TREE
+;;
+;; UML diagrams have an order to them.  Producing a sorted tree is the
+;; first step in producing code.
+(defun cogre-nodes-linkedto (node links &optional slot)
+  "Return a list of nodes from linked to from NODE based on LINKS.
+Optional SLOT is the slot to check in each LINK to see if it matches a node.
+If SLOT is not supplied, then SLOT is :start."
+  (when (not slot) (setq slot :start))
+  (let ((out nil)
+	(checkslot (or slot :start))
+	(getslot (cond ((eq slot :start)
+			:end)
+		       (t :start))))
+    (dolist (L links)
+      (when (eq (eieio-oref L checkslot) node)
+	(push (eieio-oref L getslot) out))
+      )
+    out))
+
+(defun cogre-nodes-all-in-list (checknodes refnodes)
+  "Are all nodes in CHECKNODES in the reference list of REFNODES."
+  (let ((ans t))
+    (while (and checknodes ans)
+      (when (not (memq (car checknodes) refnodes))
+	(setq ans nil))
+      (setq checknodes nil))
+    ans))
+
+;;;###autoload
+(defun cogre-uml-sort-for-lineage (g)
+  "Sort the current graph G for determining inheritance lineage.
+Return it as a list of lists.  Each entry is of the form:
+  ( NODE PARENT1 PARENT2 ... PARENTN)"
+  (interactive (list cogre-graph)) ;; Just hack it.
+  ;; For a typed language, we have several jobs to do before
+  ;; going to convert the individual nodes.
+  ;;
+  ;; 0) Collect all the classes and inheritance links.
+  ;; 1) Find all top-level nodes w/ no inherited parents.
+  ;; 2) For each of these nodes, generate the tag, then
+  ;;    generate each node that is a subclass.
+  ;; 3) Generate for each sub-sub-class, and repeat.
+  (let ((nodes nil) (links nil)
+	(toplevelnodes nil)
+	(dumped nil)
+	(out nil)
+	count)
+    ;; 0 - Sort the elements.
+    (cogre-map-graph-elements
+     g (lambda (elt) (cond ((cogre-class-child-p elt)
+			    (push elt nodes))
+			   ((cogre-inherit-child-p elt)
+			    (push elt links))
+			   )))
+    ;; 1 - Find toplevel nodes.
+    (mapc (lambda (node)
+	    (when (not (object-assoc node :start links))
+	      (push node toplevelnodes)))
+	  nodes)
+    ;; 2 - Go over each toplevel node, and generate
+    (dolist (TL toplevelnodes)
+      (push TL dumped)
+      (push (list TL) out)
+      (setq nodes (delq TL nodes))
+      )
+    ;; 3 - Loop over the remaining nodes until there are none left,
+    ;;     and all have been dumped.
+    (setq count (length nodes))
+    (while nodes
+      (mapc (lambda (node)
+	      (let ((parents (cogre-nodes-linkedto node links)))
+		;; If all parents have already been dumped, then we can
+		;; dump NODE.
+		(when (cogre-nodes-all-in-list parents dumped)
+		  (push node dumped)
+		  (push (cons node parents) out)
+		  (setq nodes (delq node nodes)))
+		))
+	    nodes)
+      (when (= count (length nodes))
+	(error "Possible graph inheritance recursion"))
+      (setq count (length nodes))
+      )
+    ;; DONE
+    (setq out (nreverse out))
+    ;; 4) Dump if in interactive mode.
+    (when (interactive-p)
+      ;; Dump the output.
+      (data-debug-show-stuff out "SortedInheritanceNodes"))
+    out))
 
 (provide 'cogre-uml)
 

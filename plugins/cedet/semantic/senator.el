@@ -6,7 +6,7 @@
 ;; Maintainer: David Ponce <david@dponce.com>
 ;; Created: 10 Nov 2000
 ;; Keywords: syntax
-;; X-RCS: $Id: senator.el,v 1.141 2009/04/02 01:05:25 zappo Exp $
+;; X-RCS: $Id: senator.el,v 1.142 2009/04/23 22:32:17 zappo Exp $
 
 ;; This file is not part of Emacs
 
@@ -1338,14 +1338,28 @@ If that parent which is only a reference in the function tag
 is found, we can jump to it.
 Some tags such as includes have other reference features."
   (interactive)
-  (let ((newtag (semantic-up-reference (or tag (semantic-current-tag)))))
-    (if (not newtag)
+  (let ((result (semantic-up-reference (or tag (semantic-current-tag)))))
+    (if (not result)
         (error "No up reference found")
       (push-mark)
-      (semantic-go-to-tag newtag)
-      (switch-to-buffer (current-buffer))
-      (semantic-momentary-highlight-tag newtag))))
+      (cond
+       ;; A tag
+       ((semantic-tag-p result)
+	(semantic-go-to-tag result)
+	(switch-to-buffer (current-buffer))
+	(semantic-momentary-highlight-tag result))
+       ;; Buffers
+       ((bufferp result)
+	(switch-to-buffer result)
+	(pulse-momentary-highlight-one-line (point)))
+       ;; Files
+       ((and (stringp result) (file-exists-p result))
+	(find-file result)
+	(pulse-momentary-highlight-one-line (point)))
+       (t
+	(error "Unknown result type from `semantic-up-reference'"))))))
 
+;; @TODO - move this to some analyzer / refs tool
 (define-overloadable-function semantic-up-reference (tag)
   "Return a tag that is referredto by TAG.
 A \"reference\" could be any interesting feature of TAG.
@@ -1364,54 +1378,47 @@ Makes C/C++ language like assumptions."
            ;; this.  Oy!
            (car options)
            ))
+
+	;; Include always point to another file.
         ((eq (semantic-tag-class tag) 'include)
-         ;; Include always point to another file.
-         tag
-         ;; Note: if you then call 'semantic-go-to-tag', then
-         ;; you would just to the source of this tag.
-         )
-        ((and (eq (semantic-tag-class tag) 'function)
+	 (let ((file (semantic-dependency-tag-file tag)))
+	   (cond
+	    ((or (not file) (not (file-exists-p file)))
+	     (error "Could not location include %s"
+		    (semantic-tag-name tag)))
+	    ((get-file-buffer file)
+	     (get-file-buffer file))
+	    ((stringp file)
+	     file)
+	    )))
+
+	;; Is there a parent of the function to jump to?
+        ((and (semantic-tag-of-class-p tag 'function)
               (semantic-tag-function-parent tag))
-         ;; Is there a parent of the function to jump to?
-         (let* ((p (semantic-tag-function-parent tag))
-                (sr1 (semanticdb-find-tags-by-name p))
-                (sr2 (when sr1
-                       (semanticdb-find-tags-by-class 'type sr1)))
-                )
-           (semanticdb-find-result-nth-in-buffer sr2 0)
-           )
-         )
-        ((and (eq (semantic-tag-class tag) 'function)
-              (semantic-tag-get-attribute tag :prototype-flag))
-         ;; Is there a parent of the function to jump to?
-         (let* ((p (semantic-tag-name tag))
-                (sr1 (semanticdb-find-tags-by-name p))
-                (sr2 (when sr1
-                       (semanticdb-find-tags-by-class
-                        (semantic-tag-class tag)
-                        sr1)))
-                (int 0)
-                (len (semanticdb-find-result-length sr2)))
-           (while (and (< int len)
-                       (semantic-tag-get-attribute
-                        (semanticdb-find-result-nth-in-buffer sr2 int)
-                        :prototype-flag))
-             (setq int (1+ int)))
-           (semanticdb-find-result-nth-in-buffer sr2 int)
-           ))
+         (let* ((scope (semantic-calculate-scope (point))))
+	   ;; @todo - it would be cool to ask the user which one if
+	   ;; more than one.
+	   (car (oref scope parents))
+	   ))
+
+	;; Is there a non-prototype version of the tag to jump to?
+        ((semantic-tag-get-attribute tag :prototype-flag)
+	 (let* ((sar (semantic-analyze-tag-references tag)))
+	   (car (semantic-analyze-refs-impl sar t)))
+	 )
+
+	;; If this is a datatype, and we have superclasses
+	((and (semantic-tag-of-class-p tag 'type)
+	      (semantic-tag-type-superclasses tag))
+	 (let ((scope (semantic-calculate-scope (point)))
+	       (parents (semantic-tag-type-superclasses tag)))
+	   (semantic-analyze-find-tag (car parents) 'type scope)))
+
+	;; Get the data type, and try to find that.
         ((semantic-tag-type tag)
-         ;; Get the data type, and try to find that.
-         (let* ((type (semantic-tag-type tag))
-                (tn (cond ((stringp type)
-                           type)
-                          ((semantic-tag-p type)
-                           (semantic-tag-name type))
-                          (t (error "No known type"))))
-                (sr1 (semanticdb-find-tags-by-name tn))
-                (sr2 (when sr1
-                       (semanticdb-find-tags-by-class 'type sr1))))
-           (semanticdb-find-result-nth-in-buffer sr2 0)
-           ))
+	 (let ((scope (semantic-calculate-scope (point))))
+	   (semantic-analyze-tag-type tag scope))
+	 )
         (t nil)))
 
 ;;;;
@@ -1882,6 +1889,8 @@ This is a buffer local variable.")
     (define-key km "i"    'senator-isearch-toggle-semantic-mode)
     (define-key km "j"    'semantic-complete-jump-local) ;senator-jump)
     (define-key km "J"    'semantic-complete-jump)
+    (define-key km "g"    'semantic-symref-symbol) ; g for "grep" like behavior.
+    (define-key km "G"    'semantic-symref)
     (define-key km "p"    'senator-previous-tag)
     (define-key km "n"    'senator-next-tag)
     (define-key km "u"    'senator-go-to-up-reference)
@@ -2158,10 +2167,25 @@ This is a buffer local variable.")
       :active (semantic-current-tag)
       :help "Find uses of the tag the cursor is in."])
     (senator-menu-item
-     ["Find Symbol"
-      semantic-symref
+     ["Find This Symbol..."
+      semantic-symref-symbol
       :active t
       :help "Find uses of any arbitrary symbol."])
+    )
+   (list
+    "UML"
+    (senator-menu-item
+     [ "Create new UML Graph."
+       cogre
+       :active t
+       :help "Create a new UML graph using COGRE."
+       ])
+    (senator-menu-item
+     [ "Autogenerate UML Graph for Class"
+       cogre-uml-quick-class
+       :active t
+       :help "Autogenerate a small UML graph from a class in your code."
+       ])
     )
    (list
     "Chart"

@@ -24,7 +24,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-eshell.el,v 1.82 2009/04/15 14:22:35 berndl Exp $
+;; $Id: ecb-eshell.el,v 1.85 2009/05/08 14:05:55 berndl Exp $
 
 ;;; Commentary:
 
@@ -112,14 +112,6 @@ If current layout does not display a compile-window \(see
   :group 'ecb-eshell
   :type 'boolean)
 
-(defcustom ecb-eshell-synchronize t
-  "*Synchronize eshell with the default-directory of current source-buffer.
-The synchronization is done by `ecb-eshell-buffer-sync' which can be
-called interactively but normally it is called autom. by internal
-idle-mechanism."
-  :group 'ecb-eshell
-  :type 'boolean)
-
 ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: was ecb-eshell-synchronize -->
 ;; rename in texi and also to ecb-upgrade (also with value-upgrade!)
 (defcustom ecb-eshell-buffer-sync 'basic
@@ -164,7 +156,7 @@ If the special value 'basic is set then ECB uses the setting of the option
                    (set symbol value)
                    (if (and (boundp 'ecb-minor-mode)
                             ecb-minor-mode)
-                       (ecb-activate-ecb-autocontrol-functions
+                       (ecb-activate-ecb-autocontrol-function
                         value 'ecb-analyse-buffer-sync))))
   :initialize 'custom-initialize-default)
   
@@ -221,8 +213,8 @@ active.")
     (ecb-layout-debug-error "eshell around-advice: comp-win will be toggled.")
     (ecb-toggle-compile-window 1))
 
-  (ecb-activate-ecb-autocontrol-functions ecb-eshell-buffer-sync-delay
-                                          'ecb-eshell-buffer-sync)
+  (ecb-activate-ecb-autocontrol-function ecb-eshell-buffer-sync-delay
+                                         'ecb-eshell-buffer-sync)
   ;; some hooks
   (add-hook 'eshell-post-command-hook 'ecb-eshell-recenter)
   (add-hook 'eshell-post-command-hook 'ecb-eshell-fit-window-to-output)
@@ -273,7 +265,7 @@ ECB and if either this function is called interactively or
 `ecb-eshell-buffer-sync' is not nil."
   (when (and (equal (selected-frame) ecb-frame)
              (ecb-compile-window-live-p)
-             (not (ecb-point-in-compile-window)))
+             (ecb-point-in-edit-window-number))
     (let* ((my-eshell-buffer
             ;; nil or a living eshell-buffer in the ecb-compile-window
             (car (member (window-buffer ecb-compile-window)

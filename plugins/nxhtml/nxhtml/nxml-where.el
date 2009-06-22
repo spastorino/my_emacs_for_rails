@@ -239,6 +239,7 @@ If nil show only tag names."
     (nxml-where-mode-stop)))
 (put 'nxml-where-turn-off-unless-nxml 'permanent-local-hook t)
 
+;;;###autoload
 (define-minor-mode nxml-where-mode
   "Shows path in mode line."
   :global nil

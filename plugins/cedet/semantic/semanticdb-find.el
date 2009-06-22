@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: tags
-;; X-RCS: $Id: semanticdb-find.el,v 1.76 2009/04/09 03:00:28 zappo Exp $
+;; X-RCS: $Id: semanticdb-find.el,v 1.77 2009/05/16 11:45:58 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -382,7 +382,7 @@ Default action as described in `semanticdb-find-translate-path'."
   (let ((table (cond ((null path)
 		      semanticdb-current-table)
 		     ((bufferp path)
-		      (buffer-local-value 'semanticdb-current-table path))			
+		      (semantic-buffer-local-value 'semanticdb-current-table path))			
 		     ((and (stringp path) (file-exists-p path))
 		      (semanticdb-file-table-object path t))
 		     ((semanticdb-abstract-table-child-p path)

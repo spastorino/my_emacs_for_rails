@@ -21,16 +21,16 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-winman-support.el,v 1.14 2007/07/05 11:08:23 berndl Exp $
+;; $Id: ecb-winman-support.el,v 1.16 2009/05/15 15:19:53 berndl Exp $
 
 ;;; Commentary
 ;;
 ;; This library contains support for several window-managers so they interact
 ;; well with ECB. Currently the following window-managers are supported by ECB:
 ;; - winring.el: Written by Barry A. Warsaw <bwarsaw@python.org>, get it from
-;;   http://www.python.org/emacs/
+;;   http://www.python.org/emacs/winring
 ;; - escreen.el: Written by Noah Friedman <friedman@splode.com>, get it from
-;;   http://www.splode.com/~friedman/software/emacs-lisp/
+;;   http://www.splode.com/~friedman/software/emacs-lisp/#ui
 ;;
 ;; Note: With one of these window-managers installed and active you can run
 ;; applications like Gnus, VM or BBDB in the same frame as ECB! Just use
@@ -98,6 +98,7 @@
   (require 'silentcomp))
 
 (require 'ecb-util)
+(require 'ecb-common-browser)
 
 (silentcomp-defvar escreen-current-screen-number)
 
@@ -129,7 +130,8 @@ configurations with deactivated ECB!"
 
 (defecb-advice-set ecb-winman-escreen-adviced-functions
   "These functions of escreen are adviced if escreen is active during ECB is
-active.")
+active. This advice is a permanent advice set!"
+  t)
 
 
 (defun ecb-winman-escreen-enable-support ()
@@ -155,7 +157,7 @@ escreen.el!"
 (defun ecb-winman-escreen-disable-support ()
   "Disable the escreen-support of ECB."
   (interactive)
-  (ecb-disable-advices 'ecb-winman-escreen-adviced-functions)
+  (ecb-disable-advices 'ecb-winman-escreen-adviced-functions t)
   (when (featurep 'escreen)
     (remove-hook 'escreen-goto-screen-hook
                  'ecb-winman-escreen-goto-escreen-hook)))
@@ -186,7 +188,8 @@ uses dedicated windows. So we deactivate ECB before running this function."
 
 (defecb-advice-set ecb-winman-winring-adviced-functions
   "These functions of winring are adviced if winring is active during ECB is
-active.")
+active.  This advice is a permanent advice set!"
+  t)
 
 (defun ecb-winman-winring-enable-support ()
   "Load the winring-library and enable the ECB-support for it.
@@ -208,7 +211,7 @@ winring.el!"
 (defun ecb-winman-winring-disable-support ()
   "Disable the winring-support of ECB."
   (interactive)
-  (ecb-disable-advices 'ecb-winman-winring-adviced-functions))
+  (ecb-disable-advices 'ecb-winman-winring-adviced-functions t))
 
 
 (defvar ecb-winman-winring-ecb-frame nil
@@ -270,7 +273,8 @@ window-configuration gets always the name `ecb-winman-winring-name'."
 
 (defecb-advice-set ecb-winman-not-supported-function-advices
   "These function will be adviced so an error is reported when executed in the
-ecb-frame.")
+ecb-frame. This advice is a permanent advice set!"
+  t)
 
 (defecb-advice winner-mode before ecb-winman-not-supported-function-advices
   "Prevents `winner-mode' from being activated for the ECB-frame."
@@ -306,9 +310,9 @@ ecb-frame.")
 
 ;; we disable all advices per default.
 
-(ecb-disable-advices 'ecb-winman-winring-adviced-functions)
-(ecb-disable-advices 'ecb-winman-escreen-adviced-functions)
-(ecb-disable-advices 'ecb-winman-not-supported-function-advices)
+(ecb-disable-advices 'ecb-winman-winring-adviced-functions t)
+(ecb-disable-advices 'ecb-winman-escreen-adviced-functions t)
+(ecb-disable-advices 'ecb-winman-not-supported-function-advices t)
 
 (silentcomp-provide 'ecb-winman-support)
 

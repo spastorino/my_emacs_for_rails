@@ -1,4 +1,4 @@
-;;; ecb-symboldef.el --- ECB displayor for symbol-definitions
+;;; ecb-symboldef.el --- ECB window for symbol-definitions
 
 ;;; Copyright (C) 2005 Hauke Jans
 
@@ -22,7 +22,7 @@
 ;; with GNU Emacs; see the file COPYING. If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-symboldef.el,v 1.4 2009/03/20 16:35:10 berndl Exp $
+;; $Id: ecb-symboldef.el,v 1.11 2009/06/20 05:07:30 berndl Exp $
 
 ;;; Commentary:
 ;;
@@ -47,7 +47,7 @@
 (require 'ecb-util)
 (require 'ecb-layout)
 (require 'ecb-common-browser)
-(require 'ecb-semantic-wrapper)
+(require 'ecb-cedet-wrapper)
 
 (eval-when-compile
   (require 'silentcomp))
@@ -58,6 +58,11 @@
 (silentcomp-defun find-tag-internal)
 ;; Emacs stuff
 (silentcomp-defun find-tag-noselect)
+
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: BTW add symboldef to the
+;; maximize menu of ECB when reworked ecb-symboldef.el! and also to
+;; some other menues...
+
 
 ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>:
 ;; 1. Add all necessary documentation to the info-manual (texi)
@@ -165,7 +170,7 @@ If the special value 'basic is set then ECB uses the setting of the option
                    (set symbol value)
                    (if (and (boundp 'ecb-minor-mode)
                             ecb-minor-mode)
-                       (ecb-activate-ecb-autocontrol-functions
+                       (ecb-activate-ecb-autocontrol-function
                         value 'ecb-analyse-buffer-sync))))
   :initialize 'custom-initialize-default)
   
@@ -220,40 +225,25 @@ Only prints mode and info but does not find any symbol-definition."
     (insert  "*  No symbol definition function for current mode *\n"
              "*  See variable `ecb-symboldef-find-functions' *")))
 
-(defun ecb-symboldef-get-elisp-arglist (function)
-  "Return the argument-list of FUNCTION as a string in the format:
-\(FUNCTION ARG1 ARG2...ARGn)."
-  (if ecb-running-xemacs
-      ;; XEmacs does not return an arglist for builtins (test by subrp)! So if
-      ;; the documentation itself does not contain the arglist there is no way
-      ;; to get it (e.g. call C-h f for `append', `list'...).
-      (function-arglist function)
-    ;; GNU Emacs - mechanism stolen from `describe-function-1'...
-    (let (;; resolve alias-chains
-          (def (indirect-function function))
-          (arglist nil))
-      ;; If def is a macro, find the function inside it.
-      (if (eq (car-safe def) 'macro)
-          (setq def (cdr def)))
-      (setq arglist (cond ((byte-code-function-p def)
-                           (car (append def nil)))
-                          ((eq (car-safe def) 'lambda)
-                           (nth 1 def))
-                          ((and (eq (car-safe def) 'autoload)
-                                (not (eq (nth 4 def) 'keymap)))
-                           (concat "[Arg list not available until "
-                                   "function definition is loaded.]"))
-                          (t t)))
-      (cond ((listp arglist)
-             (prin1-to-string
-              (cons (if (symbolp function) function "anonymous")
-                    (mapcar (lambda (arg)
-                              (if (memq arg '(&optional &rest))
-                                  arg
-                                (intern (upcase (symbol-name arg)))))
-                            arglist))))
-            ((stringp arglist)
-             (format "(%s %s)" function arglist))))))
+;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: check if the folliwng can be
+;; replaced by using semantic-documentation-for-tag (and the elisp overide
+;; semantic-documentation-for-tag-emacs-lisp-mode or semantic-ia-show-doc or a
+;; combination !!
+
+;; currently not used 
+(defun ecb-symboldef-get-doc-for-fsymbol (fsymbol)
+  "Use `describe-function-1' to get the doc-string for FSYMBOL."
+  ;; by binding standard-output to a special buffer we can force
+  ;; describe-function-1 to print all its output to this buffer. 
+  (let ((standard-output (get-buffer-create " *ECB-tmp-descr-function*"))
+        (doc-string nil))
+    (save-excursion
+      (set-buffer standard-output)
+      ;;(insert (symbol-name symbol))
+      (describe-function-1 fsymbol)
+      (setq doc-string (buffer-string)))
+    (kill-buffer standard-output)
+    doc-string))
 
 (defun ecb-symboldef-find-lisp-doc (symbol-name edit-buffer)
   "Insert the lisp-documentation of symbol with name SYMBOL-NAME."
@@ -261,44 +251,70 @@ Only prints mode and info but does not find any symbol-definition."
   (let ((symbol (intern symbol-name))
         (retval nil)
         (args nil))
+    ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: handle the case if a symbol
+    ;; is a var AND a function!
     (when (fboundp symbol)
-      (insert (format "%s\t%s\n\n" symbol
-                      (if (commandp symbol)
-                          (let ((keys (where-is-internal symbol)))
-                            (if keys
-                                (concat
-                                 "is a command with keys: "
-                                 (mapconcat 'key-description
-                                            keys ", "))
-                              "is a command with no keys"))
-                        "is a function")))
-      (insert (format "%s\n\n" (or (documentation symbol)
-                                   "Not documented")))
-      (setq args (ecb-symboldef-get-elisp-arglist symbol))
-      ;; KB: We display the arglist AFTER the documentation because in GNU
-      ;; Emacs the documentation of subr's (test by subrp) contains the
-      ;; arglist at the end of the documentation so we display it at the same
-      ;; place for all other functions. The internal help of GNU Emacs has an
-      ;; ugly hack for its function-help (see `describe-function-1' in
-      ;; help.el) which searches for the arglist of subr's in the docu,
-      ;; removes it from the end and inserts it again at beginning of the
-      ;; documentation. I'm to lazy to do the same here because it's a clumsy
-      ;; hack...but if you want the arglist in front of the docu-text you have
-      ;; to do this here too (how to do it can be seen in
-      ;; `describe-function-1').
-      (and args (insert (format "%s\n\n" args)))
+      (unless ecb-running-xemacs
+        ;; With XEmacs the symbol itself is already contained in the
+        ;; docstring describe-function-1 returns - with Emacs we must add it
+        ;; for ourself.
+        (insert (format "%s is " symbol)))
+      (let ((standard-output (current-buffer)))
+        (describe-function-1 symbol))
+      (let ((beg nil)
+            (end nil))
+        (goto-char (point-min))
+        (when (and ecb-symboldef-symbol-face
+                   (re-search-forward (regexp-quote symbol-name) nil t))
+          (setq beg (match-beginning 0))
+          (setq end (match-end 0))
+          (ecb-merge-face
+           (if (eq ecb-symboldef-symbol-face 'use-font-lock-face)
+               'font-lock-function-name-face
+             ecb-symboldef-symbol-face)
+           beg end)
+          (goto-char end))
+        
+        (when (and ecb-symboldef-prototype-face
+                   (re-search-forward  (regexp-quote (concat "(" symbol-name)) nil t))
+          (setq beg (match-beginning 0))
+          (goto-char beg)
+          (forward-sexp)
+          (setq end (point))
+          (ecb-merge-face
+           ecb-symboldef-prototype-face
+           beg end)
+          (ecb-merge-face
+           (if (eq ecb-symboldef-symbol-face 'use-font-lock-face)
+               'font-lock-function-name-face
+             ecb-symboldef-symbol-face)
+           (1+ beg)
+           (match-end 0))))        
       (setq retval (format "Lisp %s"
                            (if (commandp symbol)
                                "Command"
                              "Function"))))
     (when (boundp symbol)
-      (insert (format "%s\t%s\n\n%s\n\nValue: %s\n\n" symbol
+      (insert (format "%s is a %s\n\n%s\n\nValue: %s\n\n" symbol
                       (if (user-variable-p symbol)
                           "Option " "Variable")
                       (or (documentation-property
                            symbol 'variable-documentation)
                           "not documented")
                       (symbol-value symbol)))
+      (let ((beg nil)
+            (end nil))
+        (goto-char (point-min))
+        (when (and ecb-symboldef-symbol-face
+                   (re-search-forward (regexp-quote symbol-name) nil t))
+          (setq beg (match-beginning 0))
+          (setq end (match-end 0))
+          (ecb-merge-face
+           (if (eq ecb-symboldef-symbol-face 'use-font-lock-face)
+               'font-lock-variable-name-face
+             ecb-symboldef-symbol-face)
+           beg end)
+          (goto-char end)))
       (setq retval "Lisp Variable"))
     (fill-region (point-min) (point-max) 'left)
     retval))
@@ -314,10 +330,10 @@ Returns nil if not found otherwise a list \(tag-buffer tag-begin tag-end)"
                       (car (ecb--semanticdb-find-result-nth
                             mytag-list
                             (1- (ecb--semanticdb-find-result-length mytag-list))))))
-	   (mytag-ovr (if mytag (semantic-tag-bounds mytag)))
+	   (mytag-ovr (if mytag (ecb--semantic-tag-bounds mytag)))
 	   (mytag-min (if mytag-ovr (car mytag-ovr)))
 	   (mytag-max (if mytag-ovr (car (cdr mytag-ovr))))
-	   (mytag-buf (if mytag (semantic-tag-buffer mytag))))
+	   (mytag-buf (if mytag (ecb--semantic-tag-buffer mytag))))
       (if mytag-buf
           (list mytag-buf mytag-min mytag-max)))))
 
@@ -427,17 +443,15 @@ symbol. Displays the found text in the buffer of
                                      modeline-display current-symbol)
                              nil t)
           ))))
-  (run-hooks 'ecb-symboldef-buffer-sync-hook)
-  )
+  (run-hooks 'ecb-symboldef-buffer-sync-hook))
 
 
-(defecb-window-dedicator ecb-set-symboldef-buffer
-    (buffer-name (get-buffer-create ecb-symboldef-buffer-name))
+(defecb-window-dedicator-to-ecb-buffer ecb-set-symboldef-buffer ecb-symboldef-buffer-name nil
   "Set the buffer in the current window to the tag-definition-buffer and make
 this window dedicated for this buffer."
   (switch-to-buffer (get-buffer-create ecb-symboldef-buffer-name))
-  (ecb-activate-ecb-autocontrol-functions ecb-symboldef-buffer-sync-delay
-                                          'ecb-symboldef-buffer-sync))
+  (ecb-activate-ecb-autocontrol-function ecb-symboldef-buffer-sync-delay
+                                         'ecb-symboldef-buffer-sync))
 
 (defun ecb-maximize-window-symboldef ()
   "Maximize the ECB-symbol-defnition window.

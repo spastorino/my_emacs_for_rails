@@ -1,16 +1,16 @@
 ;;; tabkey2.el --- Use second tab key pressed for what you want
 ;;
 ;; Author: Lennart Borgman (lennart O borgman A gmail O com)
-;; Created: 2008-03-15T14:40:28+0100 Sat
+;; Created: 2008-03-15
 (defconst tabkey2:version "1.39")
-;; Last-Updated: 2008-07-21T22:24:55+0200 Mon
+;; Last-Updated: 2009-06-02 Tue
 ;; URL: http://www.emacswiki.org/cgi-bin/wiki/tabkey2.el
 ;; Keywords:
 ;; Compatibility:
 ;;
 ;; Features that might be required by this library:
 ;;
-;;   `appmenu', `cl'.
+  ;; `appmenu', `cl'.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -1352,11 +1352,11 @@ again.")
 
 
 
-(defun tabkey2-get-key-binding (fun)
+(defun tabkey2-get-key-binding (fun t2)
   "Get key binding for FUN during 'Tab completion state'."
   (let* ((remapped (command-remapping fun))
          (key (where-is-internal fun
-                                 tabkey2-completion-state-emul-map
+                                 (when t2 tabkey2-completion-state-emul-map)
                                  t
                                  nil
                                  remapped)))
@@ -1372,9 +1372,10 @@ again.")
 Build message but don't show it."
   ;;(tabkey2-reset-completion-functions)
   (let* ((chs-fun 'tabkey2-cycle-completion-functions)
-         (key (tabkey2-get-key-binding chs-fun))
-         (def-fun (tabkey2-get-default-completion-fun))
+         (key (tabkey2-get-key-binding chs-fun t))
+         ;;(def-fun (tabkey2-get-default-completion-fun))
          what
+         (comp-fun-key (tabkey2-get-key-binding comp-fun nil))
          reset)
     (setq tabkey2-current-tab-function comp-fun)
     (dolist (rec tabkey2-completion-functions)
@@ -1385,6 +1386,9 @@ Build message but don't show it."
           (eval res)
           (setq what txt))))
     (let ((info (concat (format "Tab: %s" what)
+                        (if comp-fun-key
+                            (format " (%s)" (key-description comp-fun-key))
+                          "")
                         (if (cdr (tabkey2-get-active-completion-functions))
                             (format ", other %s, help F1"
                                     (key-description key))

@@ -141,7 +141,7 @@
 
 <h4>UML Diagrams</h4>
 
-<p><img src="img-gen/cogre-quick-class.jpg" border="1" align="right">
+<p><img src="img-gen/cogre-quick-class.png" border="1" align="right">
    Create UML diagrams either by hand, or automatically generate
    simple 3-tier class diagrams from your sources.  The diagrams are
    linked to your source-code, so you can browse quickly through you

@@ -1,5 +1,5 @@
 ;;; anything-rcodetools.el --- accurate Ruby method completion with anything
-;; $Id: anything-rcodetools.el,v 1.12 2009/04/18 10:12:02 rubikitch Exp $
+;; $Id: anything-rcodetools.el,v 1.13 2009/04/20 16:25:37 rubikitch Exp $
 
 ;;; Copyright (c) 2007 rubikitch
 
@@ -33,6 +33,9 @@
 ;;; History:
 
 ;; $Log: anything-rcodetools.el,v $
+;; Revision 1.13  2009/04/20 16:25:37  rubikitch
+;; Set anything-samewindow to nil
+;;
 ;; Revision 1.12  2009/04/18 10:12:02  rubikitch
 ;; Adjust to change of `use-anything-show-completion'
 ;;
@@ -136,7 +139,8 @@
 
 (defun rct-complete-symbol--anything ()
   (interactive)
-  (let ((anything-execute-action-at-once-if-one t))
+  (let ((anything-execute-action-at-once-if-one t)
+        anything-samewindow)
     (anything '(anything-c-source-complete-ruby
                 anything-c-source-complete-ruby-all))))
 

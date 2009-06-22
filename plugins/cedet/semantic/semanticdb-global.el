@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: tags
-;; X-RCS: $Id: semanticdb-global.el,v 1.5 2009/01/14 00:32:14 zappo Exp $
+;; X-RCS: $Id: semanticdb-global.el,v 1.6 2009/04/18 16:37:17 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -133,8 +133,7 @@ For each file hit, get the traditional semantic table from that file."
 
 ;;; Search Overrides
 ;;
-;; NOTE WHEN IMPLEMENTING: Be sure to add doc-string updates explaining
-;; how your new search routines are implemented.
+;; Only NAME based searches work with GLOBAL as that is all it tracks.
 ;;
 (defmethod semanticdb-find-tags-by-name-method
   ((table semanticdb-table-global) name &optional tags)
@@ -148,7 +147,9 @@ Return a list of tags."
 	   (result (semantic-symref-find-tags-by-name name 'project))
 	   )
       (when result
-	(semantic-symref-result-get-tags result t))
+	;; We could ask to keep the buffer open, but that annoys
+	;; people.
+	(semantic-symref-result-get-tags result))
       )))
 
 (defmethod semanticdb-find-tags-by-name-regexp-method
@@ -162,7 +163,7 @@ Return a list of tags."
 	   (result (semantic-symref-find-tags-by-regexp regex 'project))
 	   )
       (when result
-	(semantic-symref-result-get-tags result t))
+	(semantic-symref-result-get-tags result))
       )))
 
 (defmethod semanticdb-find-tags-for-completion-method

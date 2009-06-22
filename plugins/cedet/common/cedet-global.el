@@ -3,7 +3,7 @@
 ;; Copyright (C) 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: cedet-global.el,v 1.6 2009/01/14 00:24:32 zappo Exp $
+;; X-RCS: $Id: cedet-global.el,v 1.7 2009/05/30 13:39:15 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -128,22 +128,29 @@ If optional programatic argument NOERROR is non-nil, then
 instead of throwing an error if Global isn't available, then
 return nil."
   (interactive)
-  (let ((b (cedet-gnu-global-call (list "--version")))
+  (let ((b (condition-case nil
+	       (cedet-gnu-global-call (list "--version"))
+	     (error nil)))
 	(rev nil))
-    (save-excursion
-      (set-buffer b)
-      (goto-char (point-min))
-      (re-search-forward "GNU GLOBAL \\([0-9.]+\\)" nil t)
-      (setq rev (match-string 1))
-      (if (inversion-check-version rev nil cedet-global-min-version)
-	  (if noerror
-	      nil
-	    (error "Version of GNU Global is %s.  Need at least %s"
-		   rev cedet-global-min-version))
-	;; Else, return TRUE, as in good enough.
-	(when (interactive-p)
-	  (message "GNU Global %s  - Good enough for CEDET." rev))
-	t))))
+    (if (not b)
+	(progn
+	  (when (interactive-p)
+	    (message "GNU Global not found."))
+	  nil)
+      (save-excursion
+	(set-buffer b)
+	(goto-char (point-min))
+	(re-search-forward "GNU GLOBAL \\([0-9.]+\\)" nil t)
+	(setq rev (match-string 1))
+	(if (inversion-check-version rev nil cedet-global-min-version)
+	    (if noerror
+		nil
+	      (error "Version of GNU Global is %s.  Need at least %s"
+		     rev cedet-global-min-version))
+	  ;; Else, return TRUE, as in good enough.
+	  (when (interactive-p)
+	    (message "GNU Global %s  - Good enough for CEDET." rev))
+	  t)))))
 
 (defun cedet-gnu-global-scan-hits (buffer)
   "Scan all the hits from the GNU Global output BUFFER."

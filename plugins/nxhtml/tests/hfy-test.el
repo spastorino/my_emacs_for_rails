@@ -65,9 +65,11 @@
   (split-window-vertically)
   (balance-windows)
 
-  (winsav-upper-left-window)
+  ;;(winsav-upper-left-window)
+  (frame-first-window)
   (split-window-horizontally)
-  (winsav-upper-left-window)
+  ;;(winsav-upper-left-window)
+  (frame-first-window)
   (switch-to-buffer "*scratch*")
 
   (select-window (next-window))

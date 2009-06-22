@@ -78,10 +78,12 @@
 ;;;###autoload
 (define-mumamo-multi-major-mode nxhtml-mumamo-mode
   "Turn on multiple major modes for (X)HTML with main mode `nxhtml-mode'.
-This covers inlined style and javascript and PHP."
+This covers inlined style and javascript and PHP.
+
+See also `mumamo-alt-php-tags-mode'."
   ("nXhtml Family" nxhtml-mode
    (mumamo-chunk-xml-pi
-    ;;mumamo-chunk-xml-pi2
+    mumamo-chunk-alt-php
     mumamo-chunk-inlined-style
     mumamo-chunk-inlined-script
     mumamo-chunk-style=
@@ -153,6 +155,7 @@ This also covers inlined style and javascript."
    (mumamo-chunk-genshi%
     mumamo-chunk-genshi$
     mumamo-chunk-xml-pi
+    mumamo-chunk-alt-php
     mumamo-chunk-inlined-style
     mumamo-chunk-inlined-script
     mumamo-chunk-style=
@@ -194,7 +197,6 @@ This also covers inlined style and javascript."
    (
     mumamo-chunk-mjt$
     mumamo-chunk-xml-pi
-    ;;mumamo-chunk-xml-pi2
     mumamo-chunk-inlined-style
     mumamo-chunk-inlined-script
     mumamo-chunk-style=

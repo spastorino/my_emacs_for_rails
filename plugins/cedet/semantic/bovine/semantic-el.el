@@ -3,7 +3,7 @@
 ;;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
-;; X-RCS: $Id: semantic-el.el,v 1.50 2009/01/10 00:13:51 zappo Exp $
+;; X-RCS: $Id: semantic-el.el,v 1.52 2009/05/28 02:33:12 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -93,6 +93,15 @@ syntax as specified by the syntax table."
 		 (format "%S" (car arglist))))
 	     out)
 	    arglist (cdr arglist)))
+    (nreverse out)))
+
+(defun semantic-elisp-desymbolify-args (arglist)
+  "Convert symbols to strings for ARGLIST."
+  (let ((in (semantic-elisp-desymbolify arglist))
+	(out nil))
+    (dolist (T in)
+      (when (not (string-match "^&" T))
+	(push T out)))
     (nreverse out)))
 
 (defun semantic-elisp-clos-slot-property-string (slot property)
@@ -229,7 +238,7 @@ Return a bovination list to use."
       (semantic-tag-new-function
        (symbol-name (nth 1 form))
        nil
-       (semantic-elisp-desymbolify (nth 2 form))
+       (semantic-elisp-desymbolify-args (nth 2 form))
        :user-visible-flag (eq (car-safe (nth 4 form)) 'interactive)
        :documentation (semantic-elisp-do-doc (nth 3 form))
        :overloadable (or (eq (car form) 'define-overload)
@@ -331,8 +340,8 @@ Return a bovination list to use."
          nil
          (if (listp (car args))
              (cons (symbol-name (caar args))
-                   (semantic-elisp-desymbolify (cdr args)))
-           (semantic-elisp-desymbolify (cdr args)))
+                   (semantic-elisp-desymbolify-args (cdr args)))
+           (semantic-elisp-desymbolify-args (cdr args)))
          :parent (if (listp (car args)) (symbol-name (cadr (car args))) nil)
          :documentation (semantic-elisp-do-doc doc)
          )))
@@ -508,7 +517,7 @@ into Emacs Lisp's memory."
 Optional argument NOSNARF is ignored."
   (let ((d (semantic-tag-docstring tag)))
     (when (not d)
-      (cond ((semantic-tag-buffer tag)
+      (cond ((semantic-tag-with-position-p tag)
 	     ;; Doc isn't in the tag itself.  Lets pull it out of the
 	     ;; sources.
 	     (let ((semantic-elisp-store-documentation-in-tag t))
@@ -617,12 +626,16 @@ of `let' or `let*', grab those variable names."
   (let* ((vars nil)
 	 (fn nil))
     (save-excursion
-      (while (setq fn (car (semantic-ctxt-current-function)))
-	(when (member fn '("let" "let*"))
+      (while (setq fn (car (semantic-ctxt-current-function-emacs-lisp-mode
+			    (point) (list t))))
+	(cond
+	 ((eq fn t)
+	  nil)
+	 ((member fn '("let" "let*" "with-slots"))
 	  ;; Snarf variables
 	  (up-list -1)
 	  (forward-char 1)
-	  (forward-word 1)
+	  (forward-symbol 1)
 	  (skip-chars-forward "* \t\n")
 	  (let ((varlst (read (buffer-substring-no-properties
 			       (point)
@@ -640,6 +653,27 @@ of `let' or `let*', grab those variable names."
 				 vars)))
 	      (setq varlst (cdr varlst)))
 	    ))
+	 ((string= fn "lambda")
+	  ;; Snart args...
+	  (up-list -1)
+	  (forward-char 1)
+	  (forward-word 1)
+	  (skip-chars-forward "* \t\n")
+	  (let ((arglst (read (buffer-substring-no-properties
+			       (point)
+			       (save-excursion
+				 (forward-sexp 1)
+				 (point))))))
+	    (while arglst
+	      (let* ((name (car arglst)))
+		(when (/= ?& (aref (symbol-name name) 0))
+		  (setq vars (cons (semantic-tag-new-variable
+				    (symbol-name name)
+				    nil nil)
+				   vars))))
+	      (setq arglst (cdr arglst)))
+	    ))
+	 )
 	(up-list -1)))
     (nreverse vars)))
 
@@ -672,7 +706,7 @@ In emacs lisp this is easilly defined by parenthisis bounding."
     ))
 
 (define-mode-local-override semantic-ctxt-current-function emacs-lisp-mode
-  (&optional point)
+  (&optional point same-as-symbol-return)
   "Return a string which is the current function being called."
   (save-excursion
     (if point (goto-char point) (setq point (point)))
@@ -708,7 +742,8 @@ In emacs lisp this is easilly defined by parenthisis bounding."
 			    (<= point (+ (point) (length fun))))
 			   )
 		  (error t)))
-	      nil
+	      ;; Go up and try again.
+	      same-as-symbol-return
 	    ;; We are ok, so get it.
 	    (list fun))
 	  ))

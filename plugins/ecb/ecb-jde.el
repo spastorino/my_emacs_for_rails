@@ -25,9 +25,10 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-jde.el,v 1.17 2009/04/15 14:22:35 berndl Exp $
+;; $Id: ecb-jde.el,v 1.19 2009/05/10 16:41:42 berndl Exp $
 
 ;;; Commentary:
+;;
 ;;
 ;; Contains code for JDEE integrations into ECB or vice versa
 ;; JDEE is available at http://jdee.sunsite.dk/
@@ -125,7 +126,9 @@ available."
 
 (defun ecb-jde-show-class-source (external-tag)
   "Calls `jde-show-class-source' for th tag-name of EXTERNAL-TAG.
-Returns t if the tag is found and no error occurs otherwise nil."
+Returns t if the tag is found and no error occurs otherwise nil.
+
+This function is for usage with `ecb-find-external-tag-functions'."
   (when (eq major-mode 'jde-mode)
     (condition-case nil
         (progn

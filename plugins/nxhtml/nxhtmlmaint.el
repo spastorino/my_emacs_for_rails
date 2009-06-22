@@ -18,7 +18,8 @@
 ;;
 ;; This module contains maintenance functions:
 ;;
-;; `nxhtmlmaint-get-all-autoloads'
+;; `nxhtmlmaint-get-all-autoloads' (nxhtmlmaint-get-all-autoloads)
+;;
 ;; `nxhtmlmaint-start-byte-compilation'
 ;; `nxhtmlmaint-byte-uncompile-all'
 ;;
@@ -147,6 +148,7 @@ Update nXhtml autoload file with them."
                     (string= dir "alts"))
           (nxhtmlmaint-get-tree-autoloads full-dir))))))
 
+;;(nxhtmlmaint-get-all-autoloads)
 (defun nxhtmlmaint-get-all-autoloads ()
   "Get all autoloads for nXhtml.
 Update nXhtml autoload file with them."

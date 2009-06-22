@@ -1,10 +1,10 @@
 ;;; semantic-format.el --- Routines for formatting tags
 
-;;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2008 Eric M. Ludlam
+;;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: syntax
-;; X-RCS: $Id: semantic-format.el,v 1.32 2008/12/04 23:24:45 zappo Exp $
+;; X-RCS: $Id: semantic-format.el,v 1.33 2009/05/08 11:12:27 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -158,12 +158,12 @@ be used unless font lock is a feature.")
   "Apply onto TEXT a color associated with FACE-CLASS.
 FACE-CLASS is a tag type found in `semantic-face-alist'.  See this variable
 for details on adding new types."
-  (when (featurep 'font-lock)
-    (let ((face (cdr-safe (assoc face-class semantic-format-face-alist)))
-	  (newtext (concat text)))
-      (put-text-property 0 (length text) 'face face newtext)
-      newtext)
-    ))
+  (if (featurep 'font-lock)
+      (let ((face (cdr-safe (assoc face-class semantic-format-face-alist)))
+	    (newtext (concat text)))
+	(put-text-property 0 (length text) 'face face newtext)
+	newtext)
+    text))
 
 (make-obsolete 'semantic-colorize-text
                'semantic--format-colorize-text)

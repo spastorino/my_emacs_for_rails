@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: syntax
-;; X-RCS: $Id: semantic.el,v 1.212 2009/03/19 00:46:39 zappo Exp $
+;; X-RCS: $Id: semantic.el,v 1.213 2009/04/18 16:29:18 zappo Exp $
 
 (eval-and-compile
   ;; Other package depend on this value at compile time via inversion.
@@ -299,6 +299,10 @@ to use Semantic, and `semantic-init-hook' is run."
              (not (semantic-active-p))
              (not (run-hook-with-args-until-success
                    'semantic-inhibit-functions)))
+    ;; Make sure that if this buffer is cloned, our tags and overlays
+    ;; don't go along for the ride.
+    (add-hook 'clone-indirect-buffer-hook 'semantic-clear-toplevel-cache
+	      nil t)
     ;; Specify that this function has done it's work.  At this point
     ;; we can consider that semantic is active in this buffer.
     (setq semantic-new-buffer-fcn-was-run t)
@@ -550,6 +554,8 @@ was marked unparseable, then do nothing, and return the cache."
    ;; Is this a semantic enabled buffer?
    (semantic-active-p)
    ;; Application hooks say the buffer is safe for parsing
+   (run-hook-with-args-until-failure
+    'semantic-before-toplevel-bovination-hook)
    (run-hook-with-args-until-failure
     'semantic--before-fetch-tags-hook)
    ;; If the buffer was previously marked unparseable,

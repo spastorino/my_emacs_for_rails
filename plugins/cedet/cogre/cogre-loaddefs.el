@@ -3,7 +3,7 @@
 ;;; Code:
 
 
-;;;### (autoloads (cogre) "cogre" "cogre.el" (18918 12118))
+;;;### (autoloads (cogre) "cogre" "cogre.el" (18977 14170))
 ;;; Generated autoloads from cogre.el
 
 (eieio-defclass-autoload 'cogre-base-graph '(eieio-persistent) "cogre" "A Connected Graph.\na connected graph contains a series of nodes and links which are\nrendered in a buffer, or serialized to disk.")
@@ -103,8 +103,8 @@ This function depends on graphviz `dot' program.
 
 ;;;***
 
-;;;### (autoloads (cogre-mode) "cogre-mode" "cogre-mode.el" (18918
-;;;;;;  12118))
+;;;### (autoloads (cogre-mode) "cogre-mode" "cogre-mode.el" (18977
+;;;;;;  14210))
 ;;; Generated autoloads from cogre-mode.el
 
 (autoload 'cogre-mode "cogre-mode" "\
@@ -134,8 +134,8 @@ Also test various output mechanisms from the periodic table.
 
 ;;;***
 
-;;;### (autoloads (cogre-uml-quick-class cogre-semantic-tag-to-node)
-;;;;;;  "cogre-semantic" "cogre-semantic.el" (18912 15979))
+;;;### (autoloads (cogre-uml-quick-class cogre-export-code cogre-semantic-tag-to-node)
+;;;;;;  "cogre-semantic" "cogre-semantic.el" (18927 57417))
 ;;; Generated autoloads from cogre-semantic.el
 
 (autoload 'cogre-semantic-tag-to-node "cogre-semantic" "\
@@ -145,6 +145,13 @@ To convert function/variables into methods or attributes in
 an existing COGRE node, see @TODO - do that.
 
 \(fn TAG)" nil nil)
+
+(autoload 'cogre-export-code "cogre-semantic" "\
+Export the current graph into source-code in FILE.
+Uses `cogre-export-semantic' to convert into Semantic tags.
+Uses `cogre-srecode-setup' to setup SRecode for code generation.
+
+\(fn FILE)" t nil)
 
 (autoload 'cogre-uml-quick-class "cogre-semantic" "\
 Create a new UML diagram based on CLASS showing only immediate lineage.
@@ -178,8 +185,8 @@ Add macros to dictionary DICT based on the current DOT buffer.
 
 ;;;***
 
-;;;### (autoloads (cogre-uml-enable-unicode) "cogre-uml" "cogre-uml.el"
-;;;;;;  (18918 12118))
+;;;### (autoloads (cogre-uml-sort-for-lineage cogre-uml-enable-unicode)
+;;;;;;  "cogre-uml" "cogre-uml.el" (18927 57347))
 ;;; Generated autoloads from cogre-uml.el
 
 (eieio-defclass-autoload 'cogre-package '(cogre-node) "cogre-uml" "A Package node.\nPackages represent other class diagrams, and list the major nodes\nwithin them.  They can be linked by dependency links.")
@@ -208,10 +215,17 @@ cogre chart a little screwy somteims.  Your mileage may vary.
 
 \(fn)" t nil)
 
+(autoload 'cogre-uml-sort-for-lineage "cogre-uml" "\
+Sort the current graph G for determining inheritance lineage.
+Return it as a list of lists.  Each entry is of the form:
+  ( NODE PARENT1 PARENT2 ... PARENTN)
+
+\(fn G)" t nil)
+
 ;;;***
 
 ;;;### (autoloads (cogre-utest-quick-class cogre-utest) "cogre-utest"
-;;;;;;  "cogre-utest.el" (18918 12118))
+;;;;;;  "cogre-utest.el" (18912 16027))
 ;;; Generated autoloads from cogre-utest.el
 
 (autoload 'cogre-utest "cogre-utest" "\
@@ -227,7 +241,7 @@ Test the quick-class function.
 ;;;***
 
 ;;;### (autoloads (cogre-picture-insert-rectangle) "picture-hack"
-;;;;;;  "picture-hack.el" (18918 12118))
+;;;;;;  "picture-hack.el" (18897 57890))
 ;;; Generated autoloads from picture-hack.el
 
 (autoload 'cogre-picture-insert-rectangle "picture-hack" "\
@@ -239,7 +253,7 @@ Leaves the region surrounding the rectangle.
 ;;;***
 
 ;;;### (autoloads (wisent-dot-setup-parser) "wisent-dot" "wisent-dot.el"
-;;;;;;  (18918 12118))
+;;;;;;  (18906 40873))
 ;;; Generated autoloads from wisent-dot.el
 
 (autoload 'wisent-dot-setup-parser "wisent-dot" "\
@@ -253,14 +267,16 @@ Setup buffer for parse.
 
 ;;;***
 
-;;;### (autoloads nil nil ("cogre-load.el" "wisent-dot-wy.el") (18918
-;;;;;;  15200 713010))
+;;;### (autoloads nil nil ("cogre-load.el" "wisent-dot-wy.el") (19005
+;;;;;;  62361 762513))
 
 ;;;***
 
+(provide 'cogre-loaddefs)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
+;; coding: utf-8
 ;; End:
 ;;; cogre-loaddefs.el ends here

@@ -1024,9 +1024,11 @@ should be one of 'left, 'up, 'right and 'down."
           (when use-colors
             (set-face-attribute 'mode-line-inactive nil :background inactive-color)
             (set-face-attribute 'mode-line nil :background active-color))))
-    (set-face-attribute 'mode-line-inactive nil :background winsize-old-mode-line-inactive-bg)
+    (when winsize-old-mode-line-inactive-bg
+      (set-face-attribute 'mode-line-inactive nil :background winsize-old-mode-line-inactive-bg))
     (setq winsize-old-mode-line-inactive-bg nil)
-    (set-face-attribute 'mode-line nil :background winsize-old-mode-line-bg)
+    (when winsize-old-mode-line-bg
+      (set-face-attribute 'mode-line nil :background winsize-old-mode-line-bg))
     (setq winsize-old-mode-line-bg nil)))
 
 (defvar winsize-short-help-message nil
@@ -1080,7 +1082,7 @@ should be one of 'left, 'up, 'right and 'down."
     (setq winsize-selected-window-overlay nil))
   (when active
     (with-current-buffer (window-buffer (selected-window))
-      (let ((ovl (make-overlay (point-min) (point-max))))
+      (let ((ovl (make-overlay (point-min) (point-max) nil t)))
         (setq winsize-selected-window-overlay ovl)
         (overlay-put ovl 'window (selected-window))
         (overlay-put ovl 'pointer 'arrow)

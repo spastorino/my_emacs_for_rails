@@ -23,7 +23,7 @@
 # GNU Emacs; see the file COPYING.  If not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-# $Id: Makefile,v 1.22 2005/02/28 11:31:48 berndl Exp $
+# $Id: Makefile,v 1.24 2009/05/18 16:04:35 berndl Exp $
 
 
 # Just type "make upload" to upload a complete new build of the whole
@@ -32,7 +32,7 @@
 # Or type "make all" or "make upload-build" to generate the whole website
 # and build an uploadable ecb-website.tar.gz file.
 
-# $Id: Makefile,v 1.22 2005/02/28 11:31:48 berndl Exp $
+# $Id: Makefile,v 1.24 2009/05/18 16:04:35 berndl Exp $
 
 EMACS=emacs
 
@@ -40,10 +40,16 @@ include ../ecb-makedef.mk
 
 TARC=tar -czvf
 SCP=scp
-SSH=ssh -l berndl ecb.sourceforge.net
+ecb_SCP_login=berndl,ecb@web.sourceforge.net
+#SSH=ssh -l berndl ecb.sourceforge.net
+SSH=ssh -t berndl,ecb@shell.sourceforge.net create
+
+ecb_ECB_LOC=/home/groups/e/ec/ecb
+ecb_WEBSITE_LOC=htdocs
+
 GNUCLIENT=gnuclient
 
-CEDETLOAD=c:/Programme/emacs-21/site-lisp/package-development/cedet/common/cedet.el
+CEDETLOAD=c:/Programme/emacs-22.3/site-lisp/package-development/cedet/common/cedet.el
 
 MAKEINFO=/usr/bin/makeinfo
 
@@ -63,8 +69,6 @@ ecb_UPLOAD_ARC=$(ecb_UPLOAD_ARC_UNZIPPED).gz
 ecb_WEBSITE_CONTENT=index.html $(ecb_HTML_GEN) $(ecb_HTMLDOCU_DIR)/*.html \
                     $(ecb_SCREENSHOTS) NEWS.html $(ecb_GIFS)
 
-ecb_WEBSITE_LOC=/home/groups/e/ec/ecb/htdocs
-ecb_SF_login=berndl@ecb.sourceforge.net
 
 help:
 	@echo "The following external targets are available:"
@@ -113,24 +117,21 @@ upload-build: $(ecb_HTMLDOCU_DIR)/index.html NEWS.html website
 
 # Uploads a complete new website build to ecb.sourceforge.net
 upload: website upload-build
-	$(SCP) $(ecb_UPLOAD_ARC) $(ecb_SF_login):$(ecb_WEBSITE_LOC)
-	@echo "Unpacking the new website..."
-	$(SSH) "cd $(ecb_WEBSITE_LOC); gzip -d $(ecb_UPLOAD_ARC); tar -xf $(ecb_UPLOAD_ARC_UNZIPPED); rm -f $(ecb_UPLOAD_ARC_UNZIPPED)"
+	$(SCP) $(ecb_UPLOAD_ARC) $(ecb_SCP_login):$(ecb_WEBSITE_LOC)
+	@echo "For unpacking and installing the new contents do:"
+	@echo "1. open a shell at SF with ssh: ssh -t berndl,ecb@shell.sourceforge.net create"
+	@echo "2. Run ./update_website.sh (this extracts the archive and performs all chmods)"
 
 # Uploads all files currently in ./files-for-upload
 upload-update:
 	@(cd files-for-upload; \
-	$(TARC) update.tar.gz *; \
+	$(TARC) $(ecb_UPLOAD_ARC) *; \
 	echo "Uploading the updates..."; \
-	$(SCP) update.tar.gz $(ecb_SF_login):$(ecb_WEBSITE_LOC); \
-	echo "Unpacking the updates..."; \
-	$(SSH) "cd $(ecb_WEBSITE_LOC); gzip -d update.tar.gz; tar -xf update.tar; rm -f update.tar"; \
-	$(RM) update.tar.gz)
+	$(SCP) $(ecb_UPLOAD_ARC) $(ecb_SCP_login):$(ecb_WEBSITE_LOC); \
+	echo "1. open a shell at SF with ssh: ssh -t berndl,ecb@shell.sourceforge.net create"; \
+	echo "2. Run ./update_website.sh (this extracts the archive and performs all chmods)"; \
+	$(RM) $(ecb_UPLOAD_ARC))
 
-# update latest cvs-snapshot on the ECB-webiste - seems curently not working
-# update-cvs-snapshot:
-# 	@echo "Updating latest stable CVS-snapshot..."
-# 	$(SSH) "cvs -d:pserver:anonymous@cvs1:/cvsroot/ecb export -Dtomorrow ecb && rm -Rf ecb/html ecb/ecb2 && tar czvf $(ecb_WEBSITE_LOC)/cvs_snapshots/ecb.tar.gz ecb && rm -Rf ecb"
 
 update-cvs-snapshot:
 	@echo "Updating latest stable CVS-snapshot..."
@@ -145,7 +146,7 @@ update-cvs-snapshot:
 	@find ecb-snap/$(ecb_IMAGE_DIR) -name *.png -print | xargs $(RM)
 	@$(TARC) ecb.tar.gz ecb-snap
 	@$(RM) -R ecb-snap
-	$(SCP) ecb.tar.gz $(ecb_SF_login):$(ecb_WEBSITE_LOC)/cvs_snapshots
+	$(SCP) ecb.tar.gz $(ecb_SCP_login):$(ecb_WEBSITE_LOC)/cvs_snapshots
 	@$(RM) ecb.tar.gz
 
 

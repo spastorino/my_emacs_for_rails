@@ -42,6 +42,16 @@ INSTALLATION
 Copy all the files to ~/.emacs.d directory
 
 
+FONT
+----
+
+In the init.el file you have the following config font line
+
+;; (setq default-frame-alist '((font . "inconsolata")))
+
+Comment out this if you want to try inconsolata font, you must have this font installed on your system
+
+
 USAGE
 -----
 

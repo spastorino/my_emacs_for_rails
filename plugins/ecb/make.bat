@@ -10,7 +10,6 @@ REM Author: Jesper Nordenberg <mayhem@home.se>
 REM         Klaus Berndl <klaus.berndl@sdm.de>
 REM         Kevin A. Burton <burton@openprivacy.org>
 REM Maintainer: Klaus Berndl <klaus.berndl@sdm.de>
-REM             Kevin A. Burton <burton@openprivacy.org>
 REM Keywords: browser, code, programming, tools
 REM Created: 2001
 
@@ -27,7 +26,7 @@ REM You should have received a copy of the GNU General Public License along with
 REM GNU Emacs; see the file COPYING.  If not, write to the Free Software
 REM Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-REM $Id: make.bat,v 1.28 2005/02/28 11:31:51 berndl Exp $
+REM $Id: make.bat,v 1.29 2009/04/21 15:23:22 berndl Exp $
 
 
 REM Make sure you byte-compile ECB with the semantic, eieio and
@@ -37,14 +36,11 @@ REM =======================================================================
 REM user configurable section
 
 REM Define here the correct paths to your (X)Emacs-executable and the
-REM required packages (use always FORWARD SLASHES in the paths!)
+REM required CEDET-package (use always FORWARD SLASHES in the paths!)
 
-REM TODO: Supporting the new cedet 1.0 library (see Makefile)
 
-set EMACS=C:/Programme/emacs-21/bin/emacs.exe
-set SEMANTIC=../semantic
-set EIEIO=../eieio
-set SPEEDBAR=../speedbar
+set EMACS=C:/Programme/emacs-22.3/bin/emacs.exe
+set CEDET=../cedet
 
 REM Call "make" to byte-compile the ECB.
 REM If there are any warning messages during byte-compilation (normally
@@ -62,9 +58,7 @@ if exist ecb-compile-script-init del ecb-compile-script-init
 if exist ecb.elc del *.elc
 
 echo (add-to-list 'load-path nil) > ecb-compile-script-init
-echo (add-to-list 'load-path "%SEMANTIC%") >> ecb-compile-script-init
-echo (add-to-list 'load-path "%EIEIO%") >> ecb-compile-script-init
-echo (add-to-list 'load-path "%SPEEDBAR%") >> ecb-compile-script-init
+echo (load-file "%CEDET%/common/cedet.el") >> ecb-compile-script-init
 echo (require 'ecb) >> ecb-compile-script-init
 echo (setq debug-on-error t) >> ecb-compile-script-init
 

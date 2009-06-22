@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: project, make
-;; RCS: $Id: ede.el,v 1.134 2009/03/19 00:43:27 zappo Exp $
+;; RCS: $Id: ede.el,v 1.135 2009/05/16 13:50:24 zappo Exp $
 (defconst ede-version "1.0pre7"
   "Current version of the Emacs EDE.")
 
@@ -677,7 +677,9 @@ Argument MENU-DEF is the definition of the current menu."
 	;; Make custom menus for everything here.
 	(append (list
 		 (cons (concat "Project " (ede-name obj))
-		       (eieio-customize-object-group obj)))
+		       (eieio-customize-object-group obj))
+		 [ "Reorder Targets" ede-project-sort-targets t ]
+		 )
 		(mapcar (lambda (o)
 			  (cons (concat "Target " (ede-name o))
 				(eieio-customize-object-group o)))
@@ -1101,6 +1103,10 @@ Optional argument FORCE forces the file to be removed without asking."
   (let ((ede-object (ede-current-project)))
     (ede-invoke-method 'project-make-dist)))
 
+;;; Customization
+;;
+;; Routines for customizing projects and targets.
+
 (eval-when-compile (require 'eieio-custom))
 
 (defvar eieio-ede-old-variables nil
@@ -1139,7 +1145,98 @@ Optional argument GROUP is the slot group to display."
   (if (and obj (not (obj-of-class-p obj ede-target)))
       (error "No logical target to customize"))
   (eieio-customize-object obj (or group 'default)))
+;;; Target Sorting
+;;
+;; Target order can be important, but custom doesn't support a way
+;; to resort items in a list.  This function by David Engster allows
+;; targets to be re-arranged.
 
+(defvar ede-project-sort-targets-order nil
+  "Variable for tracking target order in `ede-project-sort-targets'.")
+
+(defun ede-project-sort-targets ()
+  "Create a custom-like buffer for sorting targets of current project."
+  (interactive)
+  (let ((proj (ede-current-project))
+        (count 1)
+        current order)
+    (switch-to-buffer (get-buffer-create "*EDE sort targets*"))
+    (erase-buffer)
+    (setq ede-object-project proj)
+    (widget-create 'push-button
+                   :notify (lambda (&rest ignore)
+                             (let ((targets (oref ede-object-project targets))
+                                   cur newtargets)
+                               (while (setq cur (pop ede-project-sort-targets-order))
+                                 (setq newtargets (append newtargets
+                                                          (list (nth cur targets)))))
+                               (oset ede-object-project targets newtargets))
+                             (ede-commit-project ede-object-project)
+                             (kill-buffer))
+                   " Accept ")
+    (widget-insert "   ")
+    (widget-create 'push-button
+                   :notify (lambda (&rest ignore)
+                               (kill-buffer))
+                   " Cancel ")
+    (widget-insert "\n\n")
+    (setq ede-project-sort-targets-order nil)
+    (mapc (lambda (x)
+            (add-to-ordered-list
+             'ede-project-sort-targets-order
+             x x))
+          (number-sequence 0 (1- (length (oref proj targets)))))
+    (ede-project-sort-targets-list)
+    (use-local-map widget-keymap)
+    (widget-setup)
+    (goto-char (point-min))))
+
+(defun ede-project-sort-targets-list ()
+  "Sort the target list while using `ede-project-sort-targets'."
+  (save-excursion
+    (let ((count 0)
+          (targets (oref ede-object-project targets))
+          (inhibit-read-only t)
+          (inhibit-modification-hooks t))
+      (goto-char (point-min))
+      (forward-line 2)
+      (delete-region (point) (point-max))
+      (while (< count (length targets))
+        (if (> count 0)
+            (widget-create 'push-button
+                           :notify `(lambda (&rest ignore)
+                                      (let ((cur ede-project-sort-targets-order))
+                                        (add-to-ordered-list
+                                         'ede-project-sort-targets-order
+                                         (nth ,count cur)
+                                         (1- ,count))
+                                        (add-to-ordered-list
+                                         'ede-project-sort-targets-order
+                                         (nth (1- ,count) cur) ,count))
+                                      (ede-project-sort-targets-list))
+                           " Up ")
+          (widget-insert "      "))
+        (if (< count (1- (length targets)))
+            (widget-create 'push-button
+                           :notify `(lambda (&rest ignore)
+                                      (let ((cur ede-project-sort-targets-order))
+                                        (add-to-ordered-list
+                                         'ede-project-sort-targets-order
+                                         (nth ,count cur) (1+ ,count))
+                                        (add-to-ordered-list
+                                         'ede-project-sort-targets-order
+                                         (nth (1+ ,count) cur) ,count))
+                                      (ede-project-sort-targets-list))
+                           " Down ")
+          (widget-insert "        "))
+        (widget-insert (concat " " (number-to-string (1+ count)) ".:   "
+                               (oref (nth (nth count ede-project-sort-targets-order)
+                                          targets) name) "\n"))
+        (setq count (1+ count))))))
+
+;;; Customization hooks
+;;
+;; These hooks are used when finishing up a customization.
 (defmethod eieio-done-customizing ((proj ede-project))
   "Call this when a user finishes customizing PROJ."
   (let ((ov eieio-ede-old-variables)

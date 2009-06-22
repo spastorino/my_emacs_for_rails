@@ -50,21 +50,7 @@
 (eval-when-compile (require 'majmodpri))
 (eval-when-compile (require 'moz))
 
-;; Add entries similar to those that are already there for html-mode
-;; and xml-mode.
-(dolist (mode-list '(auto-mode-alist magic-fallback-mode-alist))
-  (dolist (rec (symbol-value mode-list))
-    (when (eq (cdr rec) 'html-mode)
-      (add-to-list mode-list (cons (car rec) 'nxhtml-mode)))
-    (when (eq (cdr rec) 'html-mode)
-      (add-to-list mode-list (cons (car rec) 'nxhtml-mumamo-mode)))
-    (when (eq (cdr rec) 'html-mode)
-      (add-to-list mode-list (cons (car rec) 'html-mumamo-mode)))
-    (when (eq (cdr rec) 'xml-mode)
-      (add-to-list mode-list (cons (car rec) 'nxml-mode)))
-    ))
-
-;;; Change below if you need to:
+;;; Convenient moving by tags:
 (eval-after-load 'nxml-mode
   '(progn
      (define-key nxml-mode-map [C-M-left]  'nxml-backward-element)
@@ -77,8 +63,24 @@
 ;;(autoload 'moz-minor-mode "moz" "MozRepl Minor Mode" t)
 (defun javascript-moz-setup () (moz-minor-mode 1))
 (add-hook 'javascript-mode-hook 'javascript-moz-setup)
-(add-hook 'js2-fl-mode          'javascript-moz-setup)
+;;(add-hook 'js2-fl-mode-hook     'javascript-moz-setup)
 
+
+;; Add nXhtml entries similar to those that are already there for
+;; html-mode and xml-mode.
+(dolist (mode-list '(auto-mode-alist magic-fallback-mode-alist magic-mode-alist))
+  (dolist (rec (symbol-value mode-list))
+    (when (eq (cdr rec) 'html-mode)
+      (add-to-list mode-list (cons (car rec) 'nxhtml-mode)))
+    (when (eq (cdr rec) 'html-mode)
+      (add-to-list mode-list (cons (car rec) 'nxhtml-mumamo-mode)))
+    ;; (when (eq (cdr rec) 'html-mode)
+    ;;   (add-to-list mode-list (cons (car rec) 'html-mumamo-mode)))
+    (when (eq (cdr rec) 'xml-mode)
+      (add-to-list mode-list (cons (car rec) 'nxml-mode)))
+    ))
+
+;; Add multi major mode entries.
 (add-to-list 'magic-mode-alist
              '("\\(?:.\\|\n\\)\\{,200\\}xmlns:py=\"http://genshi.edgewall.org/\""
                . genshi-nxhtml-mumamo-mode))
@@ -99,8 +101,23 @@
 (add-to-list 'auto-mode-alist '("\\.erb\\'"      . eruby-nxhtml-mumamo-mode))
 (add-to-list 'auto-mode-alist '("\\.phps\\'"     . smarty-nxhtml-mumamo-mode))
 (add-to-list 'auto-mode-alist '("\\.epl\\'"      . embperl-nxhtml-mumamo-mode))
-(add-to-list 'auto-mode-alist '("\\.lzx\\'"       . laszlo-nxml-mumamo-mode))
 (add-to-list 'auto-mode-alist '("\\.ghtml\\'"     . genshi-nxhtml-mumamo-mode))
+
+;; Add html-mumamo style entry if there is an nxhtml-mumamo style entry.
+(save-match-data
+  (dolist (mode-list '(auto-mode-alist magic-fallback-mode-alist magic-mode-alist))
+    (dolist (rec (symbol-value mode-list))
+      (let* ((mode (cdr rec))
+             (name (when (symbolp mode) (symbol-name mode)))
+             nxmode)
+        (when (and name
+                   (string-match "nxhtml-mumamo" name))
+          (setq name (replace-regexp-in-string "nxhtml-mumamo" "html-mumamo" name t t))
+          (setq nxmode (intern-soft name))
+          (when nxmode
+            (add-to-list mode-list (cons (car rec) nxmode))))))))
+
+(add-to-list 'auto-mode-alist '("\\.lzx\\'"       . laszlo-nxml-mumamo-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'"       . javascript-mode))
 (add-to-list 'auto-mode-alist '("\\.css\\'"      . css-mode))
 (add-to-list 'auto-mode-alist '("\\.rnc\\'"      . rnc-mode))

@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: data-debug.el,v 1.21 2009/03/28 12:46:14 zappo Exp $
+;; X-RCS: $Id: data-debug.el,v 1.23 2009/04/19 16:18:38 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -25,6 +25,20 @@
 ;; Provide a simple way to investigate particularly large and complex
 ;; data structures.
 ;;
+;; The best way to get started is to bind M-: to 'data-debug-eval-expression.
+;;
+;; (global-set-key "\M-:" 'data-debug-eval-expression)
+;;
+;; If you write functions with complex output that need debugging, you
+;; can make them interactive with data-debug-show-stuff.  For example:
+;;
+;; (defun my-complex-output-fcn ()
+;;   "Calculate something complicated at point, and return it."
+;;   (interactive) ;; function not normally interactive
+;;   (let ((stuff (do-stuff)))
+;;     (when (interactive-p)
+;;       (data-debug-show-stuff stuff "myStuff"))
+;;     stuff))
 
 (require 'font-lock)
 ;;; Code:
@@ -1019,6 +1033,17 @@ Do nothing if already expanded."
       (data-debug-expand-or-contract))
     ))
 
+;;; GENERIC STRUCTURE DUMP
+;;
+;;;###autoload
+(defun data-debug-show-stuff (stuff name)
+  "Data debug STUFF in a buffer named *NAME DDebug*."
+  (data-debug-new-buffer (concat "*" name " DDebug*"))
+  (data-debug-insert-thing stuff "?" "")
+  (goto-char (point-min))
+  (when (data-debug-line-expandable-p)
+    (data-debug-expand-current-line)))
+
 ;;; DEBUG COMMANDS
 ;;
 ;; Various commands to output aspects of the current semantic environment.
@@ -1035,9 +1060,7 @@ Do nothing if already expanded."
   (let ((v (eval expr)))
     (if (not v)
 	(message "Expression %s is nil." expr)
-      (data-debug-new-buffer "*expression DDEBUG*")
-      (data-debug-insert-thing v "?" "")
-      )))
+      (data-debug-show-stuff v "expression"))))
 
 ;;;###autoload
 (defun data-debug-eval-expression (expr)
@@ -1066,8 +1089,7 @@ If the result is a list or vector, then use the data debugger to display it."
 
   (if (or (consp (car values)) (vectorp (car values)))
       (let ((v (car values)))
-	(data-debug-new-buffer "*Expression*")
-	(data-debug-insert-thing v "?" ""))
+	(data-debug-show-stuff v "Expression"))
     ;; Old style
     (prog1
 	(prin1 (car values) t)

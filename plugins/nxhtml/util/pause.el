@@ -97,7 +97,7 @@
 (defun pause-one-minute ()
   "Give you another minute ..."
   (pause-start-timer 60)
-  (message (propertize " OK, I will come back in a minute! -- greatings from pause "
+  (message (propertize " OK, I will come back in a minute! -- greatings from pause"
                        'face (list :background pause-message-color))))
 
 (defun pause-save-me ()
@@ -140,7 +140,7 @@
   (condition-case err
       (if pause-idle-delay
           (setq pause-idle-timer (run-with-idle-timer pause-idle-delay nil 'pause-break-in-timer))
-        (setq pause-idle-timer (run-with-timer 0 nil 'pause-break-in-timer)))
+        (setq pause-idle-timer (run-with-idle-timer 5 nil 'pause-break-in-timer)))
     (error
      (lwarn 'pause-pre-break
             :error "%s" (error-message-string err)))))

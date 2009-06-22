@@ -262,6 +262,10 @@ Return the documentation of @var{tag}.
 That is the value defined by the `:documentation' attribute.
 Optional argument @var{buffer} indicates where to get the text from.
 If not provided, then only the @var{position} can be provided.
+
+If you want to get documentation for languages that do not store
+the documentation string in the tag itself, use
+@dfn{semantic-documentation-for-tag} instead.
 @obsolete{semantic-token-docstring,semantic-tag-docstring}
 @end defun
 

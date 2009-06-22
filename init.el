@@ -11,12 +11,12 @@
 ;(set-fontset-font (frame-parameter nil 'font)
 ;  'han '("cwTeXHeiBold" . "unicode-bmp"))
 
-(setq make-backup-files nil) 
+(setq make-backup-files nil)
 (setq query-replace-highlight t)
 (setq search-highlight t)
 (setq font-lock-maximum-decoration t)
 (fset 'yes-or-no-p 'y-or-n-p)
-(setq require-final-newline t) 
+(setq require-final-newline t)
 (setq default-major-mode 'text-mode)
 
 ;; turn on paren matching
@@ -27,8 +27,7 @@
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message nil)
 
-(setq default-frame-alist '((font . "inconsolata")))
-;; (setq default-frame-alist '((font . "terminus")))
+;(setq default-frame-alist '((font . "inconsolata")))
 
 ;; Get back font antialiasing
 (push '(font-backend xft x) default-frame-alist)
@@ -47,7 +46,7 @@
 ;; redo
 (add-to-list  'load-path "~/.emacs.d/plugins/redo")
 (require 'redo)
-(global-set-key [(control +)] 'redo)
+(global-set-key [(control -)] 'redo)
 
 
 ;; show ascii table
@@ -73,7 +72,7 @@
   (insert (format-time-string "%a %Y-%m-%d - %l:%M %p")))
 
 
-;; Centering code stolen from somewhere and restolen from 
+;; Centering code stolen from somewhere and restolen from
 ;; http://www.chrislott.org/geek/emacs/dotemacs.html
 ;; centers the screen around a line...
 (global-set-key [(control l)]  'centerer)
@@ -81,13 +80,13 @@
    "Repositions current line: once middle, twice top, thrice bottom"
    (interactive)
    (cond ((eq last-command 'centerer2)  ; 3 times pressed = bottom
-	  (recenter -1))
-	 ((eq last-command 'centerer1)  ; 2 times pressed = top
-	  (recenter 0)
-	  (setq this-command 'centerer2))
-	 (t                             ; 1 time pressed = middle
-	  (recenter)
-	  (setq this-command 'centerer1))))
+          (recenter -1))
+         ((eq last-command 'centerer1)  ; 2 times pressed = top
+          (recenter 0)
+          (setq this-command 'centerer2))
+         (t                             ; 1 time pressed = middle
+          (recenter)
+          (setq this-command 'centerer1))))
 
 
 ;; Kills live buffers, leaves some emacs work buffers
@@ -100,38 +99,38 @@ LIST defaults to all existing live buffers."
       (setq list (buffer-list)))
   (while list
     (let* ((buffer (car list))
-	   (name (buffer-name buffer)))
+           (name (buffer-name buffer)))
       (and (not (string-equal name ""))
-	   ;(not (string-equal name "*Messages*"))
-	  ;; (not (string-equal name "*Buffer List*"))
-	   ;(not (string-equal name "*buffer-selection*"))
-	   ;(not (string-equal name "*Shell Command Output*"))
-	   (not (string-equal name "*scratch*"))
-	   (/= (aref name 0) ? )
-	   (if (buffer-modified-p buffer)
-	       (if (yes-or-no-p
-		    (format "Buffer %s has been edited. Kill? " name))
-		   (kill-buffer buffer))
-	     (kill-buffer buffer))))
+           ;(not (string-equal name "*Messages*"))
+          ;; (not (string-equal name "*Buffer List*"))
+           ;(not (string-equal name "*buffer-selection*"))
+           ;(not (string-equal name "*Shell Command Output*"))
+           (not (string-equal name "*scratch*"))
+           (/= (aref name 0) ? )
+           (if (buffer-modified-p buffer)
+               (if (yes-or-no-p
+                    (format "Buffer %s has been edited. Kill? " name))
+                   (kill-buffer buffer))
+             (kill-buffer buffer))))
     (setq list (cdr list))))
 
 
-;; maxframe
-;(add-to-list  'load-path "~/.emacs.d/plugins/maxframe")
-;(require 'maxframe)
-;(add-hook 'window-setup-hook 'maximize-frame t)
-
-
 ;; fullscreen
-(defun toggle-fullscreen ()
-(interactive)
-(x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-'(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
-(x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-'(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
-)
-(toggle-fullscreen)
+;(defun toggle-fullscreen ()
+;(interactive)
+;(x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+;'(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
+;(x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+;'(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
+;)
+;(toggle-fullscreen)
 
+
+;; maxframe
+(add-to-list  'load-path "~/.emacs.d/plugins/maxframe")
+(require 'maxframe)
+(add-hook 'window-setup-hook 'maximize-frame t)
+(add-hook 'window-setup-hook 'ecb-redraw-layout t)
 
 (set-background-color "#2b2b2b")
 (set-foreground-color "white")
@@ -167,7 +166,7 @@ LIST defaults to all existing live buffers."
 ;(global-ede-mode 1)
 ;; * This enables the database and idle reparse engines
 ;(semantic-load-enable-minimum-features)
-(setq semantic-load-turn-everything-on t)
+;(setq semantic-load-turn-everything-on t)
 
 
 ;; ecb
@@ -181,8 +180,9 @@ LIST defaults to all existing live buffers."
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(ecb-layout-window-sizes (quote (("left8" (0.1951219512195122) (0.1951219512195122) (0.1951219512195122) (0.1951219512195122)))))
- '(ecb-options-version "2.33beta2"))
+ '(ecb-layout-window-sizes (quote (("left8" (ecb-directories-buffer-name 0.23671497584541062 . 0.29310344827586204) (ecb-sources-buffer-name 0.23671497584541062 . 0.2413793103448276) (ecb-methods-buffer-name 0.23671497584541062 . 0.27586206896551724) (ecb-history-buffer-name 0.23671497584541062 . 0.1724137931034483)))))
+ '(ecb-options-version "2.40"))
+; '(show-paren-mode t))
 
 
 ;; find-recursive
@@ -312,6 +312,7 @@ t)
 (add-to-list 'load-path "~/.emacs.d/plugins/ruby-mode")
 (require 'ruby-electric)
 (add-hook 'ruby-mode-hook 'turn-on-font-lock)
+(add-to-list 'auto-mode-alist '("\\.rjs$" . ruby-mode))
 
 ;; ruby-block
 (add-to-list 'load-path "~/.emacs.d/plugins/ruby-block")
@@ -380,10 +381,8 @@ t)
       nxml-degraded t)
 (add-to-list 'auto-mode-alist '("\\.html$" . nxhtml-mumamo-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\.erb$" . eruby-nxhtml-mumamo-mode))
-
-(add-hook 'nxhtml-mumamo-mode-hook 'tabkey2-mode)
-(add-hook 'eruby-nxhtml-mumamo-mode-hook 'tabkey2-mode)
-
+;(add-hook 'nxhtml-mumamo-mode-hook 'tabkey2-mode)
+;(add-hook 'eruby-nxhtml-mumamo-mode-hook 'tabkey2-mode)
 
 
 ;; flymake
@@ -395,11 +394,11 @@ t)
 (set-face-background 'flymake-warnline "dark slate blue")
 
 ;; Feature request: have flymake create its temp files in the system temp file directory instead of in the same directory as the file. When using it with Ruby on Rails and autotest, autotest sees the temp file and tries to do something with it and dies, forcing me to restart it, thus killing the magic of autotest. Putting flymake’s temp files elsewhere seems like the easiest way to dodge this.
-;; 
+;;
 ;; I second the above request. I know there are workarounds for autotest, but it seems like we don’t want to find work arounds for every new web framework, we want to get flymake working in a way that won’t conflict with any other tools.
-;; 
+;;
 ;; It is easy to patch your autotest to ignore flymake files. I have submitted a patch which hopefully will be included in future releases. For more info see: Emacs, flymake and autotest: the fix
-;; 
+;;
 ;; Here is a suggestion for a solution (100% untested). Replace flymake-create-temp-inplace above with
 
 (defun flymake-create-temp-intemp (file-name prefix)
@@ -434,12 +433,13 @@ makes)."
 (defun flymake-ruby-init ()
   (let* ((temp-file   (flymake-init-create-temp-buffer-copy
                        'flymake-create-temp-intemp))
-	 (local-file  (file-relative-name
+         (local-file  (file-relative-name
                        temp-file
                        (file-name-directory buffer-file-name))))
     (list "ruby" (list "-c" local-file))))
 
 (push '(".+\\.rb$" flymake-ruby-init) flymake-allowed-file-name-masks)
+(push '(".+\\.rjs$" flymake-ruby-init) flymake-allowed-file-name-masks)
 (push '("Rakefile$" flymake-ruby-init) flymake-allowed-file-name-masks)
 
 (push '("^\\(.*\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3) flymake-err-line-patterns)
@@ -447,10 +447,10 @@ makes)."
 (add-hook 'ruby-mode-hook
           '(lambda ()
 
-	     ;; Don't want flymake mode for ruby regions in rhtml files and also on read only files
-	     (if (and (not (null buffer-file-name)) (file-writable-p buffer-file-name))
-		 (flymake-mode))
-	     ))
+             ;; Don't want flymake mode for ruby regions in rhtml files and also on read only files
+             (if (and (not (null buffer-file-name)) (file-writable-p buffer-file-name))
+                 (flymake-mode))
+             ))
 
 (require 'flymake-jslint)
 (add-hook 'javascript-mode-hook
@@ -532,3 +532,9 @@ makes)."
 ;(kill-buffer "*Compile-Log*")
 ;(kill-buffer "*Messages*")
 
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )

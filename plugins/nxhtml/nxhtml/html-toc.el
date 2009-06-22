@@ -341,6 +341,7 @@ You may also want to look at `html-wtoc-write-pages-with-toc'."
         (save-buffer))
       frames-file)))
 
+;;;###autoload
 (defconst html-toc-menu-map
   (let ((map (make-sparse-keymap)))
     (define-key map [html-toc-browse-frames-file]

@@ -1,4 +1,4 @@
-This file contains some important release-notes for ECB version 2.33beta2
+This file contains some important release-notes for ECB version 2.40
 
 General:
 --------
@@ -17,6 +17,13 @@ No special notes beyond the contents of README.
 
 Upgrading from any version:
 ---------------------------
+
+If you are upgrading from version newer then 2.27 (ie. ecb-version > 2.27)
+then you can skip the rest of this release notes.
+
+
+Upgrading from any version < 2.27:
+----------------------------------
 
 The option `ecb-auto-expand-tag-tree-collapse-other' has changed its type. ECB
 autom. upgrades your old setting to the new option-type.

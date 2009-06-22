@@ -27,6 +27,7 @@
 
 ;;(eval-when-compile (require 'mumamo))
 (require 'mumamo)
+(require 'whelp)
 
 ;;;;;;; TESTS, run in fundamental-mode buffer
 
@@ -97,15 +98,18 @@ When this mode is on the following keys are defined:
            chunk
            chunk2)
       (mumamo-save-buffer-state nil
-        (setq chunk (mumamo-create-chunk-at here)))
-      (setq chunk2 (mumamo-get-chunk-at here))
+        ;;(setq chunk (mumamo-create-chunk-at here)))
+        (setq chunk (mumamo-find-chunks here "test1")))
+      ;;(setq chunk2 (mumamo-get-chunk-at here))
+      (setq chunk2 (mumamo-find-chunks here "set chunk2"))
       ;;(message "mumamo-test-create-chunk-at-point.chunk 1=%s" chunk)
       ;;(lwarn 'test-create-chunk-at :warning "chunk=%s, chunk2=%s" chunk chunk2)
       ;;(when (overlay-buffer chunk)
         (assert (eq chunk chunk2))
         ;;)
       ;;(message "mumamo-test-create-chunk-at-point.chunk 2=%s" chunk)
-      (syntax-ppss-flush-cache (1- (overlay-start chunk)))
+      ;;(syntax-ppss-flush-cache (1- (overlay-start chunk)))
+      (syntax-ppss-flush-cache (overlay-start chunk))
       (let ((start (overlay-start chunk))
             (end   (overlay-end chunk)))
         ;;(setq syntax-ppss-last (cons 319 (parse-partial-sexp 1 1)))
@@ -117,7 +121,9 @@ When this mode is on the following keys are defined:
       ;;(message "mumamo-test-create-chunk-at-point.chunk 4=%s" chunk)
       chunk
       ;;(message "test 2.debugger=%s" debugger)
-      (mumamo-get-chunk-at here))))
+      ;;(mumamo-get-chunk-at here)
+      (mumamo-find-chunks here "return value")
+      )))
 
 (defun mumamo-test-create-chunks-at-all-points ()
   (interactive)
@@ -125,7 +131,8 @@ When this mode is on the following keys are defined:
   (let (last-ovl
         this-ovl)
     (while (< (point) (point-max))
-      (setq this-ovl (mumamo-test-create-chunk-at-point))
+      ;;(setq this-ovl (mumamo-test-create-chunk-at-point))
+      (setq this-ovl (mumamo-find-chunks (point) "test loop"))
       ;;(message "this-ovl=%s" this-ovl)
       (sit-for 0.01)
       ;;(sit-for 0)

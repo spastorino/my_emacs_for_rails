@@ -1937,6 +1937,7 @@ POSITION are not used in this case. "
 )
 
 (defvar tidy-menu-symbol nil)
+;;(tidy-build-menu (&optional map)
 ;;;###autoload
 (defun tidy-build-menu (&optional map)
   "Set up the tidy menu in MAP.
@@ -1949,6 +1950,7 @@ Used to set up a Tidy menu in your favourite mode."
     ;;(or map (setq map (current-local-map)))
     (easy-menu-remove tidy-menu)
     (easy-menu-define tidy-menu-symbol map "Menu for Tidy" tidy-menu)
+    (setq tidy-menu-symbol (delete "Tidy" tidy-menu-symbol))
     (easy-menu-add tidy-menu map))
   t)
 
@@ -2277,6 +2279,7 @@ of the buffer still a hopefully suitable header is added before
 calling tidy."
 ;; Fix-me: copy back parts outside visible region
   (interactive)
+  (message "starting tidy-buffer")
   (let* ((is-narrowed (buffer-narrowed-p))
          (validation-header (when (boundp 'rngalt-validation-header)
                               (let ((header (nth 2 rngalt-validation-header)))

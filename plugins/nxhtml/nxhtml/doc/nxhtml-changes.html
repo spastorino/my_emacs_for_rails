@@ -278,6 +278,11 @@
           <a href="#v1.74">v1.74</a>
           <a href="#v1.75">v1.75</a>
           <a href="#v1.76">v1.76</a>
+          <a href="#v1.77">v1.77</a>
+          <a href="#v1.78">v1.78</a>
+          <a href="#v1.79">v1.79</a>
+          <a href="#v1.80">v1.80</a>
+          <a href="#v1.81">v1.81</a>
         </div>
 
         <dl>
@@ -1688,7 +1693,7 @@
           <dd id="v1.34-dd">
             <ul>
               <li>
-                <span style="font-size: 1.2em; color: red ()"
+                <span style="font-size: 1.2em; color: red ()" 
                       >Changed top directory name from nxml to nxhtml</span>
                 <p>
                   This will of course case some problems if you do not
@@ -2565,6 +2570,147 @@
               </li>
               <li>
                 freemind.el: bug fixes.
+              </li>
+            </ul>
+          </dd>
+          <dt id="v1.77">1.77</dt>
+          <dd id="v1.77-dd">
+            <ul>
+              <li>
+                Fixed numerous bugs, please
+                see <a href="https://bugs.launchpad.net/nxhtml/">nXhtml bug tracker</a>
+                and dito <a href="https://answers.launchpad.net/nxhtml">question and answers</a>.
+              </li>
+              <li>
+                Added some missing autoloads.
+              </li>
+              <li>
+                Tried to fix some smaller troubles with Viper when
+                changing chunk.
+              </li>
+              <li>
+                Menus for Tidy were broken. Fixed.
+              </li>
+              <li>
+                Added a test that the <i>nxml-mode libraries included
+                in Emacs</i> are used and not the old ones.  (If I
+                understand it correctly this might have been a problem
+                for Debian/Ubuntu Emacs 23 snap-shots users where the
+                old nxml-mode has been a left over from earlier
+                snap-shots where it was needed.)
+              </li>
+              <li>
+                MuMaMo:
+                <ul>
+                  <li>
+                    Chunks are now always created from top to bottom.
+                    This should make chunk creation more stable.
+                    It also opens up for chunks in chunks in the future.
+                    (The code still needs work...)
+                  </li>
+                </ul>
+              </li>
+              <li>
+                majmodpri.el:
+                <ul>
+                  <li>
+                    To restore multi major modes in files loaded by
+                    desktop-save-mode the new
+                    function <i>majmodpri-apply</i> can be added
+                    to <i>desktop-after-read-hook</i>.
+                  </li>
+                  <li>
+                    New default for <i>majmodpri-sort-after-load</i>:
+                    Sort after loading certain features/libraries that
+                    are known to change <i>auto-mode-alist</i> and
+                    apply to current buffer.  This new default should
+                    hopefully make major mode selection less
+                    confusing.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                winsav.el:
+                <ul>
+                  <li>
+                    Added save and restore between Emacs sessions for frame configuration.
+                    I am not sure how this works with special frames yet, but I have tested this with oneonone.el and it seems to work.
+                    Dedicated windows should also work.
+                  </li>
+                  <li>
+                    Added saving and restoring of named frame configurations.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                javascript.el:
+                <ul>
+                  <li>
+                    Updated to Karl's newest version (and added my additions).
+                  </li>
+                </ul>
+              </li>
+              <li>
+                Added library usb-setup.el that might help a bit with
+                using Emacs from an USB stick.
+              </li>
+              <li>
+                Updated smarty-mode.el to the latest version.
+              </li>
+              <li>
+                <img alt="Happy brain" src="img/fun-brain-2.png" width="131" height="119" />
+                Added an n-back game for your brain (and mine).
+                Just do <b>M-x n-back-game</b> to start it.
+              </li>
+            </ul>
+          </dd>
+          <dt id="v1.78">1.78</dt>
+          <dd id="v1.78-dd">
+            <ul>
+              <li>
+                nXhtml version 1.78 is the release of the previous beta (which had
+                number 1.77 and existed in many versions).
+              </li>
+            </ul>
+          </dd>
+          <dt id="v1.79">1.79</dt>
+          <dd id="v1.79-dd">
+            <ul>
+              <li>
+                Added a function to simplify adding for example font
+                lock keywords for major modes used in multi major
+                mode: <i>mumamo-refresh-multi-font-lock</i>.
+              </li>
+            </ul>
+          </dd>
+          <dt id="v1.80">1.80</dt>
+          <dd id="v1.80-dd">
+            <ul>
+              <li>
+                Fixed a (rather serious) bug and cleaned up.
+              </li>
+              <li>
+                Added mumamo regions. Mumamo regions are temporary
+                mumamo chunks that you set up by selecting a region
+                and telling you want that in a new major mode. To use
+                this feature look in the nXhtml menu under <i>Chunks -
+                Region Chunks</i>.
+              </li>
+            </ul>
+          </dd>
+          <dt id="v1.81">1.81</dt>
+          <dd id="v1.81-dd">
+            <ul>
+              <li>
+                Added the minor mode <i>mumamo-alt-php-tags-mode</i>
+                that lets you work more easily with &lt;?php tags in
+                strings while you are still able to use XHTML
+                completion.
+              </li>
+              <li>
+                Added support for hi-lock, but please be aware that
+                chunk overlays hides background marking that hi-lock
+                does... - so you must use marking that changes foreground.
               </li>
             </ul>
           </dd>

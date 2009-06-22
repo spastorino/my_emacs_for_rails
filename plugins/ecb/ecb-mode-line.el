@@ -24,7 +24,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-mode-line.el,v 1.36 2009/04/15 14:22:35 berndl Exp $
+;; $Id: ecb-mode-line.el,v 1.40 2009/05/15 16:40:05 berndl Exp $
 
 ;;; Commentary:
 ;;
@@ -239,7 +239,7 @@ prepended by the window-number, see `ecb-mode-line-display-window-number'."
                                      ecb-path-selected-directory)
                                     ((equal data-elem 'sel-source)
                                      (and ecb-path-selected-source
-                                          (ecb-path-selected-source 'buffer)))
+                                          (ecb-path-selected-source 'buffername)))
                                     ((stringp data-elem)
                                      data-elem)
                                     ((null data-elem)
@@ -294,9 +294,9 @@ as \"W-<number>\"."
                             (concat " " prefix (if (stringp text) ": " ""))
                           (if (stringp text) " " "")))
           (win-width (window-width (get-buffer-window buffer-name)))
-          (avaiable-text-width nil))
+          (available-text-width nil))
       (setq shown-prefix (ecb-fit-str-to-width shown-prefix (1- win-width) 'right))
-      (setq avaiable-text-width (- win-width
+      (setq available-text-width (- win-width
                                    (+ (length shown-prefix)
                                       (if (and (not ecb-running-xemacs)
                                                ecb-mode-line-display-window-number
@@ -318,10 +318,9 @@ as \"W-<number>\"."
              (ecb-mode-line-make-modeline-str
               (concat (if (stringp text)
                           (ecb-fit-str-to-width text
-                                                avaiable-text-width
+                                                available-text-width
                                                 'left)))
               ecb-mode-line-data-face))))))
-
 
 
 (defun ecb-mode-line-update-buffer (buffer-name new-mode-line-format)

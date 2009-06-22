@@ -1,9 +1,9 @@
 ;;; semantic-ectag-util.el --- Utilities for Exuberent CTags and Semantic
 
-;; Copyright (C) 2008 Eric M. Ludlam
+;; Copyright (C) 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: semantic-ectag-util.el,v 1.5 2008/11/27 18:49:35 zappo Exp $
+;; X-RCS: $Id: semantic-ectag-util.el,v 1.6 2009/05/31 11:19:45 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -32,10 +32,30 @@
 
 ;;; Code:
 
-(defcustom semantic-ectag-program "ctags"
+(defcustom semantic-ectag-program-list '("ctags-exuberant"
+					 "ectags"
+					 "ctags")
+  "*List of possible exuberent ctags programs that coule be installed."
+  :group 'semantic
+  :type '(repeat file))
+
+(defcustom semantic-ectag-program nil
   "The Exuberent CTags program to use."
   :group 'semantic
-  :type 'file)
+  :type 'program)
+
+(defun semantic-ectag-program ()
+  "Return our best guess at an exuberent ctags program."
+  (or semantic-ectag-program
+      (let ((pl semantic-ectag-program-list))
+	(while (and pl (not semantic-ectag-program))
+	  (condition-case nil
+	      (progn
+		(call-process (car pl) nil nil nil "--version")
+		(setq semantic-ectag-program (car pl)))
+	    (error nil))
+	  (setq pl (cdr pl)))
+	(or semantic-ectag-program "ctags"))))
 
 ;;; RUN CTAGS
 ;;
@@ -50,10 +70,12 @@ The returned buffer will be recycled in future calls to this function."
       (erase-buffer)
       (setq default-directory dd)
       (condition-case nil
-	  (apply 'call-process semantic-ectag-program nil b nil
-		 args)
+	  (progn
+	    (apply 'call-process (semantic-ectag-program) nil b nil
+		   args)
+	    b)
 	(error nil)))
-    b))
+    ))
 
 ;;; Semi-automatic linguistic configuration
 ;;
@@ -110,28 +132,45 @@ The returned buffer will be recycled in future calls to this function."
   "Get the revision number of ctags."
   (interactive)
   (let* ((b (semantic-ectag-run "--version"))
-	 (str (save-excursion
-		(set-buffer b)
-		(goto-char (point-min))
-		(if (re-search-forward "Exuberant Ctags \\([0-9.]+\\)," nil t)
-		    (match-string 1)
-		  "0")
-		))
-	 (ropt (save-excursion
-		 (set-buffer b)
-		 (goto-char (point-min))
-		 (if (re-search-forward "\\+regex\\>" nil t)
-		     t
-		   nil)))
-	 )
-    (when (interactive-p)
-      (message "Detected Exuberent CTags version : %s %s"
-	       str
-	       (if ropt
-		   "with regex support"
-		 "WITHOUT regex support")
-	       ))
-    (list str ropt) ))
+	 str ropt)
+    (if (not b)
+	(progn
+	  (message "Could not find program %s"
+		   semantic-ectag-program)
+	  nil)
+      (setq str (save-excursion
+		  (set-buffer b)
+		  (goto-char (point-min))
+		  (if (re-search-forward "Exuberant Ctags \\([0-9.]+\\)," nil t)
+		      (match-string 1)
+		    nil)
+		  )
+	    ropt (save-excursion
+		   (set-buffer b)
+		   (goto-char (point-min))
+		   (if (re-search-forward "\\+regex\\>" nil t)
+		       t
+		     nil)))
+      (if (not str)
+	  (let ((whatver
+		 (save-excursion
+		   (set-buffer b)
+		   (goto-char (point-min))
+		   (cond ((looking-at "ctags (?GNU Emacs")
+			  "ctags that comes with Emacs")
+			 (t
+			  "unknown ctags version"))
+		   )))
+	    (message "Exuberent CTags not found.  Found %s" whatver)
+	    nil)
+	(when (interactive-p)
+	  (message "Detected Exuberent CTags version : %s %s"
+		   str
+		   (if ropt
+		       "with regex support"
+		     "WITHOUT regex support")
+		   ))
+	(list str ropt) ))))
 
 (defvar semantic-ectag-min-version "5.7"
   "Minimum version of Exuberent CTags we need.")
@@ -142,6 +181,8 @@ The returned buffer will be recycled in future calls to this function."
 	 (v (car vi))
 	 (r (car (cdr vi))))
     (require 'inversion)
+    (when (not v)
+      (error "Exuberent CTags not found.  Use M-x semantic-ectag-version RET"))
     (when (inversion-check-version v nil semantic-ectag-min-version)
       (error "Version of CTags is %s.  Need at least %s"
 	     v semantic-ectag-min-version))

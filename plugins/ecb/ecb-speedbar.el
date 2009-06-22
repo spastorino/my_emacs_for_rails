@@ -24,7 +24,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-speedbar.el,v 1.71 2009/04/15 14:22:35 berndl Exp $
+;; $Id: ecb-speedbar.el,v 1.74 2009/06/04 08:38:15 berndl Exp $
 
 ;;; Commentary:
 
@@ -66,8 +66,9 @@
 
 (require 'speedbar)
 (require 'ecb-util)
-(require 'ecb-semantic-wrapper)
+(require 'ecb-cedet-wrapper)
 (require 'ecb-common-browser)
+(require 'ecb-layout)
 
 (eval-when-compile
   ;; to avoid compiler grips
@@ -134,7 +135,7 @@ If the special value 'basic is set then ECB uses the setting of the option
                    (set symbol value)
                    (if (and (boundp 'ecb-minor-mode)
                             ecb-minor-mode)
-                       (ecb-activate-ecb-autocontrol-functions
+                       (ecb-activate-ecb-autocontrol-function
                         value 'ecb-analyse-buffer-sync))))
   :initialize 'custom-initialize-default)
   
@@ -254,9 +255,9 @@ the point was not set by `mouse-set-point'."
              (window-live-p ecb-last-edit-window-with-point)
              (equal (window-buffer ecb-last-edit-window-with-point)
                     ecb-last-source-buffer))
-;;     (select-window ecb-last-edit-window-with-point)
-;;     (set-buffer ecb-last-source-buffer)
-    nil
+    (select-window ecb-last-edit-window-with-point)
+    (set-buffer ecb-last-source-buffer)
+;;     nil
     ))
 
 (defun ecb-speedbar-select-speedbar-window ()
@@ -264,13 +265,14 @@ the point was not set by `mouse-set-point'."
     (and (window-live-p (get-buffer-window ecb-speedbar-buffer-name))
          (select-window (get-buffer-window ecb-speedbar-buffer-name)))))
 
-(defun ecb-speedbar-set-buffer()
-  "Set the speedbar buffer within ECB."
+(defecb-window-dedicator-to-ecb-buffer ecb-set-speedbar-buffer ecb-speedbar-buffer-name nil
+  "Display in current window the speedbar-buffer and make window dedicated."
   (ecb-speedbar-activate)
   (set-window-buffer (selected-window)
                      (get-buffer-create ecb-speedbar-buffer-name))
   (unless ecb-running-xemacs
     (set (make-local-variable 'automatic-hscrolling) nil)))
+
 
 
 (defvar ecb-speedbar-verbosity-level-old nil)
@@ -328,7 +330,9 @@ future this could break."
         (if dframe-track-mouse-function
             (set (make-local-variable 'track-mouse) t)) ;this could be messy.
         ;; disable auto-show-mode for Emacs
-        (setq auto-show-mode nil))))
+        ;; obsolete with beginning of Emacs 21...
+;;         (setq auto-show-mode nil)
+        )))
 
   ;;Start up the timer
   (speedbar-reconfigure-keymaps)
@@ -353,7 +357,7 @@ future this could break."
       (setq ecb-speedbar-update-flag-old speedbar-update-flag))
   (setq speedbar-update-flag nil)
 
-  (ecb-activate-ecb-autocontrol-functions ecb-speedbar-buffer-sync-delay 
+  (ecb-activate-ecb-autocontrol-function ecb-speedbar-buffer-sync-delay 
                                           'ecb-speedbar-buffer-sync)
 
   ;;reset the selection variable

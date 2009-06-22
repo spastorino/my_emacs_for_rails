@@ -1,12 +1,3 @@
-- Implement ecb-upgrading with the new url-package of Emacs 22 and with
-  url-dl.el (at least copy this code into ecb-upgrade) - in combination with
-  tar-mode it should be possible to download and extract a new ecb-version
-  without any external tools like wget, tar and gzip!
-
-- Implementing the class-browser of speedbar native with ECB in an
-  additional special ecb-window - a very important todo of high
-  priority!
-
 - Distinction of include-tags by "" or <>. This can be done via
   (semantic-tag-include-system-p TAG). Thanks to Markus grietsch.
   But probably it would be the best if semantic itself does this special

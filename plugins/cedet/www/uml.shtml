@@ -6,7 +6,7 @@
 <tr><td><h2><font color="black">UML Diagrams</font></h2></td></tr>
 </table>
 
-<p><img src="img-gen/cogre-quick-class.jpg" border="1" align="right">
+<p><img src="img-gen/cogre-quick-class.png" border="1" align="right">
 
    <b>CEDET</b> lets you create UML diagrams either by hand, or
    automatically generate simple 3-tier class diagrams from your

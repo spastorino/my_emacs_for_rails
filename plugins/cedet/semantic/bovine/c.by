@@ -7,7 +7,7 @@
 ;;         David Ponce <david@dponce.com>
 ;;         Klaus Berndl <klaus.berndl@sdm.de>
 ;;
-;; X-RCS: $Id: c.by,v 1.56 2009/03/14 23:44:09 zappo Exp $
+;; X-RCS: $Id: c.by,v 1.57 2009/04/18 12:15:51 zappo Exp $
 ;;
 ;; c.by is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -183,10 +183,6 @@
 %token UNDERUNDERP "__P"
 %put UNDERP summary "Common macro to eliminate prototype compatibility on some compilers"
 %put UNDERUNDERP summary "Common macro to eliminate prototype compatibility on some compilers"
-
-;; GCC
-%token __ATTRIBUTE__ "__attribute__"
-%put __ATTRIBUTE__ summary "<cdecl> __attribute__ ((<attributeoption>))"
 
 %%
 
@@ -387,12 +383,6 @@ opt-name
     ( "" )
   ;
 
-opt-class-declmods
-  : symbol declespec semantic-list
-  | symbol
-  | ;;EMPTY
-  ;
-
 typesimple
   : struct-or-class opt-class opt-name opt-template-specifier
     opt-class-parents semantic-list
@@ -442,7 +432,7 @@ struct-or-class
   ;
 
 type
-  : typesimple opt-attribute SEMICOLON
+  : typesimple SEMICOLON
     ( ,$1 )
  ;; named namespaces like "namespace XXX {"
   | NAMESPACE symbol namespaceparts
@@ -450,13 +440,6 @@ type
  ;; unnamed namespaces like "namespace {"
   | NAMESPACE namespaceparts
     (TYPE-TAG "unnamed" $1 $2 nil )
-  ;
-
-opt-attribute
-  : __ATTRIBUTE__ semantic-list
-    ( nil )
-  | ;; EMPTY
-    ( nil )
   ;
 
 ;; Klaus Berndl: We must parse "using namespace XXX" too
@@ -1089,7 +1072,7 @@ function-pointer
   ;
 
 fun-or-proto-end
-  : opt-attribute SEMICOLON
+  : SEMICOLON
     ( t )
   | semantic-list
     ( nil )

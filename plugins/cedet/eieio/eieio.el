@@ -5,7 +5,7 @@
 ;; Copyright (C) 95,96,98,99,2000,01,02,03,04,05,06,07,08,09 Eric M. Ludlam
 ;;
 ;; Author: <zappo@gnu.org>
-;; RCS: $Id: eieio.el,v 1.184 2009/04/04 18:51:32 zappo Exp $
+;; RCS: $Id: eieio.el,v 1.185 2009/06/20 12:00:10 zappo Exp $
 ;; Keywords: OO, lisp
 
 (defvar eieio-version "1.2"
@@ -104,11 +104,7 @@ introduced."
 ;;
 
 (defvar eieio-hook nil
-  "*This hook is executed, then cleared each time `defclass' is called.
-The immediate effect is that I can safely keep track of common-lisp
-`setf' definitions regardless of the order.  Users can add hooks to
-this variable without worrying about weather this package has been
-loaded or not.")
+  "*This hook is executed, then cleared each time `defclass' is called.")
 
 (defvar eieio-error-unsupported-class-tags nil
   "*Non nil to throw an error if an encountered tag us unsupported.

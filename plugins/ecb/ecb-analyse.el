@@ -1,4 +1,4 @@
-;;; ecb-analyse.el --- ECB analysis display interactor
+;;; ecb-analyse.el --- ECB analysis display window
 
 ;;; Copyright (C) 2004 - 2005 Klaus Berndl
 
@@ -20,7 +20,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-analyse.el,v 1.19 2009/04/15 14:22:35 berndl Exp $
+;; $Id: ecb-analyse.el,v 1.26 2009/06/04 08:38:15 berndl Exp $
 
 
 ;;; Commentary:
@@ -143,12 +143,14 @@ bucket. So most needed buckets are better visible in the analyse-buffer."
 
 (defcustom ecb-analyse-fontified-buckets '("Context" "Function")
   "*Buckets whose elements should be fontified as in the methods-buffer.
-If the name of a category/bucket is contained in this option then all elements
-of this bucket will be displayed as in the methods-buffer - at least if an
-element is a semantic-tag. This means if `ecb-font-lock-tags' is not nil these
-elements will be fontified and also displayed with an appropriate icon if
-possible. The default value does this only for the Context-bucket because for
-most of the other buckets this makes not really much sense.
+If the name of a category/bucket is contained in this option then
+all elements of this bucket will be displayed as in the
+methods-buffer - at least if an element is a semantic-tag. This
+means if `ecb-font-lock-tags' is not nil and the font-lock
+feature is loaded into Emacs these elements will be fontified and
+also displayed with an appropriate icon if possible. The default
+value does this only for the Context-bucket because for most of
+the other buckets this makes not really much sense.
 
 For available buckets see `ecb-analyse-collapsed-buckets'.
 
@@ -199,8 +201,6 @@ See also `ecb-analyse-gen-tag-info-fn'."
                        :value ecb-analyse-show-tag-info-in-temp-buffer)
                 (function :tag "Info display-function")))
 
-;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: add all these new options to the
-;; ecb.texi
 (defcustom ecb-analyse-buffer-sync 'basic
   "*Synchronize the analyse buffer automatically with current edit buffer.
 
@@ -228,25 +228,24 @@ IMPORTANT NOTE: Every time the synchronization is done the hook
 (defcustom ecb-analyse-buffer-sync-delay 2
   "*Time Emacs must be idle before the analyse-buffer is synchronized.
 Synchronizing is done with the current source displayed in the edit window. If
-nil then there is no delay, means synchronization takes place immediately. A
-small value of about 0.25 seconds saves CPU resources and you get even though
-almost the same effect as if you set no delay.
+nil then there is no delay, means synchronization takes place immediately.
 
-CAUTION: With analysing a value to too small is strongly recommended because
+CAUTION: With analysing a value not too small is strongly recommended because
 it can be very annoying if more or less after each typing the current context
-is analysed.
+is analysed. If set to nil then *each* keyboard hit refreshes the
+analyse-buffer which will make ECB quite unusable!
 
 If the special value 'basic is set then ECB uses the setting of the option
 `ecb-basic-buffer-sync-delay'"
   :group 'ecb-analyse
-  :type '(radio (const :tag "use basic value" :value basic)
+  :type '(radio (const :tag "Use basic value" :value basic)
                 (const :tag "No synchronizing delay" :value nil)
                 (number :tag "Idle time before synchronizing" :value 2))
   :set (function (lambda (symbol value)
                    (set symbol value)
                    (if (and (boundp 'ecb-minor-mode)
                             ecb-minor-mode)
-                       (ecb-activate-ecb-autocontrol-functions
+                       (ecb-activate-ecb-autocontrol-function
                         value 'ecb-analyse-buffer-sync))))
   :initialize 'custom-initialize-default)
 
@@ -453,8 +452,8 @@ used as window."
           ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: what about tags without
           ;; buffer but onlxy with start- and end-pos?!
           (ecb-display-tag (ecb-source-make (ecb-buffer-file-name
-                                             (ecb--semantic-tag-buffer tag))
-                                            (ecb--semantic-tag-buffer tag))
+                                             (ecb-semantic-tag-buffer tag))
+                                            (ecb-semantic-tag-buffer tag))
                            tag
                            (or window (ecb-get-edit-window nil))
                            t nil))))))
@@ -468,10 +467,6 @@ used as window."
     (when (or (= type ecb-analyse-nodetype-completions)
               (= type ecb-analyse-nodetype-localvars))
       (tree-buffer-highlight-node-by-data/name data)
-      ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: here we must handle
-      ;; indirect buffers - probbaly with a smart new function
-      ;; ecb-display-source which decides smartly if to switch to a buffer or
-      ;; if to find-file....
       (ecb-display-source ecb-path-selected-source nil)
       (let* ((a (ecb--semantic-analyze-current-context (point)))
              (bounds (if a (oref a bounds)))
@@ -515,10 +510,10 @@ used as window."
         (when meta-mode
           (ecb-run-with-idle-timer 0.001 nil 'ecb-hide-ecb-windows)))))))
 
-(defecb-window-dedicator ecb-set-analyse-buffer ecb-analyse-buffer-name
+(defecb-window-dedicator-to-ecb-buffer ecb-set-analyse-buffer ecb-analyse-buffer-name t
   "Display the analyse buffer in current window and make window dedicated."
-  (ecb-activate-ecb-autocontrol-functions ecb-analyse-buffer-sync-delay
-                                          'ecb-analyse-buffer-sync)
+  (ecb-activate-ecb-autocontrol-function ecb-analyse-buffer-sync-delay
+                                         'ecb-analyse-buffer-sync)
   (switch-to-buffer ecb-analyse-buffer-name))
 
 (defun ecb-maximize-window-analyse ()
@@ -614,7 +609,9 @@ completions. This means that this node should be highlighted when mouse is
 moved over it."
   (or (equal ecb-analyse-nodedata-tag-with-pos
              (nth 1 (tree-node->data node)))
-      (= (tree-node->type node) ecb-analyse-nodetype-completions)))
+      (member (tree-node->type node)
+              (list ecb-analyse-nodetype-completions
+                    ecb-analyse-nodetype-localvars))))
 
 (defun ecb-analyse-create-menu (node)
   "Return a popup-menu suitable for NODE."
@@ -672,8 +669,6 @@ analyse-buffer."
    :frame ecb-frame
    :mouse-action-trigger ecb-tree-mouse-action-trigger
    :is-click-valid-fn 'ecb-interpret-mouse-click
-   ;; TODO: Klaus Berndl <klaus.berndl@sdm.de>: Maybe we should make own
-   ;; callbacks for analyse...
    :node-selected-fn 'ecb-tree-buffer-node-select-callback
    :node-expanded-fn 'ecb-tree-buffer-node-expand-callback
    :node-collapsed-fn 'ecb-tree-buffer-node-collapsed-callback
@@ -685,6 +680,9 @@ analyse-buffer."
    :menu-creator 'ecb-analyse-menu-creator
    :menu-titles (ecb-analyse-gen-menu-title-creator)
    :modeline-menu-creator 'ecb-common-tree-buffer-modeline-menu-creator
+   :sticky-parent-p ecb-tree-make-parent-node-sticky
+   :sticky-indent-string ecb-tree-stickynode-indent-string
+   :sticky-parent-fn nil
    :trunc-lines (ecb-member-of-symbol/value-list ecb-analyse-buffer-name
                                                  ecb-tree-truncate-lines)
    :read-only t

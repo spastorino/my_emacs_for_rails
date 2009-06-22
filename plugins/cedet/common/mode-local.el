@@ -7,7 +7,7 @@
 ;; Maintainer: David Ponce <david@dponce.com>
 ;; Created: 27 Apr 2004
 ;; Keywords: syntax
-;; X-RCS: $Id: mode-local.el,v 1.15 2009/01/09 22:58:30 zappo Exp $
+;; X-RCS: $Id: mode-local.el,v 1.16 2009/04/19 00:35:08 zappo Exp $
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -357,32 +357,48 @@ If MODE is not specified it defaults to current `major-mode'."
          table))
       (setq mode (get-mode-local-parent mode)))))
 
-(defmacro with-mode-local (mode &rest body)
-   "With the local bindings of MODE, evaluate BODY.
+(defmacro with-mode-local-symbol (mode &rest body)
+   "With the local bindings of MODE symbol, evaluate BODY.
 The current mode bindings are saved, BODY is evaluated, and the saved
 bindings are restored, even in case of an abnormal exit.
-Value is what BODY returns."
+Value is what BODY returns.
+This is like `with-mode-local', except that MODE's value is used.
+To use the symbol MODE (quoted), use `with-mode-local'."
    (let ((old-mode  (make-symbol "mode"))
          (old-locals (make-symbol "old-locals"))
+	 (new-mode (make-symbol "new-mode"))
          (local (make-symbol "local")))
      `(let ((,old-mode mode-local-active-mode)
-            (,old-locals nil))
+            (,old-locals nil)
+	    (,new-mode ,mode)
+	    )
         (unwind-protect
             (progn
               (deactivate-mode-local-bindings ,old-mode)
-              (setq mode-local-active-mode ',mode)
+              (setq mode-local-active-mode ,new-mode)
               ;; Save the previous value of buffer-local variables
               ;; changed by `activate-mode-local-bindings'.
-              (setq ,old-locals (activate-mode-local-bindings ',mode))
+              (setq ,old-locals (activate-mode-local-bindings ,new-mode))
               ,@body)
-          (deactivate-mode-local-bindings ',mode)
+          (deactivate-mode-local-bindings ,new-mode)
           ;; Restore the previous value of buffer-local variables.
           (dolist (,local ,old-locals)
             (set (car ,local) (cdr ,local)))
           ;; Restore the mode local variables.
           (setq mode-local-active-mode ,old-mode)
           (activate-mode-local-bindings ,old-mode)))))
+(put 'with-mode-local-symbol 'lisp-indent-function 1)
+
+(defmacro with-mode-local (mode &rest body)
+   "With the local bindings of MODE, evaluate BODY.
+The current mode bindings are saved, BODY is evaluated, and the saved
+bindings are restored, even in case of an abnormal exit.
+Value is what BODY returns.
+This lis like `with-mode-local-symbol', except that MODE is quoted
+and is note evaluated."
+   `(with-mode-local-symbol ',mode ,@body))
 (put 'with-mode-local 'lisp-indent-function 1)
+
 
 (defsubst mode-local-value (mode sym)
   "Return the value of the MODE local variable SYM."

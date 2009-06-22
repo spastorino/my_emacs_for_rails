@@ -7,7 +7,7 @@
 ;;;;;;  (18540 13339))
 ;;; Generated autoloads from cedet-autogen.el
 
-(autoload (quote cedet-update-autoloads) "cedet-autogen" "\
+(autoload 'cedet-update-autoloads "cedet-autogen" "\
 Update autoloads in file LOADDEFS from sources.
 Optional argument DIRECTORY, specifies the directory to scan for
 autoloads.  It defaults to the current directory.
@@ -23,13 +23,13 @@ exists.
 ;;;### (autoloads nil "cedet-compat" "cedet-compat.el" (18791 63972))
 ;;; Generated autoloads from cedet-compat.el
 
-(if (or (featurep (quote xemacs)) (inversion-test (quote emacs) "22.0")) (defalias (quote cedet-split-string) (quote cedet-split-string-1)) (defalias (quote cedet-split-string) (quote split-string)))
+(if (or (featurep 'xemacs) (inversion-test 'emacs "22.0")) (defalias 'cedet-split-string 'cedet-split-string-1) (defalias 'cedet-split-string 'split-string))
 
 ;;;***
 
 ;;;### (autoloads (cedet-cscope-version-check cedet-cscope-expand-filename
 ;;;;;;  cedet-cscope-search cedet-cscope-command) "cedet-cscope"
-;;;;;;  "cedet-cscope.el" (18855 29112))
+;;;;;;  "cedet-cscope.el" (18977 14036))
 ;;; Generated autoloads from cedet-cscope.el
 
 (defvar cedet-cscope-command "cscope" "\
@@ -68,9 +68,9 @@ return nil.
 ;;;### (autoloads nil "cedet-edebug" "cedet-edebug.el" (18411 2781))
 ;;; Generated autoloads from cedet-edebug.el
 
-(add-hook (quote edebug-setup-hook) (lambda nil (require (quote cedet-edebug)) (defalias (quote edebug-prin1-to-string) (quote cedet-edebug-prin1-to-string)) (define-key edebug-mode-map "A" (quote data-debug-edebug-expr))))
+(add-hook 'edebug-setup-hook (lambda nil (require 'cedet-edebug) (defalias 'edebug-prin1-to-string 'cedet-edebug-prin1-to-string) (define-key edebug-mode-map "A" 'data-debug-edebug-expr)))
 
-(add-hook (quote debugger-mode-hook) (lambda nil (require (quote cedet-edebug)) (define-key debugger-mode-map "A" (quote data-debug-edebug-expr))))
+(add-hook 'debugger-mode-hook (lambda nil (require 'cedet-edebug) (define-key debugger-mode-map "A" 'data-debug-edebug-expr)))
 
 ;;;***
 
@@ -78,7 +78,7 @@ return nil.
 ;;;;;;  (18826 9372))
 ;;; Generated autoloads from cedet-files.el
 
-(autoload (quote cedet-files-utest) "cedet-files" "\
+(autoload 'cedet-files-utest "cedet-files" "\
 Test out some file name conversions.
 
 \(fn)" t nil)
@@ -88,15 +88,15 @@ Test out some file name conversions.
 ;;;### (autoloads (cedet-gnu-global-version-check cedet-gnu-global-root
 ;;;;;;  cedet-gnu-global-show-root cedet-gnu-global-expand-filename
 ;;;;;;  cedet-gnu-global-search cedet-global-command) "cedet-global"
-;;;;;;  "cedet-global.el" (18797 12480))
+;;;;;;  "cedet-global.el" (18977 14083))
 ;;; Generated autoloads from cedet-global.el
 
 (defvar cedet-global-command "global" "\
 Command name for the GNU Global executable.")
 
-(custom-autoload (quote cedet-global-command) "cedet-global" t)
+(custom-autoload 'cedet-global-command "cedet-global" t)
 
-(autoload (quote cedet-gnu-global-search) "cedet-global" "\
+(autoload 'cedet-gnu-global-search "cedet-global" "\
 Perform a search with GNU Global, return the created buffer.
 SEARCHTEXT is text to find.
 TEXTTYPE is the type of text, such as 'regexp, 'string, 'tagname,
@@ -108,25 +108,25 @@ SCOPE is the scope of the search, such as 'project or 'subdirs.
 
 \(fn SEARCHTEXT TEXTTYPE TYPE SCOPE)" nil nil)
 
-(autoload (quote cedet-gnu-global-expand-filename) "cedet-global" "\
+(autoload 'cedet-gnu-global-expand-filename "cedet-global" "\
 Expand the FILENAME with GNU Global.
 Return a fully qualified filename.
 
 \(fn FILENAME)" t nil)
 
-(autoload (quote cedet-gnu-global-show-root) "cedet-global" "\
+(autoload 'cedet-gnu-global-show-root "cedet-global" "\
 Show the root of a GNU Global area under the current buffer.
 
 \(fn)" t nil)
 
-(autoload (quote cedet-gnu-global-root) "cedet-global" "\
+(autoload 'cedet-gnu-global-root "cedet-global" "\
 Return the root of any GNU Global scanned project.
 If a default starting DIR is not specified, the current buffer's
 `default-directory' is used.
 
 \(fn &optional DIR)" nil nil)
 
-(autoload (quote cedet-gnu-global-version-check) "cedet-global" "\
+(autoload 'cedet-gnu-global-version-check "cedet-global" "\
 Check the version of the installed GNU Global command.
 If optional programatic argument NOERROR is non-nil, then
 instead of throwing an error if Global isn't available, then
@@ -163,7 +163,7 @@ return nil.
 
 ;;;### (autoloads (cedet-idutils-version-check cedet-idutils-expand-filename
 ;;;;;;  cedet-idutils-token-command cedet-idutils-file-command) "cedet-idutils"
-;;;;;;  "cedet-idutils.el" (18851 8015))
+;;;;;;  "cedet-idutils.el" (18977 13753))
 ;;; Generated autoloads from cedet-idutils.el
 
 (defvar cedet-idutils-file-command "fnid" "\
@@ -193,7 +193,7 @@ return nil.
 ;;;***
 
 ;;;### (autoloads (cedet-utest-batch cedet-utest) "cedet-utests"
-;;;;;;  "cedet-utests.el" (18918 12118))
+;;;;;;  "cedet-utests.el" (18912 16091))
 ;;; Generated autoloads from cedet-utests.el
 
 (autoload 'cedet-utest "cedet-utests" "\
@@ -211,11 +211,11 @@ Run the CEDET unit test in BATCH mode.
 ;;;***
 
 ;;;### (autoloads (data-debug-eval-expression data-debug-edebug-expr
-;;;;;;  data-debug-new-buffer data-debug-mode data-debug-insert-thing
-;;;;;;  data-debug-insert-stuff-vector data-debug-insert-stuff-list
+;;;;;;  data-debug-show-stuff data-debug-new-buffer data-debug-mode
+;;;;;;  data-debug-insert-thing data-debug-insert-stuff-vector data-debug-insert-stuff-list
 ;;;;;;  data-debug-insert-widget-properties data-debug-insert-hash-table
 ;;;;;;  data-debug-insert-property-list) "data-debug" "data-debug.el"
-;;;;;;  (18918 12118))
+;;;;;;  (18923 20190))
 ;;; Generated autoloads from data-debug.el
 
 (autoload 'data-debug-insert-property-list "data-debug" "\
@@ -267,6 +267,11 @@ Create a new ddebug buffer with NAME.
 
 \(fn NAME)" nil nil)
 
+(autoload 'data-debug-show-stuff "data-debug" "\
+Data debug STUFF in a buffer named *NAME DDebug*.
+
+\(fn STUFF NAME)" nil nil)
+
 (autoload 'data-debug-edebug-expr "data-debug" "\
 Dump out the contets of some expression EXPR in edebug with ddebug.
 
@@ -284,7 +289,7 @@ If the result is a list or vector, then use the data debugger to display it.
 ;;;### (autoloads (define-fame-channel) "fame" "fame.el" (17213 39681))
 ;;; Generated autoloads from fame.el
 
-(autoload (quote define-fame-channel) "fame" "\
+(autoload 'define-fame-channel "fame" "\
 Define the new message channel CHANNEL.
 CHANNEL must be a non-nil symbol.
 The optional argument DEFAULT specifies the default value of message
@@ -304,7 +309,7 @@ messages to CHANNEL.
 
 ;;;### (autoloads (inversion-upgrade-package inversion-add-to-load-path
 ;;;;;;  inversion-find-version inversion-require-emacs inversion-require)
-;;;;;;  "inversion" "inversion.el" (18870 53996))
+;;;;;;  "inversion" "inversion.el" (18844 54499))
 ;;; Generated autoloads from inversion.el
 
 (autoload 'inversion-require "inversion" "\
@@ -356,10 +361,10 @@ Try to upgrade PACKAGE in DIRECTORY is available.
 ;;;***
 
 ;;;### (autoloads (mode-local-read-function) "mode-local" "mode-local.el"
-;;;;;;  (18791 54934))
+;;;;;;  (18922 29116))
 ;;; Generated autoloads from mode-local.el
 
-(autoload (quote mode-local-read-function) "mode-local" "\
+(autoload 'mode-local-read-function "mode-local" "\
 Interactively read in the name of a mode-local function.
 PROMPT, INITIAL, HIST, and DEFAULT are the same as for `completing-read'.
 
@@ -371,7 +376,7 @@ PROMPT, INITIAL, HIST, and DEFAULT are the same as for `completing-read'.
 ;;;;;;  "pprint.el" (17213 39693))
 ;;; Generated autoloads from pprint.el
 
-(autoload (quote pprint-to-string) "pprint" "\
+(autoload 'pprint-to-string "pprint" "\
 Return a string containing the pretty-printed representation of OBJECT.
 OBJECT can be any Lisp object.  Quoting characters are used as needed
 to make output that `read' can handle, whenever this is possible.  The
@@ -380,7 +385,7 @@ given WIDTH.  WIDTH value defaults to `fill-column'.
 
 \(fn OBJECT &optional WIDTH)" nil nil)
 
-(autoload (quote pprint) "pprint" "\
+(autoload 'pprint "pprint" "\
 Output the pretty-printed representation of OBJECT, any Lisp object.
 Quoting characters are printed as needed to make output that `read'
 can handle, whenever this is possible.  Output stream is STREAM, or
@@ -390,7 +395,7 @@ value defaults to `fill-column'.
 
 \(fn OBJECT &optional STREAM WIDTH)" nil nil)
 
-(autoload (quote pprint-function) "pprint" "\
+(autoload 'pprint-function "pprint" "\
 See a pretty-printed representation of FUNCTION-NAME.
 
 \(fn FUNCTION-NAME)" t nil)
@@ -400,7 +405,7 @@ See a pretty-printed representation of FUNCTION-NAME.
 ;;;### (autoloads (pulse-line-hook-function pulse-toggle-integration-advice
 ;;;;;;  pulse-momentary-highlight-region pulse-momentary-highlight-one-line
 ;;;;;;  pulse-momentary-highlight-overlay pulse-test pulse) "pulse"
-;;;;;;  "pulse.el" (18918 12118))
+;;;;;;  "pulse.el" (18900 47467))
 ;;; Generated autoloads from pulse.el
 
 (autoload 'pulse "pulse" "\
@@ -463,13 +468,15 @@ Only pulses the line if `pulse-command-advice-flag' is non-nil.
 ;;;***
 
 ;;;### (autoloads nil nil ("cedet-load.el" "cedet.el" "ezimage.el"
-;;;;;;  "sformat.el" "working.el") (18918 15180 284125))
+;;;;;;  "sformat.el" "working.el") (19005 62337 877437))
 
 ;;;***
 
+(provide 'cedet-loaddefs)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
+;; coding: utf-8
 ;; End:
 ;;; cedet-loaddefs.el ends here

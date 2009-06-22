@@ -3,7 +3,7 @@
 ;; Copyright (C) 2009 Eric M. Ludlam
 ;;
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: cedet-idutils.el,v 1.1 2009/02/23 22:12:31 zappo Exp $
+;; X-RCS: $Id: cedet-idutils.el,v 1.2 2009/05/30 13:33:45 zappo Exp $
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -136,11 +136,14 @@ This works by running lid on a bogus symbol, and looking for
 the error code."
   (save-excursion
     (let ((default-directory (or dir default-directory)))
-      (set-buffer (cedet-idutils-fnid-call '("moose")))
-      (goto-char (point-min))
-      (if (looking-at "[^ \n]*fnid: ")
-	  nil
-	t))))
+      (condition-case nil
+	  (progn
+	    (set-buffer (cedet-idutils-fnid-call '("moose")))
+	    (goto-char (point-min))
+	    (if (looking-at "[^ \n]*fnid: ")
+		nil
+	      t))
+	(error nil)))))
 
 ;;;###autoload
 (defun cedet-idutils-version-check (&optional noerror)
@@ -149,22 +152,29 @@ If optional programatic argument NOERROR is non-nil, then
 instead of throwing an error if Global isn't available, then
 return nil."
   (interactive)
-  (let ((b (cedet-idutils-fnid-call (list "--version")))
+  (let ((b (condition-case nil
+	       (cedet-idutils-fnid-call (list "--version"))
+	     (error nil)))
 	(rev nil))
-    (save-excursion
-      (set-buffer b)
-      (goto-char (point-min))
-      (re-search-forward "fnid - \\([0-9.]+\\)" nil t)
-      (setq rev (match-string 1))
-      (if (inversion-check-version rev nil cedet-idutils-min-version)
-	  (if noerror
-	      nil
-	    (error "Version of ID Utis is %s.  Need at least %s"
-		   rev cedet-idutils-min-version))
-	;; Else, return TRUE, as in good enough.
-	(when (interactive-p)
-	  (message "ID Utils %s  - Good enough for CEDET." rev))
-	t))))
+    (if (not b)
+	(progn
+	  (when (interactive-p)
+	    (message "ID Utils not found."))
+	  nil)
+      (save-excursion
+	(set-buffer b)
+	(goto-char (point-min))
+	(re-search-forward "fnid - \\([0-9.]+\\)" nil t)
+	(setq rev (match-string 1))
+	(if (inversion-check-version rev nil cedet-idutils-min-version)
+	    (if noerror
+		nil
+	      (error "Version of ID Utis is %s.  Need at least %s"
+		     rev cedet-idutils-min-version))
+	  ;; Else, return TRUE, as in good enough.
+	  (when (interactive-p)
+	    (message "ID Utils %s  - Good enough for CEDET." rev))
+	  t)))))
 
 
 (provide 'cedet-idutils)

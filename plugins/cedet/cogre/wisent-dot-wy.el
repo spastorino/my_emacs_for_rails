@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2003, 2004, 2009 Eric M. Ludlam
 
-;; Author:  <santiago@debian>
-;; Created: 2009-04-15 16:54:04-0300
+;; Author:  <santiago@localhost>
+;; Created: 2009-06-21 05:45:49-0300
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 

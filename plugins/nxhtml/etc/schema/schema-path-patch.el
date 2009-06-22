@@ -75,7 +75,7 @@
          (schema-relative-dir (file-relative-name schema-dir))
          (loader-string (concat "include \""
                                 schema-relative-dir
-                                "xhtml.rnc\"")))
+                                "xhtml.rnc\"\n")))
     (when loader-buf (kill-buffer loader-buf))
     (setq loader-buf (find-file-noselect loader-path))
     (with-current-buffer loader-buf

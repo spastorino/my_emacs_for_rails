@@ -69,6 +69,8 @@
 
 ;; 2009-01-11 Lennart Borgman
 ;;   - Minor code clean up.
+;; 2009-05-23 Lennart Borgman
+;;   - Let bound m1 and m2.
 
 ;;; Code:
 (eval-when-compile (require 'cl))
@@ -580,13 +582,14 @@ Returns a list of values in the range of 0 to 255.
 
 ;; Source: hsl
 (defun css-color-hsl-to-rgb-fractions (h s l)
-  (if (<= l 0.5)
-      (setq m2 (* l (+ s 1)))
-    (setq m2 (- (+ l s) (* l s))))
-  (setq m1 (- (* l 2) m2))
-  (values (css-color-hue-to-rgb m1 m2 (+ h (/ 1 3.0)))
-	  (css-color-hue-to-rgb m1 m2 h)
-	  (css-color-hue-to-rgb m1 m2 (- h (/ 1 3.0)))))
+  (let (m1 m2)
+    (if (<= l 0.5)
+	(setq m2 (* l (+ s 1)))
+      (setq m2 (- (+ l s) (* l s))))
+    (setq m1 (- (* l 2) m2))
+    (values (css-color-hue-to-rgb m1 m2 (+ h (/ 1 3.0)))
+	    (css-color-hue-to-rgb m1 m2 h)
+	    (css-color-hue-to-rgb m1 m2 (- h (/ 1 3.0))))))
 
 (defun css-color-hsl-to-rgb (h s l)
   (multiple-value-bind (r g b)
@@ -845,11 +848,11 @@ Return list of point and color-type."
  (defun css-color-string-name-to-hex (str)
   (let ((str (downcase str)))
     (cadr (assoc-if
-          (lambda (a)
-            (string=
-             (downcase a)
-             str))
-          css-color-html-colors))))
+	   (lambda (a)
+	     (string=
+	      (downcase a)
+	      str))
+	   css-color-html-colors))))
  (defun css-color-string-rgb-to-hex (str)
  (save-match-data
     (string-match css-color-rgb-re str)

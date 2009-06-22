@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: project, make
-;; RCS: $Id: ede-pmake.el,v 1.56 2009/03/12 22:38:21 zappo Exp $
+;; RCS: $Id: ede-pmake.el,v 1.57 2009/04/30 01:16:06 zappo Exp $
 
 ;; This software is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -285,55 +285,55 @@ Use CONFIGURATION as the current configuration to query."
 
 NOTE: Not yet in use!  This is part of an SRecode conversion of
       EDE that is in progress."
-  (let ((conf-table (ede-proj-makefile-configuration-variables
-		     this (oref this configuration-default)))
-	(conf-done nil))
-
-    (ede-srecode-insert-with-dictionary
-     "declaration:ede-vars"
-
-     ;; Insert all variables, and augment them with details from
-     ;; the current configuration.
-     (mapc (lambda (c)
-
-	     (let ((ldict (srecode-dictionary-add-section-dictionary
-			   dict "VARIABLE"))
-		   )
-	       (srecode-dictionary-set-value ldict "NAME" (car c))
-	       (if (assoc (car c) conf-table)
-		   (let ((vdict (srecode-dictionary-add-section-dictionary
-				 ldict "VALUE")))
-		     (srecode-dictionary-set-value 
-		      vdict "VAL" (cdr (assoc (car c) conf-table)))
-		     (setq conf-done (cons (car c) conf-done))))
-	       (let ((vdict (srecode-dictionary-add-section-dictionary
-			     ldict "VALUE")))
-		 (srecode-dictionary-set-value vdict "VAL" (cdr c))))
-	     )
-
-	   (oref this variables))
-
-     ;; Add in all variables from the configuration not allready covered.
-     (mapc (lambda (c)
-
-	     (if (member (car c) conf-done)
-		 nil
-	       (let* ((ldict (srecode-dictionary-add-section-dictionary
-			      dict "VARIABLE"))
-		      (vdict (srecode-dictionary-add-section-dictionary
-			      ldict "VALUE"))
-		      )
-		 (srecode-dictionary-set-value ldict "NAME" (car c))
-		 (srecode-dictionary-set-value vdict "VAL" (cdr c))))
-	     )
-
-	   conf-table)
-
+;  (let ((conf-table (ede-proj-makefile-configuration-variables
+;		     this (oref this configuration-default)))
+;	(conf-done nil))
+;
+;    (ede-srecode-insert-with-dictionary
+;     "declaration:ede-vars"
+;
+;     ;; Insert all variables, and augment them with details from
+;     ;; the current configuration.
+;     (mapc (lambda (c)
+;
+;	     (let ((ldict (srecode-dictionary-add-section-dictionary
+;			   dict "VARIABLE"))
+;		   )
+;	       (srecode-dictionary-set-value ldict "NAME" (car c))
+;	       (if (assoc (car c) conf-table)
+;		   (let ((vdict (srecode-dictionary-add-section-dictionary
+;				 ldict "VALUE")))
+;		     (srecode-dictionary-set-value 
+;		      vdict "VAL" (cdr (assoc (car c) conf-table)))
+;		     (setq conf-done (cons (car c) conf-done))))
+;	       (let ((vdict (srecode-dictionary-add-section-dictionary
+;			     ldict "VALUE")))
+;		 (srecode-dictionary-set-value vdict "VAL" (cdr c))))
+;	     )
+;
+;	   (oref this variables))
+;
+;     ;; Add in all variables from the configuration not allready covered.
+;     (mapc (lambda (c)
+;
+;	     (if (member (car c) conf-done)
+;		 nil
+;	       (let* ((ldict (srecode-dictionary-add-section-dictionary
+;			      dict "VARIABLE"))
+;		      (vdict (srecode-dictionary-add-section-dictionary
+;			      ldict "VALUE"))
+;		      )
+;		 (srecode-dictionary-set-value ldict "NAME" (car c))
+;		 (srecode-dictionary-set-value vdict "VAL" (cdr c))))
+;	     )
+;
+;	   conf-table)
+;
      
      ;; @TODO - finish off this function, and replace the below fcn
 
-     )
-  ))
+;     ))
+  )
 
 (defmethod ede-proj-makefile-insert-variables ((this ede-proj-project))
   "Insert variables needed by target THIS."
@@ -589,7 +589,9 @@ Argument THIS is the target that should insert stuff."
   "Insert the commands needed by target THIS.
 For targets, insert the commands needed by the chosen compiler."
   (mapc 'ede-proj-makefile-insert-commands (ede-proj-compilers this))
-  (mapc 'ede-proj-makefile-insert-commands (ede-proj-linkers this)))
+  (when (object-assoc t :uselinker (ede-proj-compilers this))
+    (mapc 'ede-proj-makefile-insert-commands (ede-proj-linkers this))))
+
 
 (defmethod ede-proj-makefile-insert-user-rules ((this ede-proj-project))
   "Insert user specified rules needed by THIS target.

@@ -1,10 +1,11 @@
+(setq message-log-max t)
 (setq debug-on-error t)
 ;;; autostart.el --- Load nxhtml
 ;;
 ;; Author: By: Lennart Borgman
-;; Created: Fri Dec 15 10:22:41 2006
+;; Created: Fri Dec 15 2006
 ;; Version:
-;; Last-Updated: 2009-01-06 Tue
+;; Last-Updated: 2009-04-30 Thu
 ;; Keywords:
 ;; Compatibility:
 ;;
@@ -41,16 +42,17 @@
 ;;; Code:
 
 (message "Nxml/Nxhtml Autostart.el loading ...")
+(defconst nxhtml-load-time-start (float-time))
 
-(defvar nxhtml-install-dir
+(defconst nxhtml-install-dir
   (file-name-directory (or load-file-name
                            (when (boundp 'bytecomp-filename) bytecomp-filename)
                            buffer-file-name))
   "Installation directory for nXhtml.")
-(setq nxhtml-install-dir (file-name-directory
-                          (or load-file-name
-                              (when (boundp 'bytecomp-filename) bytecomp-filename)
-                              buffer-file-name)))
+;; (setq nxhtml-install-dir (file-name-directory
+;;                           (or load-file-name
+;;                               (when (boundp 'bytecomp-filename) bytecomp-filename)
+;;                               buffer-file-name)))
 
 ;; (defun nxhtml-custom-load-and-get-value (symbol)
 ;;   (custom-load-symbol symbol)
@@ -126,6 +128,16 @@
   ;; Provide the feature here to avoid loading looping on error.
   (provide 'nxhtml-autostart)
 
+  (if (< emacs-major-version 23)
+      (load (expand-file-name "autostart22" nxhtml-install-dir))
+    ;; Check that the nxml-mode included with Emacs is used. There
+    ;; has been some problems on Debian with this.
+    (let ((nxml-mode-file (locate-library "nxml-mode"))
+          (help-file      (locate-library "help")))
+      (unless (string= (expand-file-name ".." help-file)
+                       (expand-file-name "../.." nxml-mode-file))
+        (error "Wrong nxml-mode=%s used, please use the one that comes with Emacs" nxml-mode-file))))
+
   (let* ((util-dir (file-name-as-directory (expand-file-name "util" nxhtml-install-dir)))
          (related-dir (file-name-as-directory (expand-file-name "related" nxhtml-install-dir)))
          (nxhtml-dir (file-name-as-directory (expand-file-name "nxhtml" nxhtml-install-dir))))
@@ -134,31 +146,36 @@
     (add-to-list 'load-path util-dir)
     (add-to-list 'load-path nxhtml-install-dir)
 
+    (message "... nXhtml loading %.1f seconds elapsed ..." (- (float-time) nxhtml-load-time-start))
+
     ;; Autoloading etc
 
     ;; Fix-me: Why must as-external be loaded? Why doesn't it work in batch?
     ;;(unless noninteractive (require 'as-external))
 
     (load (expand-file-name "nxhtml-loaddefs" nxhtml-install-dir))
+    (message "... nXhtml loading %.1f seconds elapsed ..." (- (float-time) nxhtml-load-time-start))
 
     ;; Turn on `nxhtml-global-minor-mode' unconditionally
     (nxhtml-global-minor-mode 1)
-
-    (when (< emacs-major-version 23)
-      (load (expand-file-name "autostart22" nxhtml-install-dir)))
+    (message "... nXhtml loading %.1f seconds elapsed ..." (- (float-time) nxhtml-load-time-start))
 
     ;; Patch the rnc include paths
     (when (fboundp 'nxml-mode)
       (load (expand-file-name "etc/schema/schema-path-patch"
                               nxhtml-install-dir))
       (rncpp-patch-xhtml-loader))
+    (message "... nXhtml loading %.1f seconds elapsed ..." (- (float-time) nxhtml-load-time-start))
 
     ;; Load nXhtml
-    (load (expand-file-name "nxhtml/nxhtml-autoload"
-                            nxhtml-install-dir)))
+    (load (expand-file-name "nxhtml/nxhtml-autoload" nxhtml-install-dir)))
+    (message "... nXhtml loading %.1f seconds elapsed ..." (- (float-time) nxhtml-load-time-start))
 
   ;; Tell what have been loaded of nXhtml:
   (nxhtml-list-loaded-features)
+
+  ;; How long time did it all take?
+  (message "Nxml/Nxhtml Autostart.el loaded in %.1f seconds" (- (float-time) nxhtml-load-time-start))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

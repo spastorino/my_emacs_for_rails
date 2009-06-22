@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: syntax
-;; X-RCS: $Id: semantic-idle.el,v 1.54 2009/04/01 04:48:35 zappo Exp $
+;; X-RCS: $Id: semantic-idle.el,v 1.55 2009/04/24 02:18:46 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -287,16 +287,16 @@ And also manages services that depend on tag values."
 	;; safe to do, because we have marked the buffer unparseable
 	;; if there was a problem.
 	;;(when safe
-          (save-excursion
-            (dolist (service semantic-idle-scheduler-queue)
-              (semantic-throw-on-input 'idle-queue)
-	      (when semantic-idle-scheduler-verbose-flag
-		(working-temp-message "IDLE: execture service %s..." service))
-	      (semantic-safe (format "Idle Service Error %s: %%S" service)
-		(funcall service))
-	      (when semantic-idle-scheduler-verbose-flag
-		(working-temp-message "IDLE: execture service %s...done" service))
-	      )))
+	(dolist (service semantic-idle-scheduler-queue)
+	  (save-excursion
+	    (semantic-throw-on-input 'idle-queue)
+	    (when semantic-idle-scheduler-verbose-flag
+	      (working-temp-message "IDLE: execture service %s..." service))
+	    (semantic-safe (format "Idle Service Error %s: %%S" service)
+	      (funcall service))
+	    (when semantic-idle-scheduler-verbose-flag
+	      (working-temp-message "IDLE: execture service %s...done" service))
+	    )))
 	;;)
       ;; Finally loop over remaining buffers, trying to update them as
       ;; well.  Stop on keypress.
@@ -893,7 +893,7 @@ visible, then highlight it."
     nil))
 
 (define-semantic-idle-service semantic-idle-tag-highlight
-  "Highlight the tag, and references of the sumbol under point.
+  "Highlight the tag, and references of the symbol under point.
 Call `semantic-analyze-current-context' to find the reference tag.
 Call `semantic-symref-hits-in-region' to identify local references."
   (when (semantic-idle-summary-useful-context-p)

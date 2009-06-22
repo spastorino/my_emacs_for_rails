@@ -2,17 +2,17 @@
 ;;
 ;; Author: Lennart Borgman (lennart O borgman A gmail O com)
 ;; Created: 2008-02-19T17:52:56+0100 Tue
-;; Version: 0.58
-;; Last-Updated: 2009-02-22 Sun
+;; Version: 0.59
+;; Last-Updated: 2009-05-23 Sat
 ;; URL:
 ;; Keywords:
 ;; Compatibility:
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `cl', `easymenu', `font-lock', `noutline', `org', `org-compat',
-;; `org-faces', `org-list', `org-macs', `outline', `syntax',
-;; `time-date', `xml'.
+  ;; `easymenu', `font-lock', `noutline', `org', `org-compat',
+  ;; `org-faces', `org-footnote', `org-list', `org-macs',
+  ;; `org-panel', `outline', `syntax', `time-date', `xml'.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -89,6 +89,53 @@
 ;;   "Background color of child nodes."
 ;;   :type 'color
 ;;   :group 'freemind)
+
+(defvar freemind-node-style nil "Internal use.")
+
+(defcustom freemind-node-styles nil
+  "Styles to apply to node.
+NOT READY YET."
+  :type '(repeat
+          (list :tag "Node styles for file"
+                (regexp :tag "File name")
+                (repeat
+                 (list :tag "Node"
+                       (regexp :tag "Node name regexp")
+                       (set :tag "Node properties"
+                            (list :format "%v" (const :format "" node-style)
+                                  (choice :tag "Style"
+                                          :value bubble
+                                          (const bubble)
+                                          (const fork)))
+                            (list :format "%v" (const :format "" color)
+                                  (color :tag "Color" :value "red"))
+                            (list :format "%v" (const :format "" background-color)
+                                  (color :tag "Background color" :value "yellow"))
+                            (list :format "%v" (const :format "" edge-color)
+                                  (color :tag "Edge color" :value "green"))
+                            (list :format "%v" (const :format "" edge-style)
+                                  (choice :tag "Edge style" :value bezier
+                                          (const :tag "Linear" linear)
+                                          (const :tag "Bezier" bezier)
+                                          (const :tag "Sharp Linear" sharp-linear)
+                                          (const :tag "Sharp Bezier" sharp-bezier)))
+                            (list :format "%v" (const :format "" edge-width)
+                                  (choice :tag "Edge width" :value thin
+                                          (const :tag "Parent" parent)
+                                          (const :tag "Thin" thin)
+                                          (const 1)
+                                          (const 2)
+                                          (const 4)
+                                          (const 8)))
+                            (list :format "%v" (const :format "" italic)
+                                  (const :tag "Italic font" t))
+                            (list :format "%v" (const :format "" bold)
+                                  (const :tag "Bold font" t))
+                            (list :format "%v" (const :format "" font-name)
+                                  (string :tag "Font name" :value "SansSerif"))
+                            (list :format "%v" (const :format "" font-size)
+                                  (integer :tag "Font size" :value 12)))))))
+  :group 'freemind)
 
 
 ;;;###autoload
@@ -297,7 +344,7 @@
                         )))
       (list node-res note-res))))
 
-(defun freemind-write-node ()
+(defun freemind-write-node (this-m2 this-node-end)
   (let* (this-icons
          this-bg-color
          this-m2-escaped
@@ -367,15 +414,21 @@
   (if (file-exists-p file)
       (if interactively
           (y-or-n-p (format "File %s exists, replace it? " file))
-        (error "File %s already exists" mm-file))
+        (error "File %s already exists" file))
     t))
+
+(defvar freemind-node-pattern (rx bol
+                         (submatch (1+ "*"))
+                         (1+ space)
+                         (submatch (*? nonl))
+                         eol))
 
 (defun freemind-look-for-visible-child (node-level)
   (save-excursion
     (save-match-data
       (let ((found-visible-child nil))
         (while (and (not found-visible-child)
-                    (re-search-forward node-pattern nil t))
+                    (re-search-forward freemind-node-pattern nil t))
           (let* ((m1 (match-string-no-properties 1))
                  (level (length m1)))
             (if (>= node-level level)
@@ -394,11 +447,6 @@
     (save-match-data
       (let* ((drawers (copy-sequence org-drawers))
              drawers-regexp
-             (node-pattern (rx bol
-                               (submatch (1+ "*"))
-                               (1+ space)
-                               (submatch (*? nonl))
-                               eol))
              (num-top1-nodes 0)
              (num-top2-nodes 0)
              num-left-nodes
@@ -439,13 +487,13 @@
               ;; Get number of top nodes and last line for this node
               (progn
                 (goto-line node-at-line)
-                (unless (looking-at node-pattern)
+                (unless (looking-at freemind-node-pattern)
                   (error "No node at line %s" node-at-line))
                 (setq node-at-line-level (length (match-string-no-properties 1)))
                 (forward-line)
                 (setq node-at-line-last
                       (catch 'last-line
-                        (while (re-search-forward node-pattern nil t)
+                        (while (re-search-forward freemind-node-pattern nil t)
                           (let* ((m1 (match-string-no-properties 1))
                                  (level (length m1)))
                             (if (<= level node-at-line-level)
@@ -460,7 +508,7 @@
 
             ;; First get number of top nodes
             (goto-char (point-min))
-            (while (re-search-forward node-pattern nil t)
+            (while (re-search-forward freemind-node-pattern nil t)
               (let* ((m1 (match-string-no-properties 1))
                      (level (length m1)))
                 (if (= level 1)
@@ -500,7 +548,7 @@
                 next-has-some-visible-child
                 next-children-visible)
             (while (and
-                    (re-search-forward node-pattern nil t)
+                    (re-search-forward freemind-node-pattern nil t)
                     (if node-at-line-last (<= (point) node-at-line-last) t)
                     )
               (let* ((next-m1 (match-string-no-properties 1))
@@ -520,7 +568,7 @@
                       (if next-children-visible t
                         (freemind-look-for-visible-child next-level)))
                 (when this-m2
-                  (freemind-write-node))
+                  (freemind-write-node this-m2 this-node-end))
                 (when (if (= num-top1-nodes 1) (> current-level base-level) t)
                   (while (>= current-level next-level)
                     (with-current-buffer mm-buffer
@@ -542,7 +590,7 @@
               (setq next-node-start (if node-at-line-last
                                         (1+ node-at-line-last)
                                       (point-max)))
-              (freemind-write-node)
+              (freemind-write-node this-m2 this-node-end)
               (with-current-buffer mm-buffer (insert "</node>\n"))
               ;)
             )
@@ -555,53 +603,6 @@
             (delete-trailing-whitespace)
             (goto-char (point-min))
             ))))))
-
-(defvar freemind-node-style nil "Internal use.")
-
-(defcustom freemind-node-styles nil
-  "Styles to apply to node.
-NOT READY YET."
-  :type '(repeat
-          (list :tag "Node styles for file"
-                (regexp :tag "File name")
-                (repeat
-                 (list :tag "Node"
-                       (regexp :tag "Node name regexp")
-                       (set :tag "Node properties"
-                            (list :format "%v" (const :format "" node-style)
-                                  (choice :tag "Style"
-                                          :value bubble
-                                          (const bubble)
-                                          (const fork)))
-                            (list :format "%v" (const :format "" color)
-                                  (color :tag "Color" :value "red"))
-                            (list :format "%v" (const :format "" background-color)
-                                  (color :tag "Background color" :value "yellow"))
-                            (list :format "%v" (const :format "" edge-color)
-                                  (color :tag "Edge color" :value "green"))
-                            (list :format "%v" (const :format "" edge-style)
-                                  (choice :tag "Edge style" :value bezier
-                                          (const :tag "Linear" linear)
-                                          (const :tag "Bezier" bezier)
-                                          (const :tag "Sharp Linear" sharp-linear)
-                                          (const :tag "Sharp Bezier" sharp-bezier)))
-                            (list :format "%v" (const :format "" edge-width)
-                                  (choice :tag "Edge width" :value thin
-                                          (const :tag "Parent" parent)
-                                          (const :tag "Thin" thin)
-                                          (const 1)
-                                          (const 2)
-                                          (const 4)
-                                          (const 8)))
-                            (list :format "%v" (const :format "" italic)
-                                  (const :tag "Italic font" t))
-                            (list :format "%v" (const :format "" bold)
-                                  (const :tag "Bold font" t))
-                            (list :format "%v" (const :format "" font-name)
-                                  (string :tag "Font name" :value "SansSerif"))
-                            (list :format "%v" (const :format "" font-size)
-                                  (integer :tag "Font size" :value 12)))))))
-  :group 'freemind)
 
 (defun freemind-get-node-style (node-name)
   "NOT READY YET."
@@ -622,12 +623,12 @@ NOT READY YET."
 
 (defun freemind-do-apply-node-style (style-list)
   (message "style-list=%S" style-list)
-  (let ((node-style fork)
-        (color red)
-        (background-color yellow)
-        (edge-color green)
-        (edge-style bezier)
-        (edge-width thin)
+  (let ((node-style 'fork)
+        (color "red")
+        (background-color "yellow")
+        (edge-color "green")
+        (edge-style 'bezier)
+        (edge-width 'thin)
         (italic t)
         (bold t)
         (font-name "SansSerif")

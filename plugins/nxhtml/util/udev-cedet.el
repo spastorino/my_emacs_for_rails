@@ -20,6 +20,8 @@
 ;;
 ;; See `udev-cedet-update' for more information.
 ;;
+;; TODO: http://cedet.sourceforge.net/setup.shtml
+;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;; Change log:

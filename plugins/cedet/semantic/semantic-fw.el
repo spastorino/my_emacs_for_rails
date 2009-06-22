@@ -2,7 +2,7 @@
 
 ;;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Eric M. Ludlam
 
-;; X-CVS: $Id: semantic-fw.el,v 1.75 2009/03/08 16:17:11 zappo Exp $
+;; X-CVS: $Id: semantic-fw.el,v 1.77 2009/05/16 11:45:33 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -38,6 +38,7 @@
 ;;
 (if (featurep 'xemacs)
     (progn
+      (defalias 'semantic-buffer-local-value 'symbol-value-in-buffer)
       (defalias 'semantic-overlay-live-p
         (lambda (o)
           (and (extent-live-p o)
@@ -90,6 +91,8 @@
 	;; Wait...
 	(while (popup-up-p) (dispatch-event (next-event))))
       )
+  ;; Emacs Bindings
+  (defalias 'semantic-buffer-local-value      'buffer-local-value) 
   (defalias 'semantic-overlay-live-p          'overlay-buffer)
   (defalias 'semantic-make-overlay            'make-overlay)
   (defalias 'semantic-overlay-put             'overlay-put)
@@ -425,7 +428,7 @@ calling this one."
   "Call `find-file-noselect' with various features turned off.
 Use this when referencing a file that will be soon deleted.
 FILE, NOWARN, RAWFILE, and WILDCARDS are passed into `find-file-noselect'"
-  (let* ((recentf-exclude '(ignore))
+  (let* ((recentf-exclude '( (lambda (f) t) ))
 	 ;; This is a brave statement.  Don't waste time loading in
 	 ;; lots of modes.  Especially decoration mode can waste a lot
 	 ;; of time for a buffer we intend to kill.

@@ -193,10 +193,12 @@ Return the value of calling the command, ie
 
 Run the hook `ert-simulate-command-post-hook' at the very end."
 
+  (message "command=%s" command)
   (ert-should (listp command))
   (ert-should (commandp (car command)))
   (ert-should (not unread-command-events))
-  (let (return-value)
+  (let (return-value
+        (font-lock-mode t))
     ;; For the order of things here see command_loop_1 in keyboard.c
     ;;
     ;; The command loop will reset the command related variables so
@@ -210,6 +212,7 @@ Run the hook `ert-simulate-command-post-hook' at the very end."
                            this-original-command))
     (run-hooks 'pre-command-hook)
     (setq return-value (apply (car command) (cdr command))) ;; <-----
+    (message "post-command-hook=%s" post-command-hook)
     (run-hooks 'post-command-hook)
     (when deferred-action-list
       (run-hooks 'deferred_action_function))

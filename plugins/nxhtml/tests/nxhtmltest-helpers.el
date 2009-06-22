@@ -48,7 +48,7 @@
 (require 'ert2)
 
 (defun nxhtmltest-mumamo-error-messages ()
-  (ert-get-messages "^MuMaMo error"))
+  (ert-get-messages "^MU:MuMaMo error"))
 
 (defun nxhtmltest-should-no-mumamo-errors ()
   (ert-should (not (nxhtmltest-mumamo-error-messages))))

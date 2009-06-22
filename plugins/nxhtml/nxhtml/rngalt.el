@@ -234,12 +234,19 @@ Do you want to add a fictive XHTML validation header? ")
 
 (defun rngalt-validate ()
   (unless (= (buffer-size) 0)
-    (condition-case err
-        (while (rng-do-some-validation) nil)
-      (error
-       ;; FIX-ME: for debugging:
-       ;;(lwarn 'rngalt-validate :error "%s" (error-message-string err))
-       nil))
+    (let ((while-n1 0)
+          (maxn1 20))
+      (condition-case err
+          (while (and (> maxn1 (setq while-n1 (1+ while-n1)))
+                      (rng-do-some-validation))
+            nil)
+        (error
+         ;; FIX-ME: for debugging:
+         ;;(lwarn 'rngalt-validate :error "%s" (error-message-string err))
+         (message "rngalt-validate: %s" (error-message-string err))
+         nil))
+      (when (>= while-n1 maxn1)
+        (error "rngalt-validate: Could not validate")))
     (rng-validate-done)))
 
 (defvar rngalt-region-ovl nil)
@@ -426,7 +433,8 @@ available from table then this is called instead of
 `compleating-read' with the same parameters."
   (let* ((orig (buffer-substring-no-properties start (point)))
          (completion (try-completion orig table predicate))
-         (completing-fun (if altcompl altcompl 'completing-read)))
+         (completing-fun (if altcompl altcompl 'completing-read))
+         (completion-ignore-case t))
     (cond ((not (or completion completing-fun))
            (if (string= orig "")
                (message "No completions available")

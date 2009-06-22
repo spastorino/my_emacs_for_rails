@@ -26,7 +26,7 @@
 # GNU Emacs; see the file COPYING.  If not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-# $Id: Makefile,v 1.112 2009/03/16 08:41:23 berndl Exp $
+# $Id: Makefile,v 1.115 2009/06/09 10:39:47 berndl Exp $
 
 
 # ========================================================================
@@ -45,35 +45,10 @@ EMACS=emacs
 
 # -------- Compiling ECB with the cedet-library 1.0 ----------------------
 
-# cedet 1.0 (contains a.o. semantic 2.0, eieio 0.18 and speedbar 0.15). If
-# you want compile ECB with the cedet library then set here the full path
-# to the cedet-installation directory. If you do not want using the
-# cedet-suite but separate semantic-, eieio- and speedbar-pathes set this
-# variable to empty.
+# cedet >= 1.0 (contains a.o. semantic >= 2.0, eieio >= 0.18 and speedbar
+# >= 0.15). Set here the full path to the cedet-installation directory.
 
-#CEDET=
 CEDET=c:/Programme/emacs-22.3/site-lisp/package-development/cedet
-#CEDET=c:/Programme/emacs-21/site-lisp/multi-file-packages/cedet-1.0beta3b
-
-# -------- Compiling ECB with the semantic < 2.0 -------------------------
-
-# If you do not want compiling ECB with the cedet1.0-library then do not
-# set CEDET above!
-
-# If semantic, eieio and speedbar are added to load-path within some
-# Elisp-statements in the Emacs initialization-files (e.g. .emacs or
-# site-start.el) then set here again the load-path of the semantic-version,
-# the eieio-version and the speedbar-version loaded into your Emacs. Make
-# sure you compile ECB with the semantic-, eieio- and speedbar-version you
-# load into Emacs!
-
-# If you are using XEmacs with already installed XEmacs-packages for
-# semantic, eieio and speedbar or if you are using a file subdirs.el with
-# GNU Emacs which adds semantic, eieio and speedbar then there is NO need
-# to set the load-path for semantic, eieio or speedbar.
-SEMANTIC=
-EIEIO=
-SPEEDBAR=
 
 # You can set here more load-paths to arbitrary packages if you want. But
 # this is really not necessary!
@@ -87,12 +62,7 @@ LOADPATH=
 #
 #      or
 #
-#      make CEDET="path/to/cedet"           (for compiling with cedet 1.0)
-#
-#      or
-#
-#      make SEMANTIC="path/to/semantic" EIEIO="path/to/eieio" \
-#           SPEEDBAR="path/to/speedbar "EMACS="path/to/emacs"
+#      make CEDET="path/to/cedet"
 #
 #   if you want to set either different load-paths or Emacs-binary and
 #   you do not want edit the Makefile. Do not forget quoting the arguments
@@ -130,7 +100,7 @@ PS2PDF=/C/home/bin/ps2pdf
 
 # Set here the path of the info subdirectory of your (X)Emacs installation
 # which contains the dir file.
-EMACSINFOPATH=/C/Programme/emacs-22.1/info
+EMACSINFOPATH=/C/Programme/emacs-22.3/info
 
 # If you want to install the info-format of the online-help in the
 # Top-directory of the info-directory of (X)Emacs (see above EMACSINFOPATH)
@@ -142,13 +112,17 @@ INSTALLINFO=/usr/bin/install-info
 # end of user configurable section
 # ========================================================================
 
-# Do not change anything below!
 
-# $Id: Makefile,v 1.112 2009/03/16 08:41:23 berndl Exp $
+# ========================================================================
+# !!!!!!!!!!!!!!!!!!!!! Do not change anything below !!!!!!!!!!!!!!!!!!!!!
+# ========================================================================
+
+
+# $Id: Makefile,v 1.115 2009/06/09 10:39:47 berndl Exp $
 
 # For the ECB-maintainers: Change the version-number here and not
 # elsewhere!
-ecb_VERSION=2.33beta2
+ecb_VERSION=2.41
 #ecb_VERSION=2.32
 
 include ecb-makedef.mk
@@ -159,16 +133,6 @@ ecb: $(ecb_LISP_EL)
 	@echo "(add-to-list 'load-path nil)" > ecb-compile-script
 	@if test ! -z "${CEDET}"; then\
 	   echo "(load-file \"$(CEDET)/common/cedet.el\")" >> ecb-compile-script; \
-	else \
-	   if test ! -z "${SEMANTIC}"; then\
-	      echo "(add-to-list 'load-path \"$(SEMANTIC)\")" >> ecb-compile-script; \
-	   fi; \
-	   if test ! -z "${EIEIO}"; then\
-	      echo "(add-to-list 'load-path \"$(EIEIO)\")" >> ecb-compile-script; \
-	   fi; \
-	   if test ! -z "${SPEEDBAR}"; then\
-	      echo "(add-to-list 'load-path \"$(SPEEDBAR)\")" >> ecb-compile-script; \
-	   fi; \
 	fi
 	@if test ! -z "${LOADPATH}"; then\
 	   for loadpath in ${LOADPATH}; do \
@@ -179,7 +143,6 @@ ecb: $(ecb_LISP_EL)
 	@echo "(setq debug-on-error t)" >> ecb-compile-script
 	$(EBATCH) -l ecb-compile-script --eval '(ecb-byte-compile t)'
 	@$(RM) ecb-compile-script
-
 
 all: ecb online-help
 

@@ -3,7 +3,7 @@
 ;;; Copyright (C) 2003, 2004, 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
-;; X-RCS: $Id: semantic-utest.el,v 1.11 2009/03/01 04:39:11 zappo Exp $
+;; X-RCS: $Id: semantic-utest.el,v 1.14 2009/05/08 13:11:19 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -31,6 +31,15 @@
 
 (require 'cedet-utests)
 (require 'semantic)
+
+(defvar semantic-utest-temp-directory (if (fboundp 'temp-directory)
+					  (temp-directory)
+					temporary-file-directory)
+  "Temporary directory to use when creating files.")
+
+(defun semantic-utest-fname (name)
+  "Create a filename for NAME in /tmp."
+  (expand-file-name name semantic-utest-temp-directory))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Data for C tests
@@ -87,8 +96,7 @@ int calc_sv(int);
 "
   "Contents of a C header file buffer initialized by this unit test.")
 
-
-(defvar semantic-utest-C-filename "/tmp/sutest.c"
+(defvar semantic-utest-C-filename (semantic-utest-fname "sutest.c")
   "File to open and erase during this test for C.")
 
 (defvar semantic-utest-C-filename-h 
@@ -478,6 +486,7 @@ Pre-fill the buffer with CONTENTS."
     (set-buffer buff)
     (setq buffer-offer-save nil)
     (font-lock-mode -1) ;; Font lock has issues in Emacs 23
+    (toggle-read-only -1) ;; In case /tmp doesn't exist.
     (erase-buffer)
     (insert contents)
     ;(semantic-fetch-tags) ;JAVE could this go here?
@@ -569,7 +578,7 @@ INSERTME is the text to be inserted after the deletion."
 (defun semantic-utest-Python()
   (interactive)
   (if (fboundp 'python-mode)
-      (semantic-utest-generic "Python" "/tmp/pytest.py" semantic-utest-Python-buffer-contents  semantic-utest-Python-name-contents   '("fun2") "#1" "#deleted line")
+      (semantic-utest-generic "Python" (semantic-utest-fname "pytest.py") semantic-utest-Python-buffer-contents  semantic-utest-Python-name-contents   '("fun2") "#1" "#deleted line")
     (message "Skilling Python test: NO major mode."))
   )
 
@@ -577,7 +586,7 @@ INSERTME is the text to be inserted after the deletion."
 (defun semantic-utest-Javascript()
   (interactive)
   (if (fboundp 'javascript-mode)
-      (semantic-utest-generic "Javascript" "/tmp/javascripttest.js" semantic-utest-Javascript-buffer-contents  semantic-utest-Javascript-name-contents   '("fun2") "//1" "//deleted line")
+      (semantic-utest-generic "Javascript" (semantic-utest-fname "javascripttest.js") semantic-utest-Javascript-buffer-contents  semantic-utest-Javascript-name-contents   '("fun2") "//1" "//deleted line")
     (message "Skipping JavaScript test: NO major mode."))
   )
 
@@ -586,17 +595,17 @@ INSERTME is the text to be inserted after the deletion."
   ;; If JDE is installed, it might mess things up depending on the version
   ;; that was installed.
   (let ((auto-mode-alist  '(("\\.java\\'" . java-mode))))
-    (semantic-utest-generic "Java" "/tmp/JavaTest.java" semantic-utest-Java-buffer-contents  semantic-utest-Java-name-contents   '("fun2") "//1" "//deleted line")
+    (semantic-utest-generic "Java" (semantic-utest-fname "JavaTest.java") semantic-utest-Java-buffer-contents  semantic-utest-Java-name-contents   '("fun2") "//1" "//deleted line")
     ))
 
 (defun semantic-utest-Makefile()
   (interactive)
-  (semantic-utest-generic "Makefile" "/tmp/Makefile" semantic-utest-Makefile-buffer-contents  semantic-utest-Makefile-name-contents   '("fun2") "#1" "#deleted line")
+  (semantic-utest-generic "Makefile" (semantic-utest-fname "Makefile") semantic-utest-Makefile-buffer-contents  semantic-utest-Makefile-name-contents   '("fun2") "#1" "#deleted line")
   )
 
 (defun semantic-utest-Scheme()
   (interactive)
-  (semantic-utest-generic "Scheme" "/tmp/tst.scm" semantic-utest-Scheme-buffer-contents  semantic-utest-Scheme-name-contents   '("fun2") ";1" ";deleted line")
+  (semantic-utest-generic "Scheme" (semantic-utest-fname "tst.scm") semantic-utest-Scheme-buffer-contents  semantic-utest-Scheme-name-contents   '("fun2") ";1" ";deleted line")
   )
 
 
@@ -604,13 +613,13 @@ INSERTME is the text to be inserted after the deletion."
   (interactive)
   ;; Disable html-helper auto-fill-in mode.
   (let ((html-helper-build-new-buffer nil))
-    (semantic-utest-generic "HTML" "/tmp/tst.html" semantic-utest-Html-buffer-contents  semantic-utest-Html-name-contents   '("fun2") "<!--1-->" "<!--deleted line-->")
+    (semantic-utest-generic "HTML" (semantic-utest-fname "tst.html") semantic-utest-Html-buffer-contents  semantic-utest-Html-name-contents   '("fun2") "<!--1-->" "<!--deleted line-->")
     ))
 
 (defun semantic-utest-PHP()
   (interactive)
   (if (fboundp 'php-mode)
-      (semantic-utest-generic "PHP" "/tmp/phptest.php" semantic-utest-PHP-buffer-contents semantic-utest-PHP-name-contents '("fun1") "fun2" "%^@")
+      (semantic-utest-generic "PHP" (semantic-utest-fname "phptest.php") semantic-utest-PHP-buffer-contents semantic-utest-PHP-name-contents '("fun1") "fun2" "%^@")
     (message "Skipping PHP Test.  No php-mode loaded."))
   )
 
@@ -618,7 +627,7 @@ INSERTME is the text to be inserted after the deletion."
 (defun semantic-utest-Csharp() ;; hmm i dont even know how to edit a scharp file. need a csharp mode implementation i suppose
   (interactive)
   (if (fboundp 'csharp-mode)
-      (semantic-utest-generic "C#" "/tmp/csharptest.cs" semantic-utest-Csharp-buffer-contents  semantic-utest-Csharp-name-contents   '("fun2") "//1" "//deleted line")
+      (semantic-utest-generic "C#" (semantic-utest-fname "csharptest.cs") semantic-utest-Csharp-buffer-contents  semantic-utest-Csharp-name-contents   '("fun2") "//1" "//deleted line")
     (message "Skipping C# test.  No csharp-mode loaded."))
   )
 
@@ -635,13 +644,13 @@ INSERTME is the text to be inserted after the deletion."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;(defun semantic-utest-Erlang()
 ;  (interactive)
-;  (semantic-utest-generic "Erlang" "/tmp/tst.erl" semantic-utest-Erlang-buffer-contents  semantic-utest-Erlang-name-contents   '("fun2") "//1" "//deleted line")
+;  (semantic-utest-generic "Erlang" (semantic-utest-fname "tst.erl") semantic-utest-Erlang-buffer-contents  semantic-utest-Erlang-name-contents   '("fun2") "//1" "//deleted line")
 ;  )
 ;
 ;;texi is also supported
 ;(defun semantic-utest-Texi()
 ;  (interactive)
-;  (semantic-utest-generic "texi" "/tmp/tst.texi" semantic-utest-Texi-buffer-contents  semantic-utest-Texi-name-contents   '("fun2") "//1" "//deleted line")
+;  (semantic-utest-generic "texi" (semantic-utest-fname "tst.texi") semantic-utest-Texi-buffer-contents  semantic-utest-Texi-name-contents   '("fun2") "//1" "//deleted line")
 ;  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

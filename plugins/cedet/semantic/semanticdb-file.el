@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: tags
-;; X-RCS: $Id: semanticdb-file.el,v 1.44 2009/03/13 02:13:02 zappo Exp $
+;; X-RCS: $Id: semanticdb-file.el,v 1.45 2009/06/12 11:18:43 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -217,10 +217,11 @@ If SUPRESS-QUESTIONS, then do not ask to create the directory."
   "Write out the database DB to its file.
 If DB is not specified, then use the current database."
   (let ((objname (oref DB file)))
-    (when (and (semanticdb-live-p DB)
+    (when (and (semanticdb-dirty-p DB)
+	       (semanticdb-live-p DB)
 	       (semanticdb-file-directory-exists-p DB supress-questions)
 	       (semanticdb-write-directory-p DB)
-	       (semanticdb-dirty-p DB))
+	       )
       ;;(message "Saving tag summary for %s..." objname)
       (condition-case foo
 	  (eieio-persistent-save (or DB semanticdb-current-database))

@@ -206,15 +206,17 @@ Argument OLDFUN is removed NEWFUN is substituted in."
 
 (defvar cogre-tool-bar-map
   (let ((tool-bar-map (make-sparse-keymap)))
-    (tool-bar-add-item "cogre-node" 'cogre-new-node 'node)
-    (tool-bar-add-item "cogre-class" 'cogre-new-node 'class)
-    (tool-bar-add-item "cogre-package" 'cogre-new-node 'package)
-    (tool-bar-add-item "cogre-instance" 'cogre-new-node 'instance)
-    (tool-bar-add-item "cogre-note" 'cogre-new-node 'note)
-    (tool-bar-add-item "cogre-link" 'cogre-new-link 'link)
-    (tool-bar-add-item "cogre-arrow" 'cogre-new-link 'arrow)
-    (tool-bar-add-item "cogre-isa" 'cogre-new-link 'inherit)
-    (tool-bar-add-item "cogre-hasa" 'cogre-new-link 'aggregate)
+    (when (fboundp 'tool-bar-add-item)
+      (tool-bar-add-item "cogre-node" 'cogre-new-node 'node)
+      (tool-bar-add-item "cogre-class" 'cogre-new-node 'class)
+      (tool-bar-add-item "cogre-package" 'cogre-new-node 'package)
+      (tool-bar-add-item "cogre-instance" 'cogre-new-node 'instance)
+      (tool-bar-add-item "cogre-note" 'cogre-new-node 'note)
+      (tool-bar-add-item "cogre-link" 'cogre-new-link 'link)
+      (tool-bar-add-item "cogre-arrow" 'cogre-new-link 'arrow)
+      (tool-bar-add-item "cogre-isa" 'cogre-new-link 'inherit)
+      (tool-bar-add-item "cogre-hasa" 'cogre-new-link 'aggregate)
+      )
     tool-bar-map)
   "The tool-bar used for COGRE mode.")
 
@@ -275,7 +277,8 @@ Argument MENU-DEF is the easy-menu definition."
   (setq major-mode 'cogre-mode
 	mode-name "Cogre")
   (use-local-map cogre-mode-map)
-  (set (make-local-variable 'tool-bar-map) cogre-tool-bar-map)
+  (when cogre-tool-bar-map
+    (set (make-local-variable 'tool-bar-map) cogre-tool-bar-map))
   (setq truncate-lines t)
   (setq indent-tabs-mode nil)
   (buffer-disable-undo)
@@ -290,6 +293,9 @@ Argument MENU-DEF is the easy-menu definition."
   (font-lock-mode -1)
   ;; Force the redraw AFTER disabling font lock
   (cogre-render-buffer cogre-graph t)
+  ;; If someone changes the major mode, be sure to convert everything
+  ;; back into plain-text save file.
+  (add-hook 'change-major-mode-hook 'cogre-switch-to-save-text t t)
   )
 (put 'cogre-mode 'semantic-match-any-mode t)
 
@@ -304,7 +310,10 @@ If it is already drawing a graph, then don't convert."
     (if (and (buffer-file-name) (file-exists-p (buffer-file-name)))
 	(let ((cogre-loading-from-file t))
 	  ;; Convert this file into a graph.
-	  (setq cogre-graph (eieio-persistent-read (buffer-file-name)))
+	  (condition-case nil
+	      (setq cogre-graph (eieio-persistent-read (buffer-file-name)))
+	    (error (fundamental-mode)
+		   (error "Not a COGRE graph file")))
 	  (oset cogre-graph file (buffer-file-name))
 	  (cogre-map-elements 'cogre-element-post-serialize)
 	  )
@@ -326,6 +335,24 @@ If it is already drawing a graph, then don't convert."
   (set-buffer-modified-p nil)
   (clear-visited-file-modtime)
   t)
+
+(defun cogre-switch-to-save-text ()
+  "Convert the current graph to the text we save."
+  (if (not cogre-graph)
+      (message "No graph to conver to text when switching modes")
+
+    ;; Setup the objects to have a file name.
+    (when (and (buffer-file-name (current-buffer))
+	       (not (slot-boundp cogre-graph 'file)))
+      (oset cogre-graph file (buffer-file-name (current-buffer))))
+    ;; Clear out all the graph text
+    (erase-buffer)
+    ;; Write the text into this buffer.
+    (let ((standard-output (current-buffer)))
+      (cogre-write-save-text cogre-graph)
+      )
+    (goto-char (point-min))
+    ))
 
 ;;; Customzize the graph
 ;;
@@ -568,7 +595,7 @@ It will redraw the links too."
   "Set the package name of the current NODE to PACKAGE."
   (interactive (let ((e (cogre-node-at-point-interactive)))
 		 (let ((name (oref e package-name)))
-		 (list e  (read-string "New Name: " name)))))
+		 (list e  (read-string "New Package Name: " name)))))
   (cogre-erase node)
   (oset node package-name package)
   (when (interactive-p)

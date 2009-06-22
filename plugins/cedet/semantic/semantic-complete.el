@@ -4,7 +4,7 @@
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: syntax
-;; X-RCS: $Id: semantic-complete.el,v 1.59 2009/02/14 18:05:10 zappo Exp $
+;; X-RCS: $Id: semantic-complete.el,v 1.61 2009/05/31 19:37:08 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -2065,11 +2065,11 @@ how completion options are displayed."
   ;; Report a message if things didn't startup.
   (if (and (interactive-p)
 	   (not (semantic-completion-inline-active-p)))
-      (message "Inline completion not needed."))
-  ;; Since this is most likely bound to something, and not used
-  ;; at idle time, throw in a TAB for good measure.
-  (semantic-complete-inline-TAB)
-  )
+      (message "Inline completion not needed.")
+    ;; Since this is most likely bound to something, and not used
+    ;; at idle time, throw in a TAB for good measure.
+    (semantic-complete-inline-TAB)
+    ))
 
 ;;;###autoload
 (defun semantic-complete-analyze-inline-idle ()
@@ -2097,28 +2097,48 @@ to change how completion options are displayed."
 ARG is passed to `self-insert-command'.  If ARG is nil,
 use `semantic-complete-analyze-inline' to complete."
   (interactive "p")
+  ;; If we are already in a completion scenario, exit now, and then start over.
+  (semantic-complete-inline-exit)
+
+  ;; Insert the key
   (self-insert-command arg)
-  (when (and (= arg 1)
-	     (semantic-analyze-current-context))
-    (semantic-complete-analyze-inline)
+
+  ;; Prepare for doing completion, but exit quickly if there is keyboard
+  ;; input.
+  (when (and (not (semantic-exit-on-input 'csi
+		    (semantic-fetch-tags)
+		    (semantic-throw-on-input 'csi)
+		    nil))
+	     (= arg 1)
+	     (not (semantic-exit-on-input 'csi
+		    (semantic-analyze-current-context)
+		    (semantic-throw-on-input 'csi)
+		    nil)))
+    (condition-case nil
+	(semantic-complete-analyze-inline)
+      ;; Ignore errors.  Seems likely that we'll get some once in a while.
+      (error nil))
     ))
 
-;;;###autoload
-(defun semantic-complete-inline-project ()
-  "Perform inline completion for any symbol in the current project.
-`semantic-analyze-possible-completions' is used to determine the
-possible values.
-The function returns immediately, leaving the buffer in a mode that
-will perform the completion."
-  (interactive)
-  ;; Only do this if we are not already completing something.
-  (if (not (semantic-completion-inline-active-p))
-      (semantic-complete-inline-tag-project))
-  ;; Report a message if things didn't startup.
-  (if (and (interactive-p)
-	   (not (semantic-completion-inline-active-p)))
-      (message "Inline completion not needed."))
-  )
+;; @TODO - I can't  find where this fcn is used.  Delete?
+
+;;;;###autoload
+;(defun semantic-complete-inline-project ()
+;  "Perform inline completion for any symbol in the current project.
+;`semantic-analyze-possible-completions' is used to determine the
+;possible values.
+;The function returns immediately, leaving the buffer in a mode that
+;will perform the completion."
+;  (interactive)
+;  ;; Only do this if we are not already completing something.
+;  (if (not (semantic-completion-inline-active-p))
+;      (semantic-complete-inline-tag-project))
+;  ;; Report a message if things didn't startup.
+;  (if (and (interactive-p)
+;	   (not (semantic-completion-inline-active-p)))
+;      (message "Inline completion not needed."))
+;  )
+
 ;; End
 (provide 'semantic-complete)
 

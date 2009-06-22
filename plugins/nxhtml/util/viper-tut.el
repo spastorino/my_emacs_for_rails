@@ -308,7 +308,7 @@
     (viper-info-on-file [?\C-c ?\C-g])
     ;; ^L	Refresh screen
     ;;(recenter [(control ?l)])
-    (recenter [?\C-l])
+    (recenter-top-bottom [?\C-l])
 
     ;; !}fmt	Format the paragraph, joining and filling lines to
     ;; !}sort	Sort lines of a paragraph alphabetically
@@ -584,7 +584,7 @@ CHANGED-KEYS should be a list in the format returned by
                           ;;(concat "** The key " key-desc " has been rebound, but you can use " where " instead ["))
                           (when (and s s2)
                             (setq s (format s key-desc where s2))
-                            (insert s)
+                            (insert s " [")
                             (insert-button s2
                                            'tutorial-buffer
                                            (current-buffer)
@@ -764,7 +764,8 @@ later."
           (save-excursion
             (goto-char (point-min))
             (while (re-search-forward "'\\([][+a-zA-Z~<>!;,:.'\"%/?(){}$^0|-]\\)'" nil t)
-              (let ((matched-char (match-string 1)))
+              (let ((matched-char (match-string 1))
+                    (inhibit-read-only t))
                 (put-text-property 0 1 'vi-char t matched-char)
                 (put-text-property 0 1 'face '(:foreground "blue") matched-char)
                 (replace-match matched-char))))

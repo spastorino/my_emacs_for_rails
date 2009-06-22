@@ -1,10 +1,10 @@
 ;;; ede-proj-obj.el --- EDE Generic Project Object code generation support
 
-;;;  Copyright (C) 1998, 1999, 2000, 2005, 2008  Eric M. Ludlam
+;;;  Copyright (C) 1998, 1999, 2000, 2005, 2008, 2009  Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: project, make
-;; RCS: $Id: ede-proj-obj.el,v 1.13 2008/09/29 00:05:20 zappo Exp $
+;; RCS: $Id: ede-proj-obj.el,v 1.14 2009/05/16 13:15:38 zappo Exp $
 
 ;; This software is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -41,15 +41,20 @@
 						  ("LDFLAGS" . "-g"))))
    (availablecompilers :initform (ede-gcc-compiler
 				  ede-g++-compiler
+				  ede-gfortran-compiler
+				  ede-gfortran-module-compiler
 				  ;; More C and C++ compilers, plus
 				  ;; fortran or pascal can be added here
 				  ))
    (availablelinkers :initform (ede-g++-linker
 				;; Add more linker thingies here.
 				ede-ld-linker
+				ede-gfortran-linker
 				))
    (sourcetype :initform (ede-source-c 
 			  ede-source-c++
+			  ede-source-f77
+			  ede-source-f90
 			  ;; ede-source-other
 			  ;; This object should take everything that
 			  ;; gets compiled into objects like fortran
@@ -70,6 +75,8 @@ file.")
 		  "A variable dedicated to dependency generation."))
   "Ede compiler class for source which must compiler, and link.")
 
+;;; C/C++ Compilers and Linkers
+;;
 (defvar ede-source-c
   (ede-sourcecode "ede-source-c"
 		  :name "C"
@@ -147,6 +154,72 @@ file.")
    :objectextention "")
   "Linker needed for c++ programs.")
 
+;;; Fortran Compiler/Linker
+;;
+;; Contributed by David Engster
+(defvar ede-source-f90
+  (ede-sourcecode "ede-source-f90"
+		  :name "Fortran 90/95"
+		  :sourcepattern "\\.[fF]9[05]$"
+		  :auxsourcepattern "\\.incf$"
+		  :garbagepattern '("*.o" "*.mod" ".deps/*.P"))
+  "Fortran 90/95 source code definition.")
+
+(defvar ede-source-f77
+  (ede-sourcecode "ede-source-f77"
+		  :name "Fortran 77"
+		  :sourcepattern "\\.\\([fF]\\|for\\)$"
+		  :auxsourcepattern "\\.incf$"
+		  :garbagepattern '("*.o" ".deps/*.P"))
+  "Fortran 77 source code definition.")
+
+(defvar ede-gfortran-compiler
+  (ede-object-compiler
+   "ede-f90-compiler-gfortran"
+   :name "gfortran"
+   :dependencyvar '("F90_DEPENDENCIES" . "-Wp,-MD,.deps/$(*F).P")
+   :variables '(("F90" . "gfortran")
+		("F90_COMPILE" .
+		 "$(F90) $(DEFS) $(INCLUDES) $(F90FLAGS)"))
+   :rules (list (ede-makefile-rule
+		 "f90-inference-rule"
+		 :target "%.o"
+		 :dependencies "%.f90"
+		 :rules '("@echo '$(F90_COMPILE) -c $<'; \\"
+			  "$(F90_COMPILE) $(F90_DEPENDENCIES) -o $@ -c $<"
+			  )
+		 ))
+   :sourcetype '(ede-source-f90 ede-source-f77)
+   :objectextention ".o"
+   :makedepends t
+   :uselinker t)
+  "Compiler for Fortran sourcecode.")
+
+(defvar ede-gfortran-module-compiler
+  (clone ede-gfortran-compiler
+	 "ede-f90-module-compiler-gfortran"
+	 :name "gfortranmod"
+	 :sourcetype '(ede-source-f90)
+	 :commands '("$(F90_COMPILE) -c $^")
+	 :objectextention ".mod"
+	 :uselinker nil)
+  "Compiler for Fortran 90/95 modules.")
+
+
+(defvar ede-gfortran-linker
+  (ede-linker
+   "ede-gfortran-linker"
+   :name "gfortran"
+   :sourcetype '(ede-source-f90 ede-source-f77)
+   :variables  '(("F90_LINK" .
+		  "$(F90) $(CFLAGS) $(LDFLAGS) -L. -o $@")
+		 )
+   :commands '("$(F90_LINK) $^")
+   :objectextention "")
+  "Linker needed for Fortran programs.")
+
+;;; Generic Linker
+;;
 (defvar ede-ld-linker
   (ede-linker
    "ede-ld-linker"

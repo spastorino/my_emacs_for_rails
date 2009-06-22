@@ -268,6 +268,16 @@ When called interactively you can combine the @var{IN-CONTEXT} and
 - @kbd{C-u} @kbd{C-u}   @var{IN-CONTEXT} + @var{NO-DEFAULT}.
 @end defun
 
+@defun senator-go-to-up-reference tag
+@anchor{senator-go-to-up-reference}
+Move up one reference from the current @var{TAG}.
+A ``reference'' could be any interesting feature of @var{TAG}.
+In @var{C}++, a function may have a 'parent' which is non-local.
+If that parent which is only a reference in the function tag
+is found, we can jump to it.
+Some tags such as includes have other reference features.
+@end defun
+
 @subsection Searching
 
 Searching using senator mode restricts the search only to the
@@ -375,6 +385,12 @@ semantic-complete-jump-local
 @item C-c , J
 (Upper case J)
 semantic-complete-jump
+@item C-c , u
+senator-go-to-up-reference
+@item C-c , g
+semantic-symref
+@item C-c , G
+semantic-symref-symbol
 @item C-c , TAB
 senator-complete-symbol
 @item C-c , SPC

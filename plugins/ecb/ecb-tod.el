@@ -23,7 +23,7 @@
 ;; GNU Emacs; see the file COPYING.  If not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-;; $Id: ecb-tod.el,v 1.22 2009/04/15 14:22:35 berndl Exp $
+;; $Id: ecb-tod.el,v 1.23 2009/04/21 15:23:22 berndl Exp $
 
 ;;; Commentary:
 ;;
@@ -70,8 +70,6 @@
     "You can change the window-sizes by dragging the mouse and storing the new sizes with `ecb-store-window-sizes'."
     "You can get a quick overlook of all built-in layouts with `ecb-show-layout-help'."
     "Browse your sources as with a web-browser with `ecb-nav-goto-next' \[C-c . n], `ecb-nav-goto-previous' \[C-c . p]."
-    "Download latest ECB direct from the website with `ecb-download-ecb'."
-    "Download latest semantic direct from the website with `ecb-download-semantic''."
     "Customize the look\&feel of the tree-buffers with `ecb-tree-expand-symbol-before' and `ecb-tree-indent'."
     "Customize the contents of the methods-buffer with `ecb-tag-display-function', `ecb-type-tag-display', `ecb-show-tags'."
     "Customize the main mouse-buttons of the tree-buffers with `ecb-primary-secondary-mouse-buttons'."

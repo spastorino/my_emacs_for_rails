@@ -3,7 +3,7 @@
 ;;; Copyright (C) 2001, 2002, 2003, 2004, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
-;; X-RCS: $Id: semantic-scm.el,v 1.15 2009/01/24 03:52:52 zappo Exp $
+;; X-RCS: $Id: semantic-scm.el,v 1.17 2009/05/14 01:41:52 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -68,19 +68,31 @@ Attempts a simple prototype for calling or using TAG."
 	(t
 	 (insert (semantic-tag-name tag)))))
 
+;; Note: Analyzer from Henry S. Thompson
+(define-lex-regex-analyzer semantic-lex-scheme-symbol
+  "Detect and create symbol and keyword tokens."
+  "\\(\\sw\\([:]\\|\\sw\\|\\s_\\)+\\)"
+  ;; (message (format "symbol: %s" (match-string 0)))
+  (semantic-lex-push-token
+   (semantic-lex-token
+    (or (semantic-lex-keyword-p (match-string 0)) 'symbol)
+    (match-beginning 0) (match-end 0))))
+
+
 (define-lex semantic-scheme-lexer
   "A simple lexical analyzer that handles simple buffers.
 This lexer ignores comments and whitespace, and will return
 syntax as specified by the syntax table."
   semantic-lex-ignore-whitespace
   semantic-lex-ignore-newline
-  semantic-lex-symbol-or-keyword
+  semantic-lex-scheme-symbol
   semantic-lex-charquote
   semantic-lex-paren-or-list
   semantic-lex-close-paren
   semantic-lex-string
   semantic-lex-ignore-comments
   semantic-lex-punctuation
+  semantic-lex-number
   semantic-lex-default-action)
 
 ;;;###autoload

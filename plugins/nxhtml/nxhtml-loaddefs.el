@@ -162,7 +162,7 @@ Report a bug in nXhtml.
 
 ;;;### (autoloads (nxhtml-overview nxhtml-global-minor-mode nxhtml-browse-region
 ;;;;;;  nxhtml-browse-file nxhtml-edit-with-gimp) "../nxhtml/nxhtml-menu"
-;;;;;;  "nxhtml/nxhtml-menu.el" (18982 51734))
+;;;;;;  "nxhtml/nxhtml-menu.el" (19011 594))
 ;;; Generated autoloads from nxhtml/nxhtml-menu.el
 
 (autoload 'nxhtml-edit-with-gimp "../nxhtml/nxhtml-menu" "\
@@ -438,14 +438,20 @@ Used to set up a Tidy menu in your favourite mode.
 
 ;;;***
 
-;;;### (autoloads (xhtml-help-show-tag-ref xhtml-help-show-css-ref)
-;;;;;;  "../nxhtml/xhtml-help" "nxhtml/xhtml-help.el" (18790 59800))
+;;;### (autoloads (xhtml-help-show-tag-ref xhtml-help-tag-at-point
+;;;;;;  xhtml-help-show-css-ref) "../nxhtml/xhtml-help" "nxhtml/xhtml-help.el"
+;;;;;;  (19017 41452))
 ;;; Generated autoloads from nxhtml/xhtml-help.el
 
 (autoload 'xhtml-help-show-css-ref "../nxhtml/xhtml-help" "\
-Show css reference for css property name at point.
+Show CSS reference for CSS property name at point.
 
 \(fn)" t nil)
+
+(autoload 'xhtml-help-tag-at-point "../nxhtml/xhtml-help" "\
+Get xhtml tag name at or before point.
+
+\(fn)" nil nil)
 
 (autoload 'xhtml-help-show-tag-ref "../nxhtml/xhtml-help" "\
 Show xhtml reference for tag name at or before point.
@@ -1738,7 +1744,7 @@ By default the link moved to will be active, see
 ;;;***
 
 ;;;### (autoloads (mumamo-multi-major-modep mumamo-mark-for-refontification)
-;;;;;;  "mumamo" "util/mumamo.el" (18994 64966))
+;;;;;;  "mumamo" "util/mumamo.el" (19017 41452))
 ;;; Generated autoloads from util/mumamo.el
 
 (autoload 'mumamo-mark-for-refontification "mumamo" "\
@@ -2688,7 +2694,7 @@ Not documented
 ;;;;;;  "util/ocr-user.el" "util/org-panel.el" "util/pause.el" "util/popcmp.el"
 ;;;;;;  "util/rebind.el" "util/rxi.el" "util/udev-nxhtml.el" "util/udev.el"
 ;;;;;;  "util/useful-commands.el" "util/whelp.el" "util/zen-mode.el")
-;;;;;;  (19005 58586 196181))
+;;;;;;  (19017 24888 216455))
 
 ;;;***
 

@@ -283,6 +283,9 @@
           <a href="#v1.79">v1.79</a>
           <a href="#v1.80">v1.80</a>
           <a href="#v1.81">v1.81</a>
+          <a href="#v1.82">v1.82</a>
+          <a href="#v1.83">v1.83</a>
+          <a href="#v1.84">v1.84</a>
         </div>
 
         <dl>
@@ -2705,12 +2708,42 @@
                 Added the minor mode <i>mumamo-alt-php-tags-mode</i>
                 that lets you work more easily with &lt;?php tags in
                 strings while you are still able to use XHTML
-                completion.
+                completion. (I added something looking rather similare
+                earlier, but removed it again because of difficulties
+                with undo. They are now fixed in Emacs and this should
+                be safe.)
               </li>
               <li>
                 Added support for hi-lock, but please be aware that
                 chunk overlays hides background marking that hi-lock
-                does... - so you must use marking that changes foreground.
+                does... - so you must use marking that changes
+                foreground part of face.
+              </li>
+            </ul>
+          </dd>
+          <dt id="v1.82">1.82</dt>
+          <dd id="v1.82-dd">
+            <ul>
+              <li>
+                Find some bugs when I tried to fix bug 388729. Not sure I fixed the bug though.
+              </li>
+            </ul>
+          </dd>
+          <dt id="v1.83">1.83</dt>
+          <dd id="v1.83-dd">
+            <ul>
+              <li>
+                Fontification disappeared for example in *grep* buffer. Fixed.
+              </li>
+            </ul>
+          </dd>
+          <dt id="v1.84">1.84</dt>
+          <dd id="v1.84-dd">
+            <ul>
+              <li>
+                Worked around bug in Emacs 22.3 where c-after-change
+                was left in after-change-fucntions. (This makes no
+                difference in Emacs 23.)
               </li>
             </ul>
           </dd>

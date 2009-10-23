@@ -1,0 +1,125 @@
+K 25
+svn:wc:ra_dav:version-url
+V 27
+/svn/!svn/ver/511/trunk/doc
+END
+compile-doc.py
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/467/trunk/doc/compile-doc.py
+END
+snippet-menu.html
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/510/trunk/doc/snippet-menu.html
+END
+snippet-organization.html
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/510/trunk/doc/snippet-organization.html
+END
+snippet-expansion.html
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/510/trunk/doc/snippet-expansion.html
+END
+template.txt
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/503/trunk/doc/template.txt
+END
+changelog.html
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/510/trunk/doc/changelog.html
+END
+snippet-organization.rst
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/510/trunk/doc/snippet-organization.rst
+END
+snippet-expansion.rst
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/510/trunk/doc/snippet-expansion.rst
+END
+snippet-menu.rst
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/510/trunk/doc/snippet-menu.rst
+END
+changelog.rst
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/510/trunk/doc/changelog.rst
+END
+define_snippet.html
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/504/trunk/doc/define_snippet.html
+END
+define_snippet.rst
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/488/trunk/doc/define_snippet.rst
+END
+snippet-development.html
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/510/trunk/doc/snippet-development.html
+END
+snippet-development.rst
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/510/trunk/doc/snippet-development.rst
+END
+html4css1.css
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/433/trunk/doc/html4css1.css
+END
+faq.html
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/!svn/ver/511/trunk/doc/faq.html
+END
+index.html
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/510/trunk/doc/index.html
+END
+styles.css
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/465/trunk/doc/styles.css
+END
+index.rst
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/!svn/ver/510/trunk/doc/index.rst
+END
+faq.rst
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/svn/!svn/ver/511/trunk/doc/faq.rst
+END

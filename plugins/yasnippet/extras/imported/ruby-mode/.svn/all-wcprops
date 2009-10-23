@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/520/trunk/extras/imported/ruby-mode
+END
+.yas-ignore-filenames-as-triggers
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/488/trunk/extras/imported/ruby-mode/.yas-ignore-filenames-as-triggers
+END
+.yas-make-groups
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/488/trunk/extras/imported/ruby-mode/.yas-make-groups
+END
+embed string variable.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/516/trunk/extras/imported/ruby-mode/embed%20string%20variable.yasnippet
+END
+Insert ERb's <% __ %> or <%= __ %>.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Insert%20ERb's%20%3C%25%20__%20%25%3E%20or%20%3C%25=%20__%20%25%3E.yasnippet
+END
+.yas-setup.el
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/517/trunk/extras/imported/ruby-mode/.yas-setup.el
+END

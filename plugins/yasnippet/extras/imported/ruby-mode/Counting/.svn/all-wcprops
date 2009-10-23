@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Counting
+END
+upto(1.0;0.0) { |n| .. }  (upt).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Counting/upto(1.0%3B0.0)%20%7B%20%7Cn%7C%20..%20%7D%20%20(upt).yasnippet
+END
+times { |n| .. }  (tim).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Counting/times%20%7B%20%7Cn%7C%20..%20%7D%20%20(tim).yasnippet
+END
+step(2) { |e| .. }  (ste).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Counting/step(2)%20%7B%20%7Ce%7C%20..%20%7D%20%20(ste).yasnippet
+END
+loop { __ }.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Counting/loop%20%7B%20__%20%7D.yasnippet
+END
+downto(0) { |n| .. }  (dow).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Counting/downto(0)%20%7B%20%7Cn%7C%20..%20%7D%20%20(dow).yasnippet
+END

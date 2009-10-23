@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/488/trunk/extras/imported/java-mode
+END
+println.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/println.yasnippet
+END
+.yas-ignore-filenames-as-triggers
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/.yas-ignore-filenames-as-triggers
+END
+.yas-make-groups
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/.yas-make-groups
+END
+print.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/print.yasnippet
+END

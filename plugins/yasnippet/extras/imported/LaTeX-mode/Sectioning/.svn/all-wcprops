@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Sectioning
+END
+Paragraph.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Sectioning/Paragraph.yasnippet
+END
+Chapter.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Sectioning/Chapter.yasnippet
+END
+Part.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Sectioning/Part.yasnippet
+END
+\subsubsection .. (ssub).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Sectioning/%5Csubsubsection%20..%20(ssub).yasnippet
+END
+Sub Paragraph.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Sectioning/Sub%20Paragraph.yasnippet
+END
+\subsection .. (sub).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Sectioning/%5Csubsection%20..%20(sub).yasnippet
+END
+\section .. (section).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Sectioning/%5Csection%20..%20(section).yasnippet
+END

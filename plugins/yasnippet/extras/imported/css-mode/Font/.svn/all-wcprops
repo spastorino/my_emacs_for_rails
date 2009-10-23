@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Font
+END
+font-weight: weight (font).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Font/font-weight:%20weight%20(font).yasnippet
+END
+font-family:   family (font).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Font/font-family:%20%20%20family%20(font).yasnippet
+END
+font-variant:   normal:small-caps (font).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Font/font-variant:%20%20%20normal:small-caps%20(font).yasnippet
+END
+font: size font (font).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Font/font:%20size%20font%20(font).yasnippet
+END
+font-style:   normal:italic:oblique (font).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Font/font-style:%20%20%20normal:italic:oblique%20(font).yasnippet
+END
+font-size: size (font).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Font/font-size:%20size%20(font).yasnippet
+END
+font:   style variant weight size:line-height font -family (font).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Font/font:%20%20%20style%20variant%20weight%20size:line-height%20font%20-family%20(font).yasnippet
+END

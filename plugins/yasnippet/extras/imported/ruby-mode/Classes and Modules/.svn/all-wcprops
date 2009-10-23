@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Classes%20and%20Modules
+END
+class .. < DelegateClass .. initialize .. end  (class).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Classes%20and%20Modules/class%20..%20%3C%20DelegateClass%20..%20initialize%20..%20end%20%20(class).yasnippet
+END
+class .. initialize .. end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Classes%20and%20Modules/class%20..%20initialize%20..%20end.yasnippet
+END
+module .. end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Classes%20and%20Modules/module%20..%20end.yasnippet
+END
+class .. end  (cla).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Classes%20and%20Modules/class%20..%20end%20%20(cla).yasnippet
+END
+class << self __ end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Classes%20and%20Modules/class%20%3C%3C%20self%20__%20end.yasnippet
+END
+class .. < ParentClass .. initialize .. end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Classes%20and%20Modules/class%20..%20%3C%20ParentClass%20..%20initialize%20..%20end.yasnippet
+END
+module .. ClassMethods .. end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Classes%20and%20Modules/module%20..%20ClassMethods%20..%20end.yasnippet
+END
+class .. instance_methods .. undef .. initialize .. end  (class).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Classes%20and%20Modules/class%20..%20instance_methods%20..%20undef%20..%20initialize%20..%20end%20%20(class).yasnippet
+END
+module .. module_function .. end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Classes%20and%20Modules/module%20..%20module_function%20..%20end.yasnippet
+END
+class .. < Struct .. initialize .. end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Classes%20and%20Modules/class%20..%20%3C%20Struct%20..%20initialize%20..%20end.yasnippet
+END

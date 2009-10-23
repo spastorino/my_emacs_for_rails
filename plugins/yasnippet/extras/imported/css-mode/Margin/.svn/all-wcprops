@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Margin
+END
+margin: V H (margin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Margin/margin:%20V%20H%20(margin).yasnippet
+END
+margin-top: length (margin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Margin/margin-top:%20length%20(margin).yasnippet
+END
+margin: T R B L (margin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Margin/margin:%20T%20R%20B%20L%20(margin).yasnippet
+END
+margin-bottom: length (margin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Margin/margin-bottom:%20length%20(margin).yasnippet
+END
+margin:   all (margin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Margin/margin:%20%20%20all%20(margin).yasnippet
+END
+margin-left: length (margin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Margin/margin-left:%20length%20(margin).yasnippet
+END
+margin-right: length (margin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Margin/margin-right:%20length%20(margin).yasnippet
+END

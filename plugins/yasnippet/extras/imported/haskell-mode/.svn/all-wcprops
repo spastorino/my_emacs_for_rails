@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/488/trunk/extras/imported/haskell-mode
+END
+Instance.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/488/trunk/extras/imported/haskell-mode/Instance.yasnippet
+END
+Main.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/488/trunk/extras/imported/haskell-mode/Main.yasnippet
+END
+module.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/488/trunk/extras/imported/haskell-mode/module.yasnippet
+END
+.yas-ignore-filenames-as-triggers
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/488/trunk/extras/imported/haskell-mode/.yas-ignore-filenames-as-triggers
+END
+t <- f t.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/488/trunk/extras/imported/haskell-mode/t%20%3C-%20f%20t.yasnippet
+END
+.yas-make-groups
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/488/trunk/extras/imported/haskell-mode/.yas-make-groups
+END
+Case.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/488/trunk/extras/imported/haskell-mode/Case.yasnippet
+END
+\.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/488/trunk/extras/imported/haskell-mode/%5C.yasnippet
+END

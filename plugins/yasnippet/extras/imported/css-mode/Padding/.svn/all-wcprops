@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Padding
+END
+padding:   V H (padding).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Padding/padding:%20%20%20V%20H%20(padding).yasnippet
+END
+padding-left: length (margin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Padding/padding-left:%20length%20(margin).yasnippet
+END
+padding-right: length (margin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Padding/padding-right:%20length%20(margin).yasnippet
+END
+padding:   T R B L (padding).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Padding/padding:%20%20%20T%20R%20B%20L%20(padding).yasnippet
+END
+padding-top: length (margin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Padding/padding-top:%20length%20(margin).yasnippet
+END
+padding:   all (padding).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Padding/padding:%20%20%20all%20(padding).yasnippet
+END
+padding-bottom: length (margin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Padding/padding-bottom:%20length%20(margin).yasnippet
+END

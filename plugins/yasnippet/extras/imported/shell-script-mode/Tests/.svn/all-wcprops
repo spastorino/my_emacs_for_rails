@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/488/trunk/extras/imported/shell-script-mode/Tests
+END
+if ... then (if).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/488/trunk/extras/imported/shell-script-mode/Tests/if%20...%20then%20(if).yasnippet
+END
+elif .. (elif).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/488/trunk/extras/imported/shell-script-mode/Tests/elif%20..%20(elif).yasnippet
+END
+case .. esac (case).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/488/trunk/extras/imported/shell-script-mode/Tests/case%20..%20esac%20(case).yasnippet
+END

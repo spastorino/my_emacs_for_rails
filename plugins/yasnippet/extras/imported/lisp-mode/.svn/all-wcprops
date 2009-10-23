@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode
+END
+let.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/let.yasnippet
+END
+let1.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/let1.yasnippet
+END
+.yas-ignore-filenames-as-triggers
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/.yas-ignore-filenames-as-triggers
+END
+.yas-make-groups
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/.yas-make-groups
+END
+`(.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/%60(.yasnippet
+END
+defvar.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/defvar.yasnippet
+END
+defconstant.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/defconstant.yasnippet
+END
+'(.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/'(.yasnippet
+END
+if.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/if.yasnippet
+END
+defparameter.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/defparameter.yasnippet
+END
+defmacro.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/defmacro.yasnippet
+END
+defun.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/defun.yasnippet
+END
+setf.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/488/trunk/extras/imported/lisp-mode/setf.yasnippet
+END

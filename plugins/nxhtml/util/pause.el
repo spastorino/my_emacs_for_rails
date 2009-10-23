@@ -1,9 +1,9 @@
 ;;; pause.el --- Take a break!
 ;;
 ;; Author: Lennart Borgman (lennart O borgman A gmail O com)
-;; Created: 2008-01-19T02:51:39+0100 Sat
-;; Version: 0.64
-;; Last-Updated: 2008-06-15T11:55:21+0200 Sun
+;; Created: 2008-01-19 Sat
+(defconst pause:version "0.64");; Version:
+;; Last-Updated: 2009-08-04 Tue
 ;; URL:
 ;; Keywords:
 ;; Compatibility:
@@ -138,9 +138,10 @@
 (defun pause-pre-break ()
   (setq pause-timer nil)
   (condition-case err
-      (if pause-idle-delay
-          (setq pause-idle-timer (run-with-idle-timer pause-idle-delay nil 'pause-break-in-timer))
-        (setq pause-idle-timer (run-with-idle-timer 5 nil 'pause-break-in-timer)))
+      (save-match-data ;; runs in timer
+        (if pause-idle-delay
+            (setq pause-idle-timer (run-with-idle-timer pause-idle-delay nil 'pause-break-in-timer))
+          (setq pause-idle-timer (run-with-idle-timer 5 nil 'pause-break-in-timer))))
     (error
      (lwarn 'pause-pre-break
             :error "%s" (error-message-string err)))))
@@ -166,6 +167,7 @@
   )
 
 (defun pause-kill-buffer ()
+  ;; runs in timer, save-match-data
   (when (buffer-live-p pause-break-buffer) (kill-buffer pause-break-buffer)))
 
 (defvar pause-break-was-in-minibuffer nil)
@@ -248,10 +250,12 @@
     ))
 
 (defun pause-hide-cursor ()
+  ;; runs in timer, save-match-data
   (with-current-buffer pause-break-buffer
     (set (make-local-variable 'cursor-type) nil)))
 
 (defun pause-add-to-conf-hook ()
+  ;; runs in timer, save-match-data
   (add-hook 'window-configuration-change-hook 'pause-break-mode-exit-2))
 
 (defun pause-break ()
@@ -290,29 +294,31 @@
   (setq pause-idle-timer nil))
 
 (defun pause-break-in-timer ()
-  (pause-cancel-timer)
-  (if (or (active-minibuffer-window)
-          (and (boundp 'edebug-active)
-	       edebug-active))
-      (let ((pause-idle-delay 5))
-        (pause-pre-break))
-    (let ((there-was-an-error nil))
-      ;;(message "calling break in timer")
-      (condition-case err
-          (pause-break)
-        (error
-         (message "pause-break-in-timer: %s" (error-message-string err))
-         (setq there-was-an-error t)))
-      (when there-was-an-error
+  (save-match-data ;; runs in timer
+    (pause-cancel-timer)
+    (if (or (active-minibuffer-window)
+            (and (boundp 'edebug-active)
+                 edebug-active))
+        (let ((pause-idle-delay 5))
+          (pause-pre-break))
+      (let ((there-was-an-error nil))
+        ;;(message "calling break in timer")
         (condition-case err
-            (progn
-              (select-frame last-event-frame)
-              (let ((pause-idle-delay nil))
-                (pause-pre-break)))
+            (pause-break)
           (error
-           (lwarn 'pause-break-in-timer2 :error "%s" (error-message-string err))
-           ))))))
+           (message "pause-break-in-timer: %s" (error-message-string err))
+           (setq there-was-an-error t)))
+        (when there-was-an-error
+          (condition-case err
+              (progn
+                (select-frame last-event-frame)
+                (let ((pause-idle-delay nil))
+                  (pause-pre-break)))
+            (error
+             (lwarn 'pause-break-in-timer2 :error "%s" (error-message-string err))
+             )))))))
 
+;;;###autoload
 (define-minor-mode pause-mode
   "This minor mode tries to make you take a break!
 To customize it see:

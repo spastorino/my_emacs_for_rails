@@ -127,6 +127,23 @@ to you, read through the Emacs tutorial.  To do so open Emacs and press
 key and then press the ``t'' key).
 @end itemize
 
+@b{ELPA}
+
+Rinari and the Major Modes mentioned below are now available through
+ELPA (the ``Emacs List Package Archive'') see
+@uref{http://tromey.com/elpa/} for more information on using ELPA to
+install Rinari.
+
+@b{Emacs Starter Kit}
+
+Available at
+@uref{http://github.com/technomancy/emacs-starter-kit/tree/master}, the
+Emacs Starter Kit contains a good default Emacs setup and comes
+pre-bundled with many useful packages including Rinari and relevant Ruby
+and web development Major Modes.  This can be a good way for beginners
+to get a jump start on their Emacs setup and for experienced Emacs users
+to organize their setup and see many new tools they may have missed.
+
 @b{Major Modes}
 
 There are a collection of Major Modes which are useful when working on a
@@ -134,13 +151,15 @@ Rails project (not the least of which is Ruby-Mode!).  You might want to
 check this Major Mode List (@pxref{Add Ons}) to ensure that you aren't
 missing anything vital.
 
-@b{Rinari}
+@b{Manual Rinari Setup}
 
 @menu
 * Basic Setup::          The minimum required to get going with Rinari
 * Rhtml Setup::          Select and setup a Major mode for rhtml files
 * Optional Setup::       Some additional setup options
 @end menu
+
+@b{From here on out}
 
 The remainder of this document describes the functions and usage of
 Rinari in detail.  To see all of the functions provided by rinari try

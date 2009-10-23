@@ -383,7 +383,7 @@ This refers to the functions `orgpan-paste-subtree',
   (let ((start-level (funcall outline-level)))
     (if (<= start-level 1)
         (message "Already at top level of the outline")
-      (outline-up-heading (arg invisible-ok)))))
+      (outline-up-heading arg invisible-ok))))
 
 (defconst orgpan-mode-map
   ;; Fix-me: clean up here!
@@ -713,6 +713,13 @@ button changes the binding of the arrow keys."
     (orgpan-panel-minor-mode 1)
     (add-hook 'post-command-hook 'orgpan-minor-post-command t)))
 
+(define-minor-mode orgpan-panel-minor-mode
+  "Minor mode used in `org-mode' buffer when showing panel."
+  :keymap orgpan-mode-map
+  :lighter " PANEL"
+  :group 'orgpan
+  )
+
 (defun orgpan-minor-post-command ()
   ;; Check org window and buffer
   (if (and (windowp orgpan-org-window)
@@ -729,13 +736,6 @@ button changes the binding of the arrow keys."
            orgpan-panel-minor-mode)
       (setq cursor-type nil)
     (orgpan-delete-panel)))
-
-(define-minor-mode orgpan-panel-minor-mode
-  "Minor mode used in `org-mode' buffer when showing panel."
-  :keymap orgpan-mode-map
-  :lighter " PANEL"
-  :group 'orgpan
-  )
 
 
 (provide 'org-panel)

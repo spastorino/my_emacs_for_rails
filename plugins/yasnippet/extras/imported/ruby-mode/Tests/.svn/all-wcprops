@@ -1,0 +1,155 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests
+END
+assert_kind_of(..)  (asko).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_kind_of(..)%20%20(asko).yasnippet
+END
+assert_not_same(..)  (asns).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_not_same(..)%20%20(asns).yasnippet
+END
+assert_same(..)  (ass).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_same(..)%20%20(ass).yasnippet
+END
+assert_raise(..) { .. }  (asr).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_raise(..)%20%7B%20..%20%7D%20%20(asr).yasnippet
+END
+assert_match(..)  (asm).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_match(..)%20%20(asm).yasnippet
+END
+assert_not_equal(..)  (asne).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_not_equal(..)%20%20(asne).yasnippet
+END
+assert_operator(..)  (aso).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_operator(..)%20%20(aso).yasnippet
+END
+Benchmark_bmbm(__) do __ end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/Benchmark_bmbm(__)%20do%20__%20end.yasnippet
+END
+assert_send(..)  (ass).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_send(..)%20%20(ass).yasnippet
+END
+assert_nothing_thrown { .. }  (asnt).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_nothing_thrown%20%7B%20..%20%7D%20%20(asnt).yasnippet
+END
+assert(..)  (as).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert(..)%20%20(as).yasnippet
+END
+assert_instance_of(..)  (asio).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_instance_of(..)%20%20(asio).yasnippet
+END
+assert_nothing_raised(..) { .. }  (asnr).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_nothing_raised(..)%20%7B%20..%20%7D%20%20(asnr).yasnippet
+END
+def test_ .. end  (t).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/def%20test_%20..%20end%20%20(t).yasnippet
+END
+assert_respond_to(..)  (asrt).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_respond_to(..)%20%20(asrt).yasnippet
+END
+assert_no_match(..)  (asnm).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_no_match(..)%20%20(asnm).yasnippet
+END
+require "tc_.." ..  (ts).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/require%20%22tc_..%22%20..%20%20(ts).yasnippet
+END
+assert_equal.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_equal.yasnippet
+END
+flunk(..)  (fl).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/flunk(..)%20%20(fl).yasnippet
+END
+assert_in_delta(..)  (asid).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_in_delta(..)%20%20(asid).yasnippet
+END
+class .. < Test;;Unit;;TestCase .. end  (tc).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/class%20..%20%3C%20Test%3B%3BUnit%3B%3BTestCase%20..%20end%20%20(tc).yasnippet
+END
+assert_throws(..) { .. }  (ast).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_throws(..)%20%7B%20..%20%7D%20%20(ast).yasnippet
+END
+results_report(__) { __ }.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/results_report(__)%20%7B%20__%20%7D.yasnippet
+END
+assert_not_nil(..)  (asnn).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_not_nil(..)%20%20(asnn).yasnippet
+END
+assert_nil(..)  (asn).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Tests/assert_nil(..)%20%20(asn).yasnippet
+END

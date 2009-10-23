@@ -632,11 +632,12 @@ message."
 
 (defun smarty-warning-when-idle (&rest args)
   "Wait until idle, then print out warning STRING and beep."
-  (if noninteractive
-      (smarty-warning (apply 'format args) t)
-    (unless smarty-warnings
-      (smarty-run-when-idle .1 nil 'smarty-print-warnings))
-    (setq smarty-warnings (cons (apply 'format args) smarty-warnings))))
+  (save-match-data ;; runs in timer
+    (if noninteractive
+        (smarty-warning (apply 'format args) t)
+      (unless smarty-warnings
+        (smarty-run-when-idle .1 nil 'smarty-print-warnings))
+      (setq smarty-warnings (cons (apply 'format args) smarty-warnings)))))
 
 (defun smarty-warning (string &optional nobeep)
   "Print out warning STRING and beep."

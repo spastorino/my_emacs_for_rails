@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Color
+END
+color:  color-name (color).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Color/color:%20%20color-name%20(color).yasnippet
+END
+color:  color-hex (color).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Color/color:%20%20color-hex%20(color).yasnippet
+END
+color:  color-rgb (color).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Color/color:%20%20color-rgb%20(color).yasnippet
+END

@@ -311,9 +311,10 @@ file to system again."
                            (current-buffer)))))
 
 (defun sex-restore-window-config (frame win-config buffer)
-  (with-selected-frame frame
-    (set-window-configuration win-config))
-  (when buffer (kill-buffer buffer)))
+  (save-match-data ;; runs in timer
+    (with-selected-frame frame
+      (set-window-configuration win-config))
+    (when buffer (kill-buffer buffer))))
 
 (defun sex-handle-by-external (&optional file)
   "Give file FILE to external program.

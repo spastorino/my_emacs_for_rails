@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control
+END
+default.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/default.yasnippet
+END
+break.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/break.yasnippet
+END
+for.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/for.yasnippet
+END
+else if.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/else%20if.yasnippet
+END
+else.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/else.yasnippet
+END
+while.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/while.yasnippet
+END
+for (each).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/for%20(each).yasnippet
+END
+case.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/case.yasnippet
+END
+if.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/if.yasnippet
+END
+return.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/return.yasnippet
+END
+switch.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/switch.yasnippet
+END
+catch.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/catch.yasnippet
+END
+throw.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Control/throw.yasnippet
+END

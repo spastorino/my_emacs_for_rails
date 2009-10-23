@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods
+END
+alias_method ..  (am).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods/alias_method%20..%20%20(am).yasnippet
+END
+def_delegator .. (defd).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods/def_delegator%20..%20(defd).yasnippet
+END
+include Enumerable ..  (Enum).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods/include%20Enumerable%20..%20%20(Enum).yasnippet
+END
+include Comparable ..  (Comp).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods/include%20Comparable%20..%20%20(Comp).yasnippet
+END
+def method_missing .. end  (mm).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods/def%20method_missing%20..%20end%20%20(mm).yasnippet
+END
+attr_writer ..  (w).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods/attr_writer%20..%20%20(w).yasnippet
+END
+def_delegators .. (defds).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods/def_delegators%20..%20(defds).yasnippet
+END
+attr_reader ..  (r).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods/attr_reader%20..%20%20(r).yasnippet
+END
+def self .. end  (defs).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods/def%20self%20..%20end%20%20(defs).yasnippet
+END
+extend Forwardable  (Forw).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods/extend%20Forwardable%20%20(Forw).yasnippet
+END
+attr_accessor ..  (rw).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Methods/attr_accessor%20..%20%20(rw).yasnippet
+END

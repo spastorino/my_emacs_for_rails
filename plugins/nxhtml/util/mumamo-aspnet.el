@@ -128,15 +128,19 @@ Internal variable.")
 
 (defun mumamo-aspnet-get-mode-for-chunk (&optional chunk-type)
   (cond ((eq chunk-type 'script)
-         (mumamo-mode-from-modespec
+         (mumamo-get-major-mode-substitute
           (or (if (looking-at mumamo-aspnet-language-regex)
                   (mumamo-aspnet-mode-spec-for-language (match-string 1))
                   (mumamo-aspnet-get-page-language-mode-spec))
-              'fundamental-mode)))
+              'fundamental-mode)
+          'fontification))
         ((eq chunk-type 'directive)
          'fundamental-mode)
-        (t (mumamo-mode-from-modespec
-            (mumamo-aspnet-get-page-language-mode-spec)))))
+        ;;(t (mumamo-mode-from-modespec
+        (t (mumamo-get-major-mode-substitute
+            (mumamo-aspnet-get-page-language-mode-spec)
+            'fontification
+            ))))
 
 
 (defun mumamo-chunk-aspnet(pos min max)
@@ -148,7 +152,8 @@ Internal variable.")
                               'mumamo-search-fw-exc-end-jsp))
 
 (defun mumamo-search-bw-exc-start-aspnet(pos min)
-  (let ((exc-start (mumamo-search-bw-exc-start-str pos min "<%")))
+  ;;(let ((exc-start (mumamo-search-bw-exc-start-str pos min "<%")))
+  (let ((exc-start (mumamo-chunk-start-bw-str pos min "<%")))
     (when (and exc-start
                (<= exc-start pos))
       (cons exc-start

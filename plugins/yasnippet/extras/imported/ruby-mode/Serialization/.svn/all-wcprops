@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Serialization
+END
+YAML.load(file)  (Yl-).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Serialization/YAML.load(file)%20%20(Yl-).yasnippet
+END
+PStore_new( __ ).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Serialization/PStore_new(%20__%20).yasnippet
+END
+Marshal.dump(obj, file)  (Md).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Serialization/Marshal.dump(obj,%20file)%20%20(Md).yasnippet
+END
+xpath(__) { __ }.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Serialization/xpath(__)%20%7B%20__%20%7D.yasnippet
+END
+YAML.dump(.., file)  (Yd-).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Serialization/YAML.dump(..,%20file)%20%20(Yd-).yasnippet
+END
+Marshal.load(obj)  (Ml).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Serialization/Marshal.load(obj)%20%20(Ml).yasnippet
+END
+xmlread(__).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Serialization/xmlread(__).yasnippet
+END
+transaction( __ ) do __ end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Serialization/transaction(%20__%20)%20do%20__%20end.yasnippet
+END

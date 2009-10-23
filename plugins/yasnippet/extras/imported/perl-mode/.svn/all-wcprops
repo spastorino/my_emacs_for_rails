@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode
+END
+slurp.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/slurp.yasnippet
+END
+Conditional one-line (unless).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/Conditional%20one-line%20(unless).yasnippet
+END
+class.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/class.yasnippet
+END
+.yas-ignore-filenames-as-triggers
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/.yas-ignore-filenames-as-triggers
+END
+foreach.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/foreach.yasnippet
+END
+while.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/while.yasnippet
+END
+unless.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/unless.yasnippet
+END
+Test.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/Test.yasnippet
+END
+Function (sub).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/Function%20(sub).yasnippet
+END
+Conditional if..elsif..else (ifee).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/Conditional%20if..elsif..else%20(ifee).yasnippet
+END
+Conditional one-line (xif).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/Conditional%20one-line%20(xif).yasnippet
+END
+hash pointer.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/hash%20pointer.yasnippet
+END
+for.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/for.yasnippet
+END
+.yas-make-groups
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/.yas-make-groups
+END
+eval.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/eval.yasnippet
+END
+Conditional if..else (ife).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/Conditional%20if..else%20(ife).yasnippet
+END
+if.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/if.yasnippet
+END
+Loop one-line (xforeach).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/Loop%20one-line%20(xforeach).yasnippet
+END
+Loop one-line (xwhile).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/488/trunk/extras/imported/perl-mode/Loop%20one-line%20(xwhile).yasnippet
+END

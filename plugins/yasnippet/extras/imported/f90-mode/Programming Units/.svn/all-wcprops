@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Programming%20Units
+END
+function.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Programming%20Units/function.yasnippet
+END
+module.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Programming%20Units/module.yasnippet
+END
+program.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Programming%20Units/program.yasnippet
+END
+module procedure.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Programming%20Units/module%20procedure.yasnippet
+END
+subroutine.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Programming%20Units/subroutine.yasnippet
+END
+interface.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Programming%20Units/interface.yasnippet
+END

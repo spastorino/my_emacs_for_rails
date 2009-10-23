@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/488/trunk/extras/imported/python-mode/Idioms
+END
+Try:Except:Else.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/488/trunk/extras/imported/python-mode/Idioms/Try:Except:Else.yasnippet
+END
+if __name__ == '__main__'.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/488/trunk/extras/imported/python-mode/Idioms/if%20__name__%20==%20'__main__'.yasnippet
+END
+Try:Except:Finally.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/488/trunk/extras/imported/python-mode/Idioms/Try:Except:Finally.yasnippet
+END
+Try:Except:Else:Finally.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/488/trunk/extras/imported/python-mode/Idioms/Try:Except:Else:Finally.yasnippet
+END
+New Property.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/488/trunk/extras/imported/python-mode/Idioms/New%20Property.yasnippet
+END
+Try:Except.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/488/trunk/extras/imported/python-mode/Idioms/Try:Except.yasnippet
+END

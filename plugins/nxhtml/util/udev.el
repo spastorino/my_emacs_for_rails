@@ -125,10 +125,12 @@
   "Udev-Src"
   "Mode for udev control buffer."
   (setq show-trailing-whitespace nil)
-  (setq buffer-read-only t))
+  (setq buffer-read-only t)
+  (nxhtml-minor-mode 1))
 
 ;;; Calling steps
 
+;;;###autoload
 (defun udev-call-first-step (log-buffer steps header finish-fun)
   "Set up and call first step.
 Set up buffer LOG-BUFFER to be used for log messages and
@@ -145,13 +147,13 @@ after last step with LOG-BUFFER as parameter."
   (switch-to-buffer log-buffer)
   (udev-control-mode)
   (setq udev-is-log-buffer t)
-  (setq this-chain
-        (cons nil
-              (cons log-buffer
-                    (cons (copy-tree steps)
-                          (cons finish-fun nil)))))
-  (setcar this-chain (caddr this-chain))
-  (setq udev-this-chain this-chain)
+  (let ((this-chain
+         (cons nil
+               (cons log-buffer
+                     (cons (copy-tree steps)
+                           (cons finish-fun nil))))))
+    (setcar this-chain (caddr this-chain))
+    (setq udev-this-chain this-chain))
   (assert (eq (car steps) (udev-this-step log-buffer)) t)
   (assert (eq finish-fun (udev-finish-function log-buffer)) t)
   (widen)
@@ -363,14 +365,11 @@ in the default directory DEFDIR.
 Set the buffer name for the inferior process with NAME-FUNCTION
 by giving this to `compilation-start'."
   (let ((default-directory (file-name-as-directory defdir))
-        ;; Fix-me:
-        (this-emacs "emacs"))
-    (with-current-buffer
-        (compilation-start
-         (concat this-emacs " -Q -batch " emacs-args)
-         'compilation-mode
-         name-function)
-      (current-buffer))))
+        (this-emacs (ourcomments-find-emacs)))
+    (compilation-start
+     (concat this-emacs " -Q -batch " emacs-args)
+     'compilation-mode
+     name-function)))
 
 ;;; Convenience functions for CVS
 

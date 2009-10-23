@@ -2008,6 +2008,12 @@ Used to set up a Tidy menu in your favourite mode."
       (beginning-of-line)
       (1+ (count-lines 1 (point))))))
 
+(defun tidy-goto-line (line)
+  (save-restriction
+    (widen)
+    (goto-char (point-min))
+    (forward-line (1- line))))
+
 (defun tidy-describe-options ()
   "Interactively access documentation strings for `tidy-' variables."
   (interactive)
@@ -2060,7 +2066,7 @@ Used to set up a Tidy menu in your favourite mode."
                 (insert "\n"))
            ((< count two-third-length) ;; third-length <= count < two-third-length
             (if (= count third-length)
-                (goto-line start-line)
+                (tidy-goto-line start-line)
               (forward-line 1))
             (end-of-line)
             (setq start (point))
@@ -2072,7 +2078,7 @@ Used to set up a Tidy menu in your favourite mode."
             (setq end (point)))
            (t                          ;; two-third-length <= count < length
             (if (= count two-third-length)
-                (goto-line start-line)
+                (tidy-goto-line start-line)
               (forward-line 1))
             (end-of-line)
             (setq start (point))
@@ -2761,15 +2767,6 @@ called."
           (when win
             (set-window-point win (point-max))
             ))
-;;         (run-with-idle-timer 0.1 nil
-;;                              (lambda (procbuf start end)
-;;                                (with-current-buffer procbuf
-;;                                  (font-lock-fontify-region start end)
-;;                                  ))
-;;                              (current-buffer)
-;;                              start
-;;                              (point-max)
-;;                              )
         ))))
 
 ;;;}}} +

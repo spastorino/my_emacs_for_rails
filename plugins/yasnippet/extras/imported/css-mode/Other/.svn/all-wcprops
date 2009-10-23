@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other
+END
+overflow: type (overflow).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/overflow:%20type%20(overflow).yasnippet
+END
+clear: value (clear).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/clear:%20value%20(clear).yasnippet
+END
+word-spacing:  length (word).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/word-spacing:%20%20length%20(word).yasnippet
+END
+position: type (position).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/position:%20type%20(position).yasnippet
+END
+vertical-align: type (vertical).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/vertical-align:%20type%20(vertical).yasnippet
+END
+!important CSS (!).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/!important%20CSS%20(!).yasnippet
+END
+z-index: index (z).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/z-index:%20index%20(z).yasnippet
+END
+marker-offset: auto (marker).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/marker-offset:%20auto%20(marker).yasnippet
+END
+visibility: type (visibility).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/visibility:%20type%20(visibility).yasnippet
+END
+word-spacing:  normal (word).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/word-spacing:%20%20normal%20(word).yasnippet
+END
+letter-spacing:   length-em (letter).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/letter-spacing:%20%20%20length-em%20(letter).yasnippet
+END
+white-space:  normal:pre:nowrap (white).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/white-space:%20%20normal:pre:nowrap%20(white).yasnippet
+END
+float: left:right:none (float).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/float:%20left:right:none%20(float).yasnippet
+END
+marker-offset: length (marker).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/marker-offset:%20length%20(marker).yasnippet
+END
+selection.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/selection.yasnippet
+END
+opacity: [for Safari, FF and IE] (opacity).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/opacity:%20%5Bfor%20Safari,%20FF%20and%20IE%5D%20(opacity).yasnippet
+END
+direction: ltr|rtl (direction).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/direction:%20ltr%7Crtl%20(direction).yasnippet
+END
+letter-spacing:   length-px (letter).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Other/letter-spacing:%20%20%20length-px%20(letter).yasnippet
+END

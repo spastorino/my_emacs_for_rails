@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files
+END
+directory().yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files/directory().yasnippet
+END
+untitled.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files/untitled.yasnippet
+END
+Dir["__"].yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files/Dir%5B%22__%22%5D.yasnippet
+END
+option_parse { .. }  (optp).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files/option_parse%20%7B%20..%20%7D%20%20(optp).yasnippet
+END
+open("path;or;url", "w") do |doc| .. end (ope).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files/open(%22path%3Bor%3Burl%22,%20%22w%22)%20do%20%7Cdoc%7C%20..%20end%20(ope).yasnippet
+END
+File_read("__").yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files/File_read(%22__%22).yasnippet
+END
+File.foreach ("..") do |line| .. end  (File).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files/File.foreach%20(%22..%22)%20do%20%7Cline%7C%20..%20end%20%20(File).yasnippet
+END
+Dir.glob("..") do |file| .. end  (Dir).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files/Dir.glob(%22..%22)%20do%20%7Cfile%7C%20..%20end%20%20(Dir).yasnippet
+END
+path_from_here( __ ).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files/path_from_here(%20__%20).yasnippet
+END
+File_open("__") { |file| __ }.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files/File_open(%22__%22)%20%7B%20%7Cfile%7C%20__%20%7D.yasnippet
+END
+unix_filter .. (uni).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Files/unix_filter%20..%20(uni).yasnippet
+END

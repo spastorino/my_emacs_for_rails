@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Lists
+END
+Enumerate.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Lists/Enumerate.yasnippet
+END
+Itemize.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Lists/Itemize.yasnippet
+END
+Item[description].yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Lists/Item%5Bdescription%5D.yasnippet
+END
+Lines to list environment.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Lists/Lines%20to%20list%20environment.yasnippet
+END
+Description.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/488/trunk/extras/imported/LaTeX-mode/Lists/Description.yasnippet
+END

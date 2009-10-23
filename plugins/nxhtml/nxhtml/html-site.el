@@ -202,8 +202,7 @@ See `rgrep' for the arguments REGEXP and FILES."
             (files (grep-read-files regexp)))
        (list regexp files))))
   ;; fix-me: ask for site
-  (when (called-interactively-p)
-    )
+  ;;(when (called-interactively-p) )
   (rgrep regexp files (html-site-current-site-dir)))
 
 ;;;###autoload
@@ -217,8 +216,7 @@ See `rgrep' for the arguments REGEXP and FILES."
      ;;(length parameters)
      parameters))
   ;; fix-me: ask for site
-  (when (called-interactively-p)
-    )
+  ;;(when (called-interactively-p) )
   (rdir-query-replace from to file-regexp
                       ;;root
                       (html-site-current-site-dir)

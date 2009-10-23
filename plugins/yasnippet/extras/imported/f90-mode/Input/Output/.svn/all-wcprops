@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output
+END
+Close File.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output/Close%20File.yasnippet
+END
+Quick Write.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output/Quick%20Write.yasnippet
+END
+Inquire (by Unit).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output/Inquire%20(by%20Unit).yasnippet
+END
+Quick Read.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output/Quick%20Read.yasnippet
+END
+read (Sequential Access).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output/read%20(Sequential%20Access).yasnippet
+END
+Inquire (by Filename).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output/Inquire%20(by%20Filename).yasnippet
+END
+read.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output/read.yasnippet
+END
+print.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output/print.yasnippet
+END
+Quick Open.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output/Quick%20Open.yasnippet
+END
+write (Sequental Access).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output/write%20(Sequental%20Access).yasnippet
+END
+Open File.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Input/Output/Open%20File.yasnippet
+END

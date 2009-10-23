@@ -106,7 +106,7 @@ The third argument DOC is a documentation string for the widget."
                 (buffer-string)))
       (goto-char (marker-position pos))
       (setq pos (point-marker))))
-  (let (field wbutton doc button)
+  (let (field wbutton doc button widget)
     (with-current-buffer (marker-buffer pos)
       (setq field (get-char-property pos 'field))
       (setq wbutton (get-char-property pos 'button))

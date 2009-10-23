@@ -1,0 +1,581 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode
+END
+act.arg
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/act.arg
+END
+app
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/app
+END
+def.ret-body
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/def.ret-body
+END
+pr.string
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/pr.string
+END
+whi
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/whi
+END
+pri
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/pri
+END
+def.body
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/def.body
+END
+try.catch-finally
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/try.catch-finally
+END
+arr.val-new
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/arr.val-new
+END
+intercept
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/intercept
+END
+for.loop
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/for.loop
+END
+pro
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/pro
+END
+ext
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/ext
+END
+throw
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/throw
+END
+at.author
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/at.author
+END
+actor
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/actor
+END
+cl.abs-arg
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/cl.abs-arg
+END
+pr.simple
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/pr.simple
+END
+with
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/with
+END
+arr.new
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/arr.new
+END
+case.match-all
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/case.match-all
+END
+map
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/map
+END
+try
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/try
+END
+clof
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/clof
+END
+cons.nil
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/cons.nil
+END
+doc.file
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/doc.file
+END
+cc
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/cc
+END
+imp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/imp
+END
+ls.val-new
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/ls.val-new
+END
+def.ret
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/def.ret
+END
+asof
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/asof
+END
+def.arg-ret-body
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/def.arg-ret-body
+END
+mix
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/mix
+END
+cl
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/cl
+END
+for.extract
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/for.extract
+END
+ob
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/ob
+END
+isof
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/isof
+END
+def.arg-body
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/def.arg-body
+END
+co
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/co
+END
+at.param
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/at.param
+END
+ls.new
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/ls.new
+END
+foreach
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/foreach
+END
+doc.class
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/doc.class
+END
+val.new
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/val.new
+END
+val.ret
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/val.ret
+END
+tup.paren
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/tup.paren
+END
+ano
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/ano
+END
+pr.trace
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/pr.trace
+END
+var.new
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/var.new
+END
+var.ret
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/var.ret
+END
+expect
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/expect
+END
+at.version
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/at.version
+END
+suite
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/suite
+END
+pri.param
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/pri.param
+END
+match.can
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/match.can
+END
+match
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/match
+END
+tr.ext-with
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/tr.ext-with
+END
+hmap.val-new
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/hmap.val-new
+END
+pro.param
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/pro.param
+END
+doc.def
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/doc.def
+END
+cons
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/cons
+END
+cl.abs
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/cl.abs
+END
+pac
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/pac
+END
+ass.true
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/ass.true
+END
+doc.file-scala
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/doc.file-scala
+END
+cl.arg
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/cl.arg
+END
+act
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/act
+END
+bang
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/bang
+END
+case
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/case
+END
+doc.file-scala-api
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/doc.file-scala-api
+END
+hset.val-new
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/hset.val-new
+END
+hmap.new
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/hmap.new
+END
+for.multi
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/for.multi
+END
+test
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/test
+END
+pr.newline
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/pr.newline
+END
+at.return
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/at.return
+END
+val
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/val
+END
+for.if
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/for.if
+END
+main
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/main
+END
+tr.ext
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/tr.ext
+END
+if.else
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/if.else
+END
+tr
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/tr
+END
+ass
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/ass
+END
+def.simple
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/def.simple
+END
+var
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/var
+END
+cast
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/cast
+END
+hset.new
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/hset.new
+END
+def.arg-ret
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/def.arg-ret
+END
+if
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/if
+END
+tr.with
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/tr.with
+END
+tup.arrow
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/tup.arrow
+END
+match.option
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/match.option
+END
+map.new
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/map.new
+END
+def.arg
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/def.arg
+END
+try.finally
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/try.finally
+END
+doc.scaladoc
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/433/trunk/snippets/text-mode/scala-mode/doc.scaladoc
+END

@@ -50,10 +50,7 @@
 
 (defvar mumamo-regions nil
   "List of active mumamo regions.  Internal use only.
-Mumamo regions are like another layer of chunks above the normal chunks.
-They does not affect the normal chunks, but they overrides them.
-
-The entries in this should be like this
+The entries in this list should be like this
 
     \(OVL-DEF OVL-CHUNK)
 
@@ -194,10 +191,15 @@ to work)."
 
 ;;;###autoload
 (defun mumamo-add-region ()
-  "Add a mumamo region."
+  "Add a mumamo region.
+Mumamo regions are like another layer of chunks above the normal chunks.
+They does not affect the normal chunks, but they overrides them.
+
+To create a mumamo region first select a visible region and then
+call this function."
   (interactive)
   (if (not mark-active)
-      (message "Please select a visible region first")
+      (message (propertize "Please select a visible region first" 'face 'secondary-selection))
     (let ((beg (region-beginning))
           (end (region-end))
           (maj (mumamo-region-read-major)))
@@ -206,7 +208,8 @@ to work)."
 
 ;; (dolist (o (overlays-in (point-min) (point-max))) (delete-overlay o))
 (defun mumamo-clear-all-regions ()
-  "Clear all mumamo regions in buffer."
+  "Clear all mumamo regions in buffer.
+For information about mumamo regions see `mumamo-add-region'."
   (interactive)
   (while mumamo-regions
     (mumamo-clear-region-1 (car mumamo-regions))
@@ -235,17 +238,21 @@ Accept only single major mode, not mumamo multi major modes."
 
 (defun mumamo-region-set-major (ovl major)
   "Change major mode for mumamo region at point.
+For information about mumamo regions see `mumamo-add-region'.
+
 If run non-interactively then OVL should be a mumamo region and
 MAJOR the major mode to set for that region."
   (interactive
    (list (or (mumamo-region-at (point))
              (error "There is no mumamo region at point"))
          (mumamo-region-read-major)))
-  (overlay-put ovl 'mumamo-major-mode major)
+  (overlay-put ovl 'mumamo-major-mode `(,major))
   (overlay-put ovl 'help-echo (format "Mumamo region, major mode `%s'" major)))
 
 (defun mumamo-clear-region (ovl)
   "Clear the mumamo region at point.
+For information about mumamo regions see `mumamo-add-region'.
+
 If run non-interactively then OVL should be the mumamo region to
 clear."
   (interactive

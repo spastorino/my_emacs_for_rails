@@ -1,0 +1,149 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode
+END
+Function & Arity.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Function%20&%20Arity.yasnippet
+END
+(Fun Clause).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/(Fun%20Clause).yasnippet
+END
+.yas-ignore-filenames-as-triggers
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/.yas-ignore-filenames-as-triggers
+END
+Fun Expression.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Fun%20Expression.yasnippet
+END
+Import Directive.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Import%20Directive.yasnippet
+END
+(If Clause).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/(If%20Clause).yasnippet
+END
+Ifdef Directive.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Ifdef%20Directive.yasnippet
+END
+Record Directive.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Record%20Directive.yasnippet
+END
+If Expression.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/If%20Expression.yasnippet
+END
+(Case:Receive:Try Clause).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/(Case:Receive:Try%20Clause).yasnippet
+END
+Export Directive.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Export%20Directive.yasnippet
+END
+Include Directive.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Include%20Directive.yasnippet
+END
+Behaviour Directive.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Behaviour%20Directive.yasnippet
+END
+Module Directive.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Module%20Directive.yasnippet
+END
+Function.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Function.yasnippet
+END
+Field & Value.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Field%20&%20Value.yasnippet
+END
+.yas-make-groups
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/.yas-make-groups
+END
+Define Directive.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Define%20Directive.yasnippet
+END
+Ifndef Directive.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Ifndef%20Directive.yasnippet
+END
+Case Expression.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Case%20Expression.yasnippet
+END
+Try Expression.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Try%20Expression.yasnippet
+END
+Undef Directive.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Undef%20Directive.yasnippet
+END
+Receive Expression.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/Receive%20Expression.yasnippet
+END
+(Function Clause).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/488/trunk/extras/imported/erlang-mode/(Function%20Clause).yasnippet
+END

@@ -677,7 +677,6 @@ Trailing comments are ignored."
 
 ;; --- Main Function ---
 
-;;;###autoload
 (defun javascript-mode ()
   "Major mode for editing JavaScript source text.
 

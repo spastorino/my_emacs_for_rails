@@ -592,11 +592,17 @@ single-line comment paragraph starts."
     (point)))
 
 
+(defun js-goto-line (line)
+  (save-restriction
+    (widen)
+    (goto-char (point-min))
+    (forward-line (1- line))))
+
 (defun js-sline-comment-offset (line)
   "Return the column at the start of the current single-line
 comment paragraph."
   (save-excursion
-    (goto-line line)
+    (js-goto-line line)
     (re-search-forward "//" (point-at-eol))
     (goto-char (match-beginning 0))
     (current-column)))
@@ -606,7 +612,7 @@ comment paragraph."
   "Return the column at the start of the text of the current
 single-line comment paragraph."
   (save-excursion
-    (goto-line line)
+    (js-goto-line line)
     (re-search-forward "//[ \t]*" (point-at-eol))
     (current-column)))
 

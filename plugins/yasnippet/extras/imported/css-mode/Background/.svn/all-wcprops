@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Background
+END
+background-repeat:  r:r-x:r-y:n-r (background).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Background/background-repeat:%20%20r:r-x:r-y:n-r%20(background).yasnippet
+END
+background-color:  color-hex (background).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Background/background-color:%20%20color-hex%20(background).yasnippet
+END
+background-color:  transparent (background).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Background/background-color:%20%20transparent%20(background).yasnippet
+END
+background-attachment: scroll:fixed (background).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Background/background-attachment:%20scroll:fixed%20(background).yasnippet
+END
+background-image:  none (background).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Background/background-image:%20%20none%20(background).yasnippet
+END
+background:  color image repeat attachment position (background).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Background/background:%20%20color%20image%20repeat%20attachment%20position%20(background).yasnippet
+END
+background-color:  color-rgb (background).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Background/background-color:%20%20color-rgb%20(background).yasnippet
+END
+background-image:  url (background).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Background/background-image:%20%20url%20(background).yasnippet
+END
+background-position:  position (background).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Background/background-position:%20%20position%20(background).yasnippet
+END
+background-color:  color-name (background).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Background/background-color:%20%20color-name%20(background).yasnippet
+END

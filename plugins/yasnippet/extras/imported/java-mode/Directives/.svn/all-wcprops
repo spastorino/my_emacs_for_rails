@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Directives
+END
+import.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Directives/import.yasnippet
+END
+package.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Directives/package.yasnippet
+END
+synchronized.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Directives/synchronized.yasnippet
+END
+assert.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Directives/assert.yasnippet
+END

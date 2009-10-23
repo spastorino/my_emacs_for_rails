@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: option
+# contributor: Translated from TextMate Snippet
+# name: ⌥
+## condition: "text.html"
+# --
+&#x2325;

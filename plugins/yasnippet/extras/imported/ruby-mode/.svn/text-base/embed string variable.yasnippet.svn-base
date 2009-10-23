@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# contributor: Translated from TextMate Snippet
+# name: Embedded Code — #{…}
+# binding: "#"
+# condition: (yas/ruby-in-interpolated-string-p)
+# expand-env: ((yas/wrap-around-region t))
+# --
+#{$0}

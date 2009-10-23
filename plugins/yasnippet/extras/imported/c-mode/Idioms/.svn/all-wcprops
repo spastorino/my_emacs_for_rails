@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/Idioms
+END
+Include header once only guard.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/Idioms/Include%20header%20once%20only%20guard.yasnippet
+END
+010 main() (main).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/Idioms/010%20main()%20(main).yasnippet
+END
+$1.begin(), $1.end() (beginend).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/Idioms/$1.begin(),%20$1.end()%20(beginend).yasnippet
+END
+read file (readF).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/Idioms/read%20file%20(readF).yasnippet
+END

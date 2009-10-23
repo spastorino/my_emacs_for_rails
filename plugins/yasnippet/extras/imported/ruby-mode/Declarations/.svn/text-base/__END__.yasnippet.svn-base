@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: end
+# contributor: Translated from TextMate Snippet
+# name: __END__
+## condition: "source.ruby"
+# --
+__END__

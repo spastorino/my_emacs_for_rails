@@ -1,9 +1,7 @@
 REQUIREMENTS
 ------------
 
-The current release was tested under Emacs 23 from CVS.
-See http://blog.wyeworks.com/2009/3/23/emacs-cvs-installation
-for cvs installation instructions.
+The current release was tested under Emacs 23.
 Rcodetools for auto-complete (gem install rcodetools)
 
 
@@ -16,24 +14,24 @@ Provides the following plugins:
 anything
 auto-complete
 autotest
-cedet
+cedet (http://cedet.sourceforge.net/)
 color-theme
-ecb
+ecb (http://ecb.sourceforge.net/)
 find-recursive
 flymake
 javascript
-nxhtml
-rcodetools
+nxhtml (http://ourcomments.org/Emacs/nXhtml/doc/nxhtml.html)
+rcodetools (http://eigenclass.org/hiki.rb?rcodetools)
 rdebug
 redo
 ri-emacs
-rinari
+rinari (http://rinari.rubyforge.org/)
 ruby-block
-ruby-mode
+ruby-mode (svn co http://svn.ruby-lang.org/repos/ruby/trunk ruby | svn co http://svn.ruby-lang.org/repos/ruby/branches/ruby_1_8)
 toggle
 yaml-mode
-yasnippet
-yasnippets-rails
+yasnippet (http://code.google.com/p/yasnippet/)
+yasnippets-rails (http://github.com/eschulte/yasnippets-rails/tree/master)
 
 
 INSTALLATION

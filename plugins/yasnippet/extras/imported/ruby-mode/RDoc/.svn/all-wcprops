@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/RDoc
+END
+:yields: RDoc comment.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/RDoc/:yields:%20RDoc%20comment.yasnippet
+END
+RDoc documentation block.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/RDoc/RDoc%20documentation%20block.yasnippet
+END

@@ -79,7 +79,8 @@
 
 (defun majmodpri-sort-lists-in-timer ()
   (condition-case err
-      (majmodpri-sort-lists)
+      (save-match-data ;; runs in timer
+        (majmodpri-sort-lists))
     (error (message "(majmodpri-sort-lists): %s" err))))
 
 
@@ -246,7 +247,7 @@ in buffers."
         (setq font-lock-keywords (cadr font-lock-keywords))
         (font-lock-mode 1))
       (message "majmodpri-apply-priorities: buffer=%s, %s,%s => %s,%s"
-               buffer
+               (current-buffer)
                old-major-mode
                old-mumamo-multi-major-mode
                major-mode
@@ -325,6 +326,8 @@ before applying."
     nxml-mumamo-mode
     nxml-mode
 
+    javascript-mode
+    espresso-mode
     rhtml-mode
     )
   "Priority list for major modes.

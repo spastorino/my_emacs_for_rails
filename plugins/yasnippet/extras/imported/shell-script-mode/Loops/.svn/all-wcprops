@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/488/trunk/extras/imported/shell-script-mode/Loops
+END
+while … (done).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/488/trunk/extras/imported/shell-script-mode/Loops/while%20%E2%80%A6%20(done).yasnippet
+END
+until … (done).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/488/trunk/extras/imported/shell-script-mode/Loops/until%20%E2%80%A6%20(done).yasnippet
+END
+for ... done (for).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/488/trunk/extras/imported/shell-script-mode/Loops/for%20...%20done%20(for).yasnippet
+END
+for … in … done (forin).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/!svn/ver/488/trunk/extras/imported/shell-script-mode/Loops/for%20%E2%80%A6%20in%20%E2%80%A6%20done%20(forin).yasnippet
+END

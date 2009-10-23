@@ -1,8 +1,8 @@
 ;;; chart.el --- Google charts (and maybe other)
 ;;
 ;; Author: Lennart Borgman (lennart O borgman A gmail O com)
-;; Created: 2008-04-06T15:09:33+0200 Sun
-;; Version:
+;; Created: 2008-04-06 Sun
+(defconst chart:version "0.2") ;; Version:
 ;; Last-Updated:
 ;; URL:
 ;; Keywords:

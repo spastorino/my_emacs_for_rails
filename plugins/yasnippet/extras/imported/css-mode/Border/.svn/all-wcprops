@@ -1,0 +1,125 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border
+END
+border-style: style (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-style:%20style%20(border).yasnippet
+END
+border-top-style: style (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-top-style:%20style%20(border).yasnippet
+END
+border-right-width: size (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-right-width:%20size%20(border).yasnippet
+END
+border-right: size style color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-right:%20size%20style%20color%20(border).yasnippet
+END
+border-right-color: color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-right-color:%20color%20(border).yasnippet
+END
+border-bottom-color: size style color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-bottom-color:%20size%20style%20color%20(border).yasnippet
+END
+border-bottom-width: size style color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-bottom-width:%20size%20style%20color%20(border).yasnippet
+END
+border-right-style: style (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-right-style:%20style%20(border).yasnippet
+END
+border-left-width: size (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-left-width:%20size%20(border).yasnippet
+END
+border-left-color: color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-left-color:%20color%20(border).yasnippet
+END
+border-left: size style color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-left:%20size%20style%20color%20(border).yasnippet
+END
+border-left-style: style (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-left-style:%20style%20(border).yasnippet
+END
+border-top-width: size (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-top-width:%20size%20(border).yasnippet
+END
+border:   size style color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border:%20%20%20size%20style%20color%20(border).yasnippet
+END
+border-top-color: color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-top-color:%20color%20(border).yasnippet
+END
+border-bottom-style: size style color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-bottom-style:%20size%20style%20color%20(border).yasnippet
+END
+border-color: color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-color:%20color%20(border).yasnippet
+END
+border-top: size style color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-top:%20size%20style%20color%20(border).yasnippet
+END
+border-bottom: size style color (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-bottom:%20size%20style%20color%20(border).yasnippet
+END
+border-width: width (border).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/Border/border-width:%20width%20(border).yasnippet
+END

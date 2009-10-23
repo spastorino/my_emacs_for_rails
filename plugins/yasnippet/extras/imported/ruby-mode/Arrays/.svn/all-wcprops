@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Arrays
+END
+fill(range) { |i| .. }  (fil).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Arrays/fill(range)%20%7B%20%7Ci%7C%20..%20%7D%20%20(fil).yasnippet
+END
+flatten_once  (fla).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Arrays/flatten_once%20%20(fla).yasnippet
+END
+delete_if { |e| .. }  (deli).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Arrays/delete_if%20%7B%20%7Ce%7C%20..%20%7D%20%20(deli).yasnippet
+END
+Array.new(10) { |i| .. }  (Arr).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Arrays/Array.new(10)%20%7B%20%7Ci%7C%20..%20%7D%20%20(Arr).yasnippet
+END
+zip(enums) { |row| .. }  (zip).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Arrays/zip(enums)%20%7B%20%7Crow%7C%20..%20%7D%20%20(zip).yasnippet
+END

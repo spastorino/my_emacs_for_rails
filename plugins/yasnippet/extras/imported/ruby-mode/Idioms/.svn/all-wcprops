@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Idioms
+END
+singleton_class().yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Idioms/singleton_class().yasnippet
+END
+class_from_name()  (clafn).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Idioms/class_from_name()%20%20(clafn).yasnippet
+END
+deep_copy(..)  (dee).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Idioms/deep_copy(..)%20%20(dee).yasnippet
+END

@@ -86,6 +86,7 @@ See `nxhtmltest-run' for more information about the tests."
                 "\" load-path)")))
     (with-current-buffer temp-eval-buf
       (save-buffer))
+    (kill-buffer temp-eval-buf)
     (unless (file-exists-p nxhtmltest-bin-Q)
       (error "Can't find directory %s" nxhtmltest-bin-Q))
     (unless (file-exists-p test-el)

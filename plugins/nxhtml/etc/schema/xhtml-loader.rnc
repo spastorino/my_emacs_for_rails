@@ -1,1 +1,1 @@
-include "../../../../../../../mnt/respaldo/Progs/emacs/share/emacs/23.1.50/etc/schema/xhtml.rnc"
+include "../../../../../../../usr/share/emacs/23.1/etc/schema/xhtml.rnc"

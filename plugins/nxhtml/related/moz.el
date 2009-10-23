@@ -200,14 +200,15 @@ Also switch to the interaction buffer."
   (add-hook 'comint-output-filter-functions 'inferior-moz-track-repl-name nil t))
 
 (defun inferior-moz-track-repl-name (comint-output)
-  (when (string-match "\\(\\w+\\)> $" comint-output)
-    (setq moz-repl-name (match-string 1 comint-output))))
+  (save-match-data
+    (when (string-match "\\(\\w+\\)> $" comint-output)
+      (setq moz-repl-name (match-string 1 comint-output)))))
 
 (defun inferior-moz-self-insert-or-repl-name ()
   (interactive)
   (if (looking-back "\\(\\w+\\)> $")
       (insert moz-repl-name ".")
-    (insert last-command-char)))
+    (insert last-command-event)))
 
 (defun inferior-moz-input-sender (proc string)
   "Custom function to send input with comint-send-input.
@@ -239,6 +240,8 @@ See also `inferior-moz-start-process'."
         (inferior-moz-start-process)
         (inferior-moz-process))))
 
+(defvar mozrepl-home-page "http://hyperstruct.net/projects/mozrepl")
+
 (defun inferior-moz-start-process ()
   "Start an inferior Mozrepl process and connect to Firefox.
 It runs the hook `inferior-moz-hook' after starting the process
@@ -255,8 +258,9 @@ Note that you have to start the MozRepl server from Firefox."
           (inferior-moz-mode)
           (run-hooks 'inferior-moz-hook)))
     (file-error
-     (with-output-to-temp-buffer "*MozRepl Error*"
-       (with-current-buffer (get-buffer "*MozRepl Error*")
+     (with-output-to-temp-buffer (help-buffer)
+       (help-setup-xref (list #'describe-function 'inferior-moz-start-process) (interactive-p))
+       (with-current-buffer (help-buffer)
          (insert "Can't start MozRepl, the error message was:\n\n     "
                  (error-message-string err)
                  "\n"
@@ -269,9 +273,8 @@ Note that you have to start the MozRepl server from Firefox."
          (insert-text-button
           "MozRepl home page"
           'action (lambda (button)
-                    (browse-url
-                     "http://hyperstruct.net/projects/mozrepl")
-                    )
+                    (browse-url mozrepl-home-page))
+          'help-echo mozrepl-home-page
           'face 'button)
          (insert
           " for more information."

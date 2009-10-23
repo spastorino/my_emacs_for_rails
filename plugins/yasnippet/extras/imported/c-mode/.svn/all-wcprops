@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/491/trunk/extras/imported/c-mode
+END
+#include "" (inc).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/%23include%20%22%22%20(inc).yasnippet
+END
+#ifndef … #define … #endif.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/!svn/ver/491/trunk/extras/imported/c-mode/%23ifndef%20%E2%80%A6%20%23define%20%E2%80%A6%20%23endif.yasnippet
+END
+.yas-ignore-filenames-as-triggers
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/.yas-ignore-filenames-as-triggers
+END
+.yas-make-groups
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/.yas-make-groups
+END
+std::vector (v).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/std::vector%20(v).yasnippet
+END
+#endif.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/%23endif.yasnippet
+END
+#include <> (Inc).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/%23include%20%3C%3E%20(Inc).yasnippet
+END
+std::map (map).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/std::map%20(map).yasnippet
+END
+once with #ifndef.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/491/trunk/extras/imported/c-mode/once%20with%20%23ifndef.yasnippet
+END
+fprintf ….yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/491/trunk/extras/imported/c-mode/fprintf%20%E2%80%A6.yasnippet
+END
+#pragma mark (mark).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/488/trunk/extras/imported/c-mode/%23pragma%20mark%20(mark).yasnippet
+END
+printf .. (printf).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/491/trunk/extras/imported/c-mode/printf%20..%20(printf).yasnippet
+END
+snprintf.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/491/trunk/extras/imported/c-mode/snprintf.yasnippet
+END

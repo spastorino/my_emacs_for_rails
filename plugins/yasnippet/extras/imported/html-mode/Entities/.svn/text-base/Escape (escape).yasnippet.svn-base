@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: escape
+# contributor: Translated from TextMate Snippet
+# name: ⎋
+## condition: "text.html"
+# --
+&#x238B;

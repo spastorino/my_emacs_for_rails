@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: Pn-
+# contributor: Translated from TextMate Snippet
+# name: PStore.new( .. )
+## condition: "source.ruby"
+# --
+PStore.new(${1:"${2:file_name.pstore}"})

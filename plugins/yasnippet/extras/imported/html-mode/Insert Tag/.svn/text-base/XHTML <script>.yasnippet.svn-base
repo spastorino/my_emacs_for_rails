@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# key: script
+# contributor: Translated from TextMate Snippet
+# name: Script
+## condition: "text.html"
+# --
+<script type="text/javascript" charset="utf-8">
+	$0
+</script>

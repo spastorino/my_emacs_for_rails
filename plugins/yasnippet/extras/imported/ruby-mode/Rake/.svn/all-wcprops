@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Rake
+END
+task :task_name => [:dependent, :tasks] do __ end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Rake/task%20:task_name%20=%3E%20%5B:dependent,%20:tasks%5D%20do%20__%20end.yasnippet
+END
+namespace :__ do __ end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Rake/namespace%20:__%20do%20__%20end.yasnippet
+END

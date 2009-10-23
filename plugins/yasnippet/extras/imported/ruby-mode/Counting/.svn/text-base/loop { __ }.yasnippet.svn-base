@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: loo
+# contributor: Translated from TextMate Snippet
+# name: loop { .. }
+## condition: "source.ruby"
+# --
+loop { $0 }

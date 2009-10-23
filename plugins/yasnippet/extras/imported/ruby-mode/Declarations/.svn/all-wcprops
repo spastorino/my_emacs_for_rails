@@ -1,0 +1,107 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/516/trunk/extras/imported/ruby-mode/Declarations
+END
+080 ruby case.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/080%20ruby%20case.yasnippet
+END
+require ".."  (req).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/require%20%22..%22%20%20(req).yasnippet
+END
+require_gem "__".yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/require_gem%20%22__%22.yasnippet
+END
+usage_if()  (usai).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/usage_if()%20%20(usai).yasnippet
+END
+application_code ..  (app).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/application_code%20..%20%20(app).yasnippet
+END
+until ___ end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/until%20___%20end.yasnippet
+END
+Wrap in Begin … Rescue … End.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/!svn/ver/516/trunk/extras/imported/ruby-mode/Declarations/Wrap%20in%20Begin%20%E2%80%A6%20Rescue%20%E2%80%A6%20End.yasnippet
+END
+unless (unless).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/unless%20(unless).yasnippet
+END
+def end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/def%20end.yasnippet
+END
+070 ruby if.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/070%20ruby%20if.yasnippet
+END
+while ___ end.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/while%20___%20end.yasnippet
+END
+usage_unless()  (usau).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/usage_unless()%20%20(usau).yasnippet
+END
+060 ruby if else.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/060%20ruby%20if%20else.yasnippet
+END
+elsif ___.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/elsif%20___.yasnippet
+END
+when.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/when.yasnippet
+END
+__END__.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/__END__.yasnippet
+END
+#!;usr;local;bin;ruby -w.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Declarations/%23!%3Busr%3Blocal%3Bbin%3Bruby%20-w.yasnippet
+END

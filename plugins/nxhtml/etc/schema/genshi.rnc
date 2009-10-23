@@ -19,9 +19,13 @@ genshi.attrib = attribute py:if        { genshi.expr-type   }?,
                 attribute py:replace   { genshi.expr-type   }?,
                 attribute py:strip     { genshi.expr-type   }?
 
-genshi.if.attlist   = attribute expr { genshi.expr-type }
+genshi.if.attlist   = attribute test { genshi.expr-type }
 genshi.for.attlist  = attribute each { genshi.expr-type }
-genshi.def.attlist  = attribute each { genshi.expr-type }
+genshi.def.attlist  = attribute function { genshi.expr-type }
 genshi.with.attlist = attribute vars { genshi.with-type }
+genshi.match.attlist = attribute path { genshi.xpath-type },
+                       attribute buffer { genshi.expr-type }?,
+                       attribute once { genshi.expr-type }?,
+                       attribute recursive { genshi.expr-type }?
 
                

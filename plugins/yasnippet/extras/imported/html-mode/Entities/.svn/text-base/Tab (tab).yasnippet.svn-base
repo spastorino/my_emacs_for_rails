@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: tab
+# contributor: Translated from TextMate Snippet
+# name: ⇥
+## condition: "text.html"
+# --
+&#x21E5;

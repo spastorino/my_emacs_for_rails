@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs
+END
+stop.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/stop.yasnippet
+END
+Implied do.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/Implied%20do.yasnippet
+END
+elseif.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/elseif.yasnippet
+END
+if (single line).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/if%20(single%20line).yasnippet
+END
+named: select case.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/named:%20select%20case.yasnippet
+END
+case.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/case.yasnippet
+END
+select case.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/select%20case.yasnippet
+END
+do while.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/do%20while.yasnippet
+END
+if.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/if.yasnippet
+END
+forall.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/forall.yasnippet
+END
+cycle.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/cycle.yasnippet
+END
+named: do.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/named:%20do.yasnippet
+END
+do.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/488/trunk/extras/imported/f90-mode/Control%20Constructs/do.yasnippet
+END

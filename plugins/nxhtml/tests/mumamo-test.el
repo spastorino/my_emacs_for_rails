@@ -63,11 +63,12 @@ When this mode is on the following keys are defined:
   )
 
 (defun mumamo-test-tell-bindings ()
-  (let ((s "mumamo-test-mode is on, use F3/shift-F3 for simple testing"))
-    (put-text-property 0 (length s)
-                       'face 'font-lock-warning-face
-                       s)
-    (message "%s" s)))
+  (save-match-data ;; runs in timer
+    (let ((s "mumamo-test-mode is on, use F3/shift-F3 for simple testing"))
+      (put-text-property 0 (length s)
+                         'face 'font-lock-warning-face
+                         s)
+      (message "%s" s))))
 
 ;;(mumamo-test-mode 1)
 

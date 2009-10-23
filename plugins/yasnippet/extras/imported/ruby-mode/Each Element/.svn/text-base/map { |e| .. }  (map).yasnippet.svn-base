@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: map
+# contributor: Translated from TextMate Snippet
+# name: map { |e| .. }
+## condition: "source.ruby"
+# --
+map { |${1:e}| $0 }

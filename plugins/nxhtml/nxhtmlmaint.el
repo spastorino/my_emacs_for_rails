@@ -136,6 +136,7 @@ Update nXhtml autoload file with them."
          (sub-dirs (mapcar (lambda (file)
                              (when (and (not (member file '("." "..")))
                                         (not (member file '("nxml-mode-20041004" "old")))
+                                        (not (member file '("nxhtml-company-mode")))
                                         (not (member file '("in")))
                                         (file-directory-p (expand-file-name file root)))
                                file))
@@ -184,7 +185,8 @@ Update nXhtml autoload file with them."
 
 (defun nxhtmlmaint-autoload-file-load-name (file)
   "Return relative file name for FILE to autoload file directory."
-  (let ((name (if nxhtmlmaint-autoload-default-directory
+  (let ((name (if (and nxhtmlmaint-autoload-default-directory
+                       (file-name-absolute-p file))
                   (file-relative-name
                    file nxhtmlmaint-autoload-default-directory)
                 (file-name-nondirectory file))))
@@ -246,17 +248,23 @@ You must restart Emacs to use the byte compiled files.
 If for some reason the byte compiled files does not work you can
 remove then with `nxhtmlmaint-byte-uncompile-all'."
   (interactive)
-  (let ((this-file (expand-file-name "nxhtmlmaint.el" nxhtmlmaint-dir))
-        (auto-file (expand-file-name "autostart.el" nxhtmlmaint-dir)))
-    ;;(message "this-file=%s" this-file)
+  (let* ((this-file (expand-file-name "nxhtmlmaint.el" nxhtmlmaint-dir))
+         (auto-file (expand-file-name "autostart.el" nxhtmlmaint-dir))
+         (this-emacs (locate-file invocation-name
+                                  (list invocation-directory)
+                                  exec-suffixes))
+         (process-args `(,this-emacs nil 0 nil "-Q")))
     (nxhtmlmaint-byte-uncompile-all)
-    ;;(nxhtmlmaint-get-all-autoloads)
-    (require 'ourcomments-util)
-    (call-process (ourcomments-find-emacs) nil 0 nil "-Q"
-                  "-l" this-file
-                  "-l" auto-file
-                  "-f" "nxhtmlmaint-byte-compile-all"))
-  (message "Starting new Emacs instance for byte compiling ..."))
+    (if noninteractive
+        (nxhtmlmaint-byte-compile-all)
+      ;;(when noninteractive (setq process-args (append process-args '("-batch"))))
+      (setq process-args (append process-args
+                                 (list "-l" this-file
+                                       "-l" auto-file
+                                       "-f" "nxhtmlmaint-byte-compile-all")))
+      (message "process-args=%S" process-args)
+      (message "Starting new Emacs instance for byte compiling ...")
+      (apply 'call-process process-args))))
 
 ;;(nxhtmlmaint-byte-compile-all)
 (defun nxhtmlmaint-byte-compile-all ()
@@ -268,6 +276,9 @@ remove then with `nxhtmlmaint-byte-uncompile-all'."
          (util-dir (file-name-as-directory
                     (expand-file-name "util"
                                       nxhtmlmaint-dir)))
+         (nxhtml-company-dir (file-name-as-directory
+                              (expand-file-name "nxhtml-company-mode"
+                                                util-dir)))
          (related-dir (file-name-as-directory
                        (expand-file-name "related"
                                          nxhtmlmaint-dir)))
@@ -280,6 +291,7 @@ remove then with `nxhtmlmaint-byte-uncompile-all'."
          )
     (add-to-list 'load-path nxhtml-dir)
     (add-to-list 'load-path util-dir)
+    (add-to-list 'load-path nxhtml-company-dir)
     (add-to-list 'load-path related-dir)
     (add-to-list 'load-path tests-dir)
     (when (file-directory-p emacsw32-dir)
@@ -301,7 +313,7 @@ See `nxhtmlmaint-start-byte-compilation' for byte compiling."
     (nxhtmlmaint-byte-compile-dir nxhtmlmaint-dir t t))
   (message "Byte uncompiling is ready, restart Emacs to use the elisp files"))
 
-(defconst nxhtmlmaint-nonbyte-compile-dirs '("." ".." "alts" "nxml-mode-20041004" "old" "xtests"))
+(defconst nxhtmlmaint-nonbyte-compile-dirs '("." ".." "alts" "nxml-mode-20041004" "old" "tests"))
 
 ;; Fix-me: simplify this now that nxml is not included
 (defun nxhtmlmaint-byte-compile-dir (dir force del-elc)

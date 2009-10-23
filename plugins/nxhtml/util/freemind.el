@@ -1,9 +1,9 @@
 ;;; freemind.el --- Export to FreeMind
 ;;
 ;; Author: Lennart Borgman (lennart O borgman A gmail O com)
-;; Created: 2008-02-19T17:52:56+0100 Tue
-;; Version: 0.59
-;; Last-Updated: 2009-05-23 Sat
+;; Created: 2008-02-19 Tue
+(defconst freemind:version "0.60") ;; Version:
+;; Last-Updated: 2009-08-04 Tue
 ;; URL:
 ;; Keywords:
 ;; Compatibility:
@@ -438,6 +438,12 @@ NOT READY YET."
         (eq found-visible-child 'found)
         ))))
 
+(defun freemind-goto-line (line)
+  (save-restriction
+    (widen)
+    (goto-char (point-min))
+    (forward-line (1- line))))
+
 (defun freemind-write-mm-buffer (org-buffer mm-buffer node-at-line)
   (with-current-buffer org-buffer
     (dolist (node-style freemind-node-styles)
@@ -486,7 +492,7 @@ NOT READY YET."
           (if node-at-line
               ;; Get number of top nodes and last line for this node
               (progn
-                (goto-line node-at-line)
+                (freemind-goto-line node-at-line)
                 (unless (looking-at freemind-node-pattern)
                   (error "No node at line %s" node-at-line))
                 (setq node-at-line-level (length (match-string-no-properties 1)))
@@ -504,7 +510,7 @@ NOT READY YET."
                                   (setq num-top2-nodes (1+ num-top2-nodes))))))))
                 (setq current-level node-at-line-level)
                 (setq num-top1-nodes 1)
-                (goto-line node-at-line))
+                (freemind-goto-line node-at-line))
 
             ;; First get number of top nodes
             (goto-char (point-min))

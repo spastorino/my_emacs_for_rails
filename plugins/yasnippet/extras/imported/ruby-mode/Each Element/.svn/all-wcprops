@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element
+END
+each { |e| .. }  (ea).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/each%20%7B%20%7Ce%7C%20..%20%7D%20%20(ea).yasnippet
+END
+each_byte { |byte| .. }  (eab).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/each_byte%20%7B%20%7Cbyte%7C%20..%20%7D%20%20(eab).yasnippet
+END
+each_index { |i| .. }  (eai).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/each_index%20%7B%20%7Ci%7C%20..%20%7D%20%20(eai).yasnippet
+END
+each_char { |chr| .. }  (eac-).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/each_char%20%7B%20%7Cchr%7C%20..%20%7D%20%20(eac-).yasnippet
+END
+map { |e| .. }  (map).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/map%20%7B%20%7Ce%7C%20..%20%7D%20%20(map).yasnippet
+END
+each_pair { |name, val| .. }  (eap).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/each_pair%20%7B%20%7Cname,%20val%7C%20..%20%7D%20%20(eap).yasnippet
+END
+each_with_index { |e, i| .. }  (eawi).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/each_with_index%20%7B%20%7Ce,%20i%7C%20..%20%7D%20%20(eawi).yasnippet
+END
+each_slice { |group| .. }  (eas).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/each_slice%20%7B%20%7Cgroup%7C%20..%20%7D%20%20(eas).yasnippet
+END
+map_with_index { |e, i| .. }  (mapwi).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/map_with_index%20%7B%20%7Ce,%20i%7C%20..%20%7D%20%20(mapwi).yasnippet
+END
+reverse_each { |e| .. }  (rea).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/reverse_each%20%7B%20%7Ce%7C%20..%20%7D%20%20(rea).yasnippet
+END
+each_value { |val| .. }  (eav).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/each_value%20%7B%20%7Cval%7C%20..%20%7D%20%20(eav).yasnippet
+END
+each_line { |line| .. }  (eal).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/each_line%20%7B%20%7Cline%7C%20..%20%7D%20%20(eal).yasnippet
+END
+each_cons(..) { |group| .. }  (eac-).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/each_cons(..)%20%7B%20%7Cgroup%7C%20..%20%7D%20%20(eac-).yasnippet
+END
+each_key { |key| .. }  (eak).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/each_key%20%7B%20%7Ckey%7C%20..%20%7D%20%20(eak).yasnippet
+END
+inject(init) { |mem, var| .. }  (inj).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/!svn/ver/515/trunk/extras/imported/ruby-mode/Each%20Element/inject(init)%20%7B%20%7Cmem,%20var%7C%20..%20%7D%20%20(inj).yasnippet
+END

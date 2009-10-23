@@ -3,22 +3,22 @@
 ;; Author: Lennart Borgman (lennart O borgman A gmail O com)
 ;; Created: 2008-10-03T01:29:44+0200 Thu
 (defconst html-write:version "0.6") ;; Version:
-;; Last-Updated: 2008-12-26 Fri
+;; Last-Updated: 2009-08-11 Tue
 ;; URL:
 ;; Keywords:
 ;; Compatibility:
 ;;
 ;; Features that might be required by this library:
 ;;
-  ;; `appmenu', `backquote', `bytecomp', `cl', `flyspell', `ispell',
-  ;; `mail-prsvr', `mlinks', `mm-util', `mumamo', `ourcomments-util',
-  ;; `rx', `sgml-mode', `timer', `url-expand', `url-methods',
-  ;; `url-parse', `url-util', `url-vars'.
+;;   None
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;; Commentary:
 ;;
+;; The minor mode `html-write-mode' displays simple tags like <i>,
+;; <b>, <em>, <strong> or <a> with appropriate faces (for example bold
+;; and italic) instead of displaying the tags.
 ;;
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -99,18 +99,18 @@ where
 
 (defun html-write-em-tag-actions (tag-begin tag-end overlay)
   "Do actions for <em> tags for tag between TAG-BEGIN and TAG-END.
-OVERLAY is the overlay added by `html-write-hide-tags' for this tag."
+OVERLAY is the overlay added by `html-write-mode' for this tag."
   (overlay-put overlay 'face 'html-write-em))
 
 (defun html-write-strong-tag-actions (tag-begin tag-end overlay)
   "Do actions for <strong> tags for tag between TAG-BEGIN and TAG-END.
-OVERLAY is the overlay added by `html-write-hide-tags' for this tag."
+OVERLAY is the overlay added by `html-write-mode' for this tag."
   (overlay-put overlay 'face 'html-write-strong))
 
 ;; Fix-me
 (defun html-write-img-tag-actions (tag-begin tag-end overlay)
   "Do actions for <img> tags for tag between TAG-BEGIN and TAG-END.
-OVERLAY is the overlay added by `html-write-hide-tags' for this tag."
+OVERLAY is the overlay added by `html-write-mode' for this tag."
   (save-match-data
     (let ((here (point-marker))
           href)
@@ -131,7 +131,7 @@ OVERLAY is the overlay added by `html-write-hide-tags' for this tag."
 
 (defun html-write-a-tag-actions (tag-begin tag-end overlay)
   "Do actions for <a> tags for tag between TAG-BEGIN and TAG-END.
-OVERLAY is the overlay added by `html-write-hide-tags' for this tag."
+OVERLAY is the overlay added by `html-write-mode' for this tag."
   (save-match-data
     (let ((here (point-marker))
           href)
@@ -242,7 +242,7 @@ OVERLAY is the overlay added by `html-write-hide-tags' for this tag."
 ;;(html-write-make-hide-tags-regexp)
 (defun html-write-make-hide-tags-regexp ()
   "Make regexp used for finding tags to hide."
-  ;; fix-me: single tags
+  ;; fix-me: single tags. Fix-me: what did I mean??? Maybe &lt; etc...
   (let ((tags-re
          (mapconcat 'identity
                     (mapcar (lambda (elt)
@@ -261,251 +261,10 @@ OVERLAY is the overlay added by `html-write-hide-tags' for this tag."
 (make-variable-buffer-local 'html-write-pending-changes)
 (put 'html-write-pending-changes 'permanent-local t)
 
-(defun html-write-after-change (start end pre-len)
-  "Function to put in `after-change-functions'.
-See that variable for START, END and PRE-LEN."
-  (add-to-list 'html-write-pending-changes
-               ;; Add +1 for deletions (and don't worry about other
-               ;; cases ...
-               (cons (copy-marker start) ;; Stay before
-                     (copy-marker end t) ;; Follow inserted text
-                     )))
-(put 'html-write-after-change 'permanent-hook t)
-
-(defun html-write-post-command ()
-  "Function for `post-command-hook'."
-  (condition-case err
-      (html-write-post-command-1)
-    (error (message "html-write-post-command error: %s" err))))
-(put 'html-write-post-command 'permanent-hook t)
-
-(defun html-write-post-command-1 ()
-  "Inner function for `html-write-post-command'."
-  (save-restriction
-    (widen)
-    ;;(message "html-write-pending-changes=%s" html-write-pending-changes)
-    (dolist (pend html-write-pending-changes)
-      (assert (markerp (car pend)))
-      (assert (markerp (cdr pend))))
-    (let ((pending html-write-pending-changes)
-          pending2 pend2
-          pend pend-next
-          (here (point-marker))
-          (min-ovl (point-max))
-          (max-ovl (point-min))
-          our-overlays
-          our-visible-overlays
-          (dbg nil))
-      (setq html-write-pending-changes nil)
-      (dolist (pend pending)
-        (when (< (car pend) min-ovl)
-          (setq min-ovl (car pend)))
-        (when (> (cdr pend) max-ovl)
-          (setq max-ovl (cdr pend))))
-      ;; Get our overlays
-      (when dbg (message "========================================"))
-      (when dbg (message "Get our overlays"))
-      (dolist (ovl (append (overlays-in min-ovl max-ovl)
-                           (overlays-at min-ovl)
-                           nil))
-        (when (overlay-get ovl 'html-write)
-          (if (invisible-p (overlay-start ovl))
-              (add-to-list 'our-overlays ovl)
-            (add-to-list 'our-visible-overlays ovl))))
-      ;; Skip changes inside visible overlays
-      (when dbg (message "Skip changes inside visible overlays"))
-      (while pending
-        (setq pend (car pending))
-        (setq pending (cdr pending))
-        (unless (catch 'vis
-                  (dolist (ovl our-visible-overlays)
-                    (and (<= (overlay-start ovl) (car pend))
-                         (<= (cdr pend) (overlay-end ovl))
-                         (throw 'vis t))))
-          (setq pending2 (cons pend pending2))))
-      ;; Extend to normal overlays
-      (when dbg (message "Extend to normal overlays"))
-      (dolist (pend pending2)
-        (let ((pend-min (car pend))
-              (pend-max (cdr pend)))
-          (dolist (ovl our-overlays)
-            (let ((ovl-min (overlay-start ovl))
-                  (ovl-max (overlay-end ovl)))
-              (when (and (> pend-min ovl-min)
-                         (<= pend-min ovl-max))
-                (setcar pend (copy-marker ovl-min)))
-              (when (and (< pend-max ovl-max)
-                         (>= pend-max ovl-min))
-                (setcdr pend (copy-marker ovl-max)))
-              ))))
-      ;; Sort
-      (when dbg (message "Sort pending2"))
-      (setq pending (sort pending2
-                          (lambda (rec-a rec-b)
-                            (if (= (car rec-a) (car rec-b))
-                                (< (cdr rec-a) (cdr rec-b))
-                              (< (car rec-a) (car rec-b))))))
-      ;; Extend end
-      (when dbg (message "== Extend end"))
-      (let ((high-end (point-min))
-            end
-            next-<c-pos
-            this->-pos+1
-            )
-        (dolist (pend pending)
-          (setq end (cdr pend))
-          (if (> end high-end)
-              ;; Look further
-              (progn
-                ;; Is last tested <C..> useful?
-                (when dbg (message "Is last tested <C..> useful?"))
-                (and next-<c-pos
-                     (< next-<c-pos end)
-                     (setq next-<c-pos nil))
-                (unless next-<c-pos
-                  (goto-char end)
-                  (skip-chars-forward "^<>")
-                  (if (eq ?< (char-after))
-                      (progn
-                        (forward-char)
-                        (if (not (eq ?/ (char-after)))
-                            ;; Start tag, we need not search after it.
-                            (progn
-                              (when dbg (message "Start tag, we need not search after it."))
-                              (setq next-<c-pos (point)))
-                          ;; End tag, must include it.
-                          (when dbg (message "End tag, must include it."))
-                          ;;(forward-char)
-                          (skip-chars-forward "^>")
-                          (when dbg (message "after skip ^>"))
-                          (setq end (min (point-max) (1+ (point))))))
-                    ;; Inside tag or unfinished tag
-                    (when dbg (message "Inside tag or unfinished tag"))
-                    (setq this->-pos+1 (min (point-max) (1+ (point))))
-                    (skip-chars-backward "^<>")
-                    (if (eq ?< (char-after (1- (point))))
-                        ;; Inside finished tag
-                        (when dbg (message "Inside finished tag"))
-                      (if (eq ?/ (char-after))
-                          ;; End tag
-                          (progn
-                            (when dbg (message "End tag"))
-                            (setq end this->-pos+1))
-                        ;; Start tag
-                        (when dbg (message "Start tag 2"))
-                        (unless (eobp) (forward-char))
-                        (skip-chars-forward "^>")
-                        (setq end (point)))
-                      ;; Between > and >
-                      (when dbg (message "Between > and >"))
-                      (setq end this->-pos+1)
-                      )))
-                (setq high-end end)
-                (setcdr pend high-end))
-            ;; This ends after so we can extend it to high-end
-            (when dbg (message "This ends after so we can extend it to high-end"))
-            (setcdr pend high-end))))
-      ;; Extend start
-      (when dbg (message "== Extend start"))
-      (setq pending (nreverse pending))
-      (let ((low-start (point-max))
-            start
-            last-/>-pos
-            this->-pos-1)
-        (dolist (pend pending)
-          (setq start (car pend))
-          (if (< start low-start)
-              ;; Look further
-              (progn
-                ;; Is last tested </...> useful?
-                (when dbg (message "Is last tested </...> useful?"))
-                (and last-/>-pos
-                     (> last-/>-pos start)
-                     (setq last-/>-pos nil))
-                (unless last-/>-pos
-                  (goto-char start)
-                  (skip-chars-backward "^<>")
-                  (if (eq ?< (char-after (1- (point))))
-                      ;; Inside tag
-                      (if (eq ?/ (char-after))
-                          ;; Inside end tag, need to goto start tag
-                          (progn
-                            (when dbg (message "Inside end tag, need to goto start tag"))
-                            (backward-char)
-                            (skip-chars-backward "^<")
-                            (unless (eq ?/ (char-after))
-                              (setq start (max (point-min) (1- (point))))))
-                        ;; Inside start tag
-                        (when dbg (message "Inside start tag"))
-                        (setq start (max (point-min) (1- (point)))))
-                    ;; Outside tag, check tag before
-                    (unless (bobp)
-                      (when dbg (message "Outside tag, check tag before"))
-                      (setq this->-pos-1 (point))
-                      (backward-char)
-                      (skip-chars-backward "^<")
-                      (if (eq ?/ (char-after))
-                          ;; Tag before is end tag, don't include
-                          (progn
-                            (when dbg (message "Tag before is end tag, don't include"))
-                            nil)
-                        ;; Tag before is start tag, include
-                        (when dbg (message "Tag before is start tag, include"))
-                        (setq start (max (point-min) (1- (point))))))))
-                (setq low-start start)
-                (setcar pend low-start)
-                )
-            ;; This starts before so we can extend it to low-start
-            (when dbg (message "This starts before so we can extend it to low-start"))
-            (setcar pend low-start))))
-
-      ;; delete dublicates, merge
-      (when dbg (message "== delete dublicates, merge, pending=%s" pending))
-      (setq pending2 pending)
-      (setq pending nil)
-      (while pending2
-        (setq pend2 (car pending2))
-        (setq pending2 (cdr pending2))
-        (setq pend (car pending))
-        ;; The list is sorted
-        (when dbg (message "The list is sorted, pend=%s, pend2=%s" pend pend2))
-        (if (not pend)
-            (setq pending (cons pend2 pending))
-          (assert (>= (car pend) (car pend2)) t)
-          (cond
-           ((= (car pend2) (car pend))
-            (when (> (cdr pend2) (cdr pend))
-              (when dbg (message "here"))
-              (setcdr pend (cdr pend2))))
-           ((<= (car pend2) (1+ (cdr pend)))
-            (when dbg (message "here 2"))
-            (setcar pend (car pend2)))
-           ;; Probably never happens?
-           ((equal pend2 pend)
-            (when dbg (message "here nil"))
-            nil)
-           (t
-            (when dbg (message "here t"))
-            (setq pending (cons pend2 pending)))
-           ))
-        (when dbg (message "at while end, pending=%s" pending))
-        )
-      (setq pending (reverse pending))
-      (setq pending (assq-delete-all nil pending))
-      (when dbg (message "Before dolist (pend pending)=%s" pending))
-      (dolist (pend pending)
-        (goto-char (car pend)) (goto-char (cdr pend))
-        (when dbg (message "After goto-char (pend pending)"))
-        (html-write-reveal-tags (car pend) (cdr pend))
-        (when dbg (message "After html-write-reveal-tags (pend pending)"))
-        (html-write-hide-tags (car pend) (cdr pend))
-        (when dbg (message "After html-write-hide-tags (pend pending)"))
-        )
-      (setq html-write-pending-changes nil)
-      (goto-char here))))
 
 (defun html-write-hide-tags (start end)
   "Hide tags matching `html-write-tag-list' between START and END."
+  ;;(message "html-write-hide-tags %s %s" start end)
   (let ((here (point-marker))
         (buffer-name (buffer-file-name))
         (dbg nil))
@@ -521,7 +280,7 @@ See that variable for START, END and PRE-LEN."
                    (tag-fun (cadr (assoc (match-string-no-properties 1)
                                          html-write-tag-list)))
                    hiding-ranges)
-              (overlay-put ovl 'face 'font-lock-variable-name-face)
+              ;;(overlay-put ovl 'face 'font-lock-variable-name-face)
               (overlay-put ovl 'keymap html-write-keymap)
               (setq hiding-ranges
                     (list (cons (1- (match-beginning 1)) (match-beginning 3))
@@ -581,137 +340,105 @@ this minor mode:
 
 IMPORTANT: Most commands you use works also on the text that is
 hidden.  The movement commands is an exception, but as soon as
-you edit the buffer you may also change the hidden parts."
+you edit the buffer you may also change the hidden parts.
+
+Hint: Together with `wrap-to-fill-column-mode' this can make it
+easier to see what text you are actually writing in html parts of
+a web file."
   :group 'html-write
-  (save-restriction
-    (widen)
-    (if html-write-mode
-        (progn
-          (setq html-write-pending-changes nil)
-          (html-write-hide-tags (point-min) (point-max))
-          (add-hook 'after-change-functions 'html-write-after-change nil t)
-          (add-hook 'post-command-hook 'html-write-post-command nil t)
-          (setq buffer-invisibility-spec
-                (if (listp buffer-invisibility-spec)
-                    (cons 'html-write buffer-invisibility-spec)
-                  (list 'html-write buffer-invisibility-spec))))
-      (html-write-reveal-tags (point-min) (point-max))
-      (remove-hook 'after-change-functions 'html-write-after-change t)
-      (remove-hook 'post-command-hook 'html-write-post-command t)
-      (setq buffer-invisibility-spec
-            (delq 'html-write buffer-invisibility-spec)))))
+  (if t
+      (if html-write-mode
+          (html-write-font-lock t)
+        (html-write-font-lock nil)
+        (save-restriction
+          (widen)
+          (html-write-reveal-tags (point-min) (point-max))))))
 (put html-write-mode 'permanent-local t)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Font lock
 
-;;;; Visible point
+(defun html-write-jit-extend-after-change (start end old-len)
+  "For JIT lock extending.
+Should be on `jit-lock-after-change-extend-region-functions'.
 
-;; I do not think this can be used. There is a built in feature for
-;; this anyway (which works a little bit differently).
+START, END and OLD-LEN are the parameters from after change."
+  (let ((our-ovls nil))
+    (dolist (ovl (append (overlays-in start end)
+                        (overlays-at start)
+                        nil))
+      ;; Leave the overlays until re-fontification time, but note their extent.
+      (when (overlay-get ovl 'html-write)
+        (setq jit-lock-start (min jit-lock-start (overlay-start ovl)))
+        (setq jit-lock-end   (max jit-lock-end   (overlay-end   ovl)))))))
 
-;; (defun visible-point-pre-command ()
-;;   (condition-case err
-;;       (visible-point-pre-command-1)
-;;     (error (message "visible-point-pre-command error: %s" err))))
-;; (put 'visible-point-pre-command 'permanent-hook t)
 
-;; (defun visible-point-pre-command-1 ()
-;;   ;; Fix-me: widen?
-;;   (when visible-point-mode
-;;     (setq visible-point-pre-point (point-marker))
-;;     (remove-hook 'post-command-hook 'visible-point-post-command t)
-;;     (add-hook 'post-command-hook 'visible-point-post-command t t))
-;;   )
+(defun html-write-fontify (bound)
+  ;;(message "html-write-fontify %s" bound)
+  (let (tag-ovl)
+    (save-match-data
+      (let* ((hide-tags-regexp (html-write-make-hide-tags-regexp))
+             (next-tag (re-search-forward hide-tags-regexp bound t))
+             (tag-beg (when next-tag (match-beginning 0)))
+             (tag-end (when next-tag (match-end 0)))
+             (tag-nam (when next-tag (match-string-no-properties 1)))
+             (tag-fun (when next-tag (cadr (assoc tag-nam html-write-tag-list))))
+             tag-hid
+             (old-start (next-single-char-property-change (max (point-min) (1- (point))) 'html-write nil bound)))
+        ;;(message "here a old-start=%s, tag-beg/end=%s/%s" old-start tag-beg tag-end)
+        (setq tag-ovl (when next-tag (make-overlay tag-beg tag-end)))
+        (when old-start
+          ;; Fix-me: maybe valid, perhaps better keep it then?
+          (let ((ovl (catch 'ovl
+                       (dolist (o (append (overlays-at old-start)
+                                          (overlays-in old-start (1+ old-start))
+                                          nil))
+                         (when (overlay-get o 'html-write)
+                           (throw 'ovl o))))))
+            (when ovl ;; fix-me: there should be one...
+              ;;(message "here b")
+              (mumamo-with-buffer-prepared-for-jit-lock
+               (remove-list-of-text-properties (overlay-start ovl) (overlay-end ovl) '(invisible html-write)))
+              (delete-overlay ovl))))
+        ;;(html-write-hide-tags start end)
+        ;;(message "here d, tag-ovl=%s" tag-ovl)
+        (when tag-ovl
+          (overlay-put tag-ovl 'face 'font-lock-variable-name-face)
+          (overlay-put tag-ovl 'keymap html-write-keymap)
+          (setq tag-hid
+                (list (cons (1- (match-beginning 1)) (match-beginning 3))
+                      (cons (match-beginning 2) (match-end 2))))
+          (overlay-put tag-ovl 'html-write tag-hid)
+          (when tag-fun
+            (funcall tag-fun (match-end 1) (match-beginning 3) tag-ovl))
+          (mumamo-with-buffer-prepared-for-jit-lock
+           (dolist (range tag-hid)
+             (let ((start (car range))
+                   (end   (cdr range)))
+               (put-text-property start end 'invisible 'html-write)
+               ;;(put-text-property start end 'html-write t)
+               ;; Fix-me: more careful rear-nonsticky?
+               (put-text-property (1- end) end
+                                  'rear-nonsticky '(invisible))))))))
+    (when tag-ovl
+      (set-match-data (list (copy-marker (overlay-start tag-ovl))
+                            (copy-marker (overlay-end tag-ovl))))
+      (goto-char (1+ (overlay-end tag-ovl)))
+      t)))
 
-;; ;;(defvar visible-point-pre-column nil)
-;; ;;(put 'visible-point-pre-column 'permanent-local t)
-;; (defvar visible-point-pre-point nil)
-;; (put 'visible-point-pre-point 'permanent-local t)
-;; ;;(defvar visible-point-pre-line nil)
-;; ;;(put 'visible-point-pre-line 'permanent-local t)
-
-;; (defun visible-point-post-command ()
-;;   (condition-case err
-;;       (visible-point-post-command-1)
-;;     (error (message "visible-point-post-command error: %s" err))))
-;; (put 'visible-point-post-command 'permanent-hook t)
-
-;; (defun visible-point-post-command-1 ()
-;;   ;;(setq visible-point-pre-column (current-column))
-;;   ;;(setq visible-point-pre-line (line-number-at-pos))
-;;   ;; If in invisible portion move out
-;;   (let* ((pre-point-line (line-number-at-pos visible-point-pre-point))
-;;          (current-line (line-number-at-pos))
-;;          (point-dir
-;;           (cond ((> (point) visible-point-pre-point)
-;;                  1)
-;;                 ((<= (point) visible-point-pre-point)
-;;                  -1)))
-;;          (line-dir
-;;           (cond ((> current-line pre-point-line)
-;;                  1)
-;;                 ((< current-line pre-point-line)
-;;                  -1)))
-;;          (prev-point -1)
-;;          next-pos
-;;          )
-;;     (when (invisible-p (1- (point)))
-;;       (message "\ninvis A %s, point-dir=%s, line-dir=%s" (point) point-dir line-dir)
-;;       ;; First by point
-;;       (when point-dir
-;;         (while (invisible-p (point)) ;; -1 because sticky at the end
-;;           (message "while invis B %s, %s" (point) prev-point)
-;;           (when (eq (point) prev-point) (error "B: prev-point = (point)"))
-;;           (setq prev-point (point))
-;;           (cond ((=  1 point-dir)
-;;                  (setq next-pos
-;;                        (next-single-char-property-change (1+ (point)) 'invisible))
-;;                  (message "next-pos=%s, point=%s" next-pos (point))
-;;                  (goto-char next-pos)
-;;                  )
-;;                 ((= -1 point-dir)
-;;                  (goto-char
-;;                   (previous-single-char-property-change (1- (point)) 'invisible))
-;;                  ;; Unlike the forward version this stops just before
-;;                  ;; the change so we must go back one step.
-;;                  (backward-char))
-;;                 (t (error "point-dir=%s" point-dir)))))
-;;       (message "invis C %s, %s" (point) prev-point)
-;;       ;; By line
-;;       (when (and line-dir
-;;                  (= pre-point-line (line-number-at-pos)))
-;;         (cond ((=  1 line-dir) (forward-line))
-;;               ((= -1 line-dir) (forward-line -1))
-;;               (t (error "line-dir=%s" line-dir))))
-;;       (when (and point-dir line-dir)
-;;         (setq prev-point -1)
-;;         (while (invisible-p (1- (point)))
-;;           (message "while invis D %s, %s" (point) prev-point)
-;;           (when (eq (point) prev-point) (error "D: prev-point = (point)"))
-;;           (setq prev-point (point))
-;;           (cond ((=  1 point-dir)
-;;                  (goto-char
-;;                   (next-single-char-property-change (point) 'invisible)))
-;;                 ((= -1 point-dir)
-;;                  (goto-char
-;;                   (previous-single-char-property-change (point) 'invisible)))
-;;                 (t (error "point-dir=%s" point-dir)))))
-;;       (message "invis E %s, %s" (point) prev-point)
-;;       (when (invisible-p (1- (point)))
-;;         (error "point invisible at exit: %s" (point)))
-;;       )))
-
-;; ;;;###autoload
-;; (define-minor-mode visible-point-mode
-;;   "doc"
-;;   :group 'nxhtml
-;;   (if visible-point-mode
-;;       (progn
-;;         (add-hook 'pre-command-hook 'visible-point-pre-command nil t)
-;;         (add-hook 'post-command-hook 'visible-point-post-command nil t)
-;;         )
-;;     (remove-hook 'pre-command-hook 'visible-point-pre-command t)
-;;     (remove-hook 'post-command-hook 'visible-point-post-command t)
-;;     ))
+(defun html-write-font-lock (on)
+  ;; See mlinks.el
+  ;;(message "html-write-font-lock %s" on)
+  (let* ((add-or-remove (if on 'font-lock-add-keywords 'font-lock-remove-keywords))
+         (fontify-fun 'html-write-fontify)
+         (args (list nil `(( ,fontify-fun ( 0 'html-write-base t ))))))
+    (when fontify-fun
+      (when on (setq args (append args (list t))))
+      (apply add-or-remove args)
+      (font-lock-mode -1)
+      (font-lock-mode 1)
+      ;;(message "html-write-font-lock %s Exit" on)
+      )))
 
 (provide 'html-write)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

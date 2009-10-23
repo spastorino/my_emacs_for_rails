@@ -45,6 +45,7 @@
 ;;; Code:
 
 (require 'new-key-seq-widget)
+(require 'ourcomments-widgets)
 
 
 (defun rebind-toggle-first-modifier (orig-key-seq mod)
@@ -87,21 +88,21 @@
 
 (defvar widget-commandp-prompt-value-history nil)
 
-(define-widget 'command 'function
-  "A major mode lisp function."
-  :complete-function (lambda ()
-                       (interactive)
-                       (lisp-complete-symbol 'commandp))
-  :prompt-match 'major-modep
-  :prompt-history 'widget-commandp-prompt-value-history
-  :match-alternatives '(commandp)
-  :validate (lambda (widget)
-              (unless (major-modep (widget-value widget))
-                (widget-put widget :error (format "Invalid function: %S"
-                                                  (widget-value widget)))
-                widget))
-  :value 'fundamental-mode
-  :tag "Command function")
+;; (define-widget 'command 'function
+;;   "A major mode lisp function."
+;;   :complete-function (lambda ()
+;;                        (interactive)
+;;                        (lisp-complete-symbol 'commandp))
+;;   :prompt-match 'major-modep
+;;   :prompt-history 'widget-commandp-prompt-value-history
+;;   :match-alternatives '(commandp)
+;;   :validate (lambda (widget)
+;;               (unless (major-modep (widget-value widget))
+;;                 (widget-put widget :error (format "Invalid function: %S"
+;;                                                   (widget-value widget)))
+;;                 widget))
+;;   :value 'fundamental-mode
+;;   :tag "Command function")
 
 ;; (customize-option 'rebind-keys)
 (defcustom rebind-keys

@@ -1,6 +1,7 @@
 (setq debug-on-error t)
 (setq debug-on-error t)
 (setq debug-on-error t)
+(setq debug-on-error t)
 ;;; cedet-build.el<2> --- 
 ;; 
 ;; Author: Lennart Borgman (lennart O borgman A gmail O com)

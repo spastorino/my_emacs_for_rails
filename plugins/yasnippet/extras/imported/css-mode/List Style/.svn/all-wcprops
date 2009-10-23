@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/List%20Style
+END
+list-style-position: pos (list).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/List%20Style/list-style-position:%20pos%20(list).yasnippet
+END
+list-style-type: roman-alpha-greek (list).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/List%20Style/list-style-type:%20roman-alpha-greek%20(list).yasnippet
+END
+list-style: type position image (list).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/List%20Style/list-style:%20type%20position%20image%20(list).yasnippet
+END
+list-style-type: asian (list).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/List%20Style/list-style-type:%20asian%20(list).yasnippet
+END
+list-style-type: marker(list).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/List%20Style/list-style-type:%20marker(list).yasnippet
+END
+list-style-type: other (list).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/List%20Style/list-style-type:%20other%20(list).yasnippet
+END
+list-style-type: numeric (list).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/List%20Style/list-style-type:%20numeric%20(list).yasnippet
+END
+list-style-image: url (list).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/!svn/ver/488/trunk/extras/imported/css-mode/List%20Style/list-style-image:%20url%20(list).yasnippet
+END

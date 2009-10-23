@@ -58,13 +58,17 @@
 ;;; Code:
 
 (eval-when-compile (require 'mumamo))
+(eval-when-compile (require 'foldit))
+(eval-when-compile (require 'cl))
+(eval-when-compile (require 'appmenu-fold))
+(eval-when-compile (require 'xhtml-help))
+;;(eval-when-compile (require 'nxhtml-menu)
+(eval-when-compile (require 'fold-dwim))
+(eval-when-compile (require 'typesetter nil t))
+;;(eval-when-compile (require 'outline)
+(eval-when-compile (require 'html-toc nil t))
+(eval-when-compile (require 'html-pagetoc nil t))
 (eval-when-compile
-  (require 'cl)
-  (require 'appmenu-fold)
-  ;;(require 'nxhtml-menu)
-  (require 'fold-dwim)
-  (require 'typesetter nil t)
-  ;;(require 'outline)
   (unless (or (< emacs-major-version 23)
               (featurep 'nxhtml-autostart))
     (let ((efn (expand-file-name
@@ -76,9 +80,7 @@
       (message "efn=%s" efn)
       (load efn))
     (require 'rng-valid)
-    (require 'rng-nxml)
-    (require 'html-toc nil t)
-    (require 'html-pagetoc nil t)))
+    (require 'rng-nxml)))
 
 (require 'typesetter nil t)
 (require 'button)
@@ -109,27 +111,70 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; Folding etc. This part is taken from
+;; Folding etc.
+
+
+;; This part is origially taken from
 ;; http://www.emacswiki.org/cgi-bin/wiki/NxmlModeForXHTML and was
-;; originally written by Peter Heslin. It requires fold-dwim.el.
+;; originally written by Peter Heslin, but has been changed rather
+;; much.
+
+;; (defun nxhtml-hs-adjust-beg-func (pos)
+;;   (save-excursion
+;;     (save-match-data
+;;       ;; (search-backward "<" nil t)
+;;       ;; (forward-char)
+;;       ;; (search-forward ">" nil t)
+;;       )
+;;     (point)))
+
+(defun nxhtml-hs-forward-sexp-func (pos)
+  (nxhtml-hs-forward-element))
+
+(defun nxhtml-hs-forward-element ()
+  (let ((nxml-sexp-element-flag))
+    (setq nxml-sexp-element-flag (not (looking-at "<!--")))
+    (unless nil ;;(looking-at outline-regexp)
+      ;;(condition-case nil
+          (nxml-forward-balanced-item 1)
+        ;;(error nil))
+      )))
 
 (defun nxhtml-setup-for-fold-dwim ()
   (make-local-variable 'outline-regexp)
   (setq outline-regexp "\\s *<\\([h][1-6]\\|html\\|body\\|head\\)\\b")
   (make-local-variable 'outline-level)
   (setq outline-level 'nxhtml-outline-level)
-  (outline-minor-mode 1)
-  (hs-minor-mode 1)
+  ;;(outline-minor-mode 1)
+  ;;(hs-minor-mode 1)
+  (setq hs-special-modes-alist (assq-delete-all 'nxhtml-mode hs-special-modes-alist))
   (add-to-list 'hs-special-modes-alist
                '(nxhtml-mode
-                 "<!--\\|<[^/>]>\\|<[^/][^>]*[^/]>"
+                 ;;"<!--\\|<[^/>]>\\|<[^/][^>]*[^/]>"
+                 "<!--\\|<[^/>]>\\|<[^/][^>]*"
                  "</\\|-->"
                  "<!--" ;; won't work on its own; uses syntax table
-                 (lambda (arg) (nxhtml-hs-forward-element))
-                 nil))
+                 nxhtml-hs-forward-sexp-func
+                 nil ;nxhtml-hs-adjust-beg-func
+                 ))
+  (set (make-local-variable 'hs-set-up-overlay) 'nxhtml-hs-set-up-overlay)
+  (put 'hs-set-up-overlay 'permanent-local t)
   (when (featurep 'appmenu-fold)
     (appmenu-fold-setup))
-  )
+  (foldit-mode 1))
+
+(defun nxhtml-hs-start-tag-end (beg)
+  (save-excursion
+    (save-match-data
+      (goto-char beg)
+      (or (search-forward ">" (line-end-position) t)
+          (line-end-position)))))
+
+(defun nxhtml-hs-set-up-overlay (ovl)
+  (overlay-put ovl 'priority (1+ mlinks-link-overlay-priority))
+  (when foldit-mode
+    (setq foldit-hs-start-tag-end-func 'nxhtml-hs-start-tag-end)
+    (foldit-hs-set-up-overlay ovl)))
 
 (defun nxhtml-outline-level ()
   ;;(message "nxhtml-outline-level=%s" (buffer-substring (match-beginning 0) (match-end 0)))(sit-for 2)
@@ -140,14 +185,6 @@
   ;;     0))
   8)
 
-
-(defun nxhtml-hs-forward-element ()
-  (let ((nxml-sexp-element-flag))
-    (setq nxml-sexp-element-flag (not (looking-at "<!--")))
-    (unless (looking-at outline-regexp)
-      (condition-case nil
-          (nxml-forward-balanced-item 1)
-        (error nil)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -215,12 +252,13 @@
          (normal "Normal page")
          ;;(vlhead "Validation header")
          ;;popcmp-popup-completion
-         (initial (unless popcmp-popup-completion normal))
+         (initial nil) ;;(unless popcmp-popup-completion normal))
          (hist (if (and (boundp 'mumamo-multi-major-mode) mumamo-multi-major-mode)
                    ;;(list vlhead frames normal)
                    (list frames normal)
                  (list frames normal)))
-         res)
+         res
+         (completion-ignore-case t))
     (setq res (popcmp-completing-read "Insert: " hist nil t initial (cons 'hist (length hist))))
     (cond ((string= res frames)
            (nxhtml-insert-empty-frames-page))
@@ -637,6 +675,7 @@ just copying region when you press C-c."
     (unless desc
       (setq desc (concat tag " -- No short description available")))
     (when (y-or-n-p (concat desc ". Fetch more information from the Internet? "))
+      ;; Loaded by the autoloading of `xhtml-help-tag-at-point' above:
       (xhtml-help-browse-tag tag))))
 
 (defvar nxhtml-no-single-tags nil)
@@ -769,6 +808,7 @@ just copying region when you press C-c."
          (parsed-url (url-generic-parse-url url-beginning))
          (beg-type (url-type parsed-url))
          (allowed-u allowed)
+         (completion-ignore-case t)
          choices
          choice)
     ;; (url-type (url-generic-parse-url "#some-id"))
@@ -1568,6 +1608,19 @@ by `nxml-complete' (with the special setup of this function for
 The list is handled as an association list, ie only the first
 occurence of a tag name is used.")
 
+(defun nxhtml-complete-tag-do-also-for-state-completion (dummy-completed)
+  "Add this to state completion functions completed hook."
+  (when (and nxhtml-tag-do-also
+             (derived-mode-p 'nxhtml-mode))
+    ;; Find out tag
+    (let ((tag nil))
+      (save-match-data
+        ;;(when (looking-back "<\\([a-z]+\\)[[:blank:]]+")
+        (when (looking-back "<\\([a-z]+\\)")
+          (setq tag (match-string 1))))
+      (when tag
+        (insert " ")
+        (nxhtml-complete-tag-do-also tag)))))
 
 (defun nxhtml-complete-tag-do-also (tag)
   ;; First required attributes:
@@ -1662,12 +1715,13 @@ This mode may be turned on automatically in two ways:
                                    table
                                    &optional predicate require-match
                                    initial-input hist def inherit-input-method)
-  (popcmp-completing-read prompt
-                          table
-                          predicate require-match
-                          initial-input hist def inherit-input-method
-                          nxhtml-help-tag
-                          nxhtml-tag-sets))
+  (let ((popcmp-in-buffer-allowed t))
+    (popcmp-completing-read prompt
+                            table
+                            predicate require-match
+                            initial-input hist def inherit-input-method
+                            nxhtml-help-tag
+                            nxhtml-tag-sets)))
 
 (defun nxhtml-add-required-to-attr-set (tag)
   (let ((missing (when tag
@@ -1702,6 +1756,7 @@ This mode may be turned on automatically in two ways:
                   (match-string 1))))
          (attr-sets (nxhtml-add-required-to-attr-set tag))
          (help-attr (nxhtml-get-tag-specific-attr-help tag))
+         (popcmp-in-buffer-allowed t)
          )
     (popcmp-completing-read prompt
                             table
@@ -1716,9 +1771,10 @@ This mode may be turned on automatically in two ways:
                                                initial-input hist def inherit-input-method)
   (let (val)
     (if table
-        (setq val (popcmp-completing-read prompt table
-                                          predicate require-match
-                                          initial-input hist def inherit-input-method))
+        (let ((popcmp-in-buffer-allowed t))
+          (setq val (popcmp-completing-read prompt table
+                                            predicate require-match
+                                            initial-input hist def inherit-input-method)))
       (let* (init
              delimiter
              (lt-pos (save-excursion (search-backward "<" nil t)))
@@ -2058,7 +2114,8 @@ This guess is made by matching the entries in
                   ;; ensure fontified, but how?
                   (when (and (boundp 'mumamo-multi-major-mode) mumamo-multi-major-mode)
                     (let ((mumamo-just-changed-major nil))
-                      (unless (and (mumamo-get-existing-chunk-at (point))
+                      ;;(unless (and (mumamo-get-existing-chunk-at (point))
+                      (unless (and (mumamo-find-chunks (point) "guess-validation-header")
                                    (eq t (get-text-property (point) 'fontified)))
                         (mumamo-fontify-region (point-min) (+ 1000 (point))))))
                   (unless (memq (get-text-property (point) 'face)
@@ -2262,7 +2319,8 @@ This is called because there was no validation header."
   (with-current-buffer buffer
     (unless nxhtml-current-validation-header
       ;;(message "nxhtml-validation-header-empty")
-      (nxhtml-validation-header-mode -1)
+      (save-match-data ;; runs in timer
+        (nxhtml-validation-header-mode -1))
       ;;(message "No validation header was needed")
       )))
 
@@ -2316,6 +2374,7 @@ The function returns true if the condition here is met."
 ;;     ("\.php\\'" nxhtml-validation-headers-check)
 ;;     ("\.rhtml\\'" nxhtml-validation-headers-check)
 ;;     ("\.jsp\\'" nxhtml-validation-headers-check)
+;;     ("\.gsp\\'" nxhtml-validation-headers-check)
 ;;     )
 ;;   "Alist for turning on `nxhtml-validation-mode'.
 ;; The entries in the list should have the form

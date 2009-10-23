@@ -81,9 +81,9 @@
       (custom-load-symbol symbol)
       )))
 
-(defun nxhtml-list-loaded-features ()
-  (interactive)
-  (let ((buf (when (called-interactively-p)
+(defun nxhtml-list-loaded-features (use-message)
+  (interactive (list t))
+  (let ((buf (when use-message ;(called-interactively-p)
                (get-buffer-create "*nXhtml loaded features*"))))
     (if buf
         (with-current-buffer buf (erase-buffer))
@@ -140,11 +140,15 @@
 
   (let* ((util-dir (file-name-as-directory (expand-file-name "util" nxhtml-install-dir)))
          (related-dir (file-name-as-directory (expand-file-name "related" nxhtml-install-dir)))
-         (nxhtml-dir (file-name-as-directory (expand-file-name "nxhtml" nxhtml-install-dir))))
+         (nxhtml-dir (file-name-as-directory (expand-file-name "nxhtml" nxhtml-install-dir)))
+         (company-dir (file-name-as-directory (expand-file-name "util/nxhtml-company-mode" nxhtml-install-dir)))
+         (tests-dir (file-name-as-directory (expand-file-name "tests" nxhtml-install-dir))))
     (add-to-list 'load-path nxhtml-dir)
     (add-to-list 'load-path related-dir)
     (add-to-list 'load-path util-dir)
     (add-to-list 'load-path nxhtml-install-dir)
+    (add-to-list 'load-path company-dir)
+    (add-to-list 'load-path tests-dir)
 
     (message "... nXhtml loading %.1f seconds elapsed ..." (- (float-time) nxhtml-load-time-start))
 
@@ -172,7 +176,7 @@
     (message "... nXhtml loading %.1f seconds elapsed ..." (- (float-time) nxhtml-load-time-start))
 
   ;; Tell what have been loaded of nXhtml:
-  (nxhtml-list-loaded-features)
+  (nxhtml-list-loaded-features nil)
 
   ;; How long time did it all take?
   (message "Nxml/Nxhtml Autostart.el loaded in %.1f seconds" (- (float-time) nxhtml-load-time-start))

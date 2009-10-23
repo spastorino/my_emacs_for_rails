@@ -30,9 +30,12 @@ def-head    = element py:def  { genshi.def.attlist, Head.model }
 with-inline = element py:with { genshi.with.attlist, Inline.model }
 with-block  = element py:with { genshi.with.attlist, Block.model }
 with-head   = element py:with { genshi.with.attlist, Head.model }
+match-inline = element py:match { genshi.match.attlist, Inline.model }
+match-block = element py:match { genshi.match.attlist, Block.model }
+match-head = element py:match { genshi.match.attlist, Head.model }
 
-Inline.class |= if-inline | for-inline | def-inline | with-inline
-Block.class  |= if-block | for-block | def-block | with-block
+Inline.class |= if-inline | for-inline | def-inline | with-inline | match-inline
+Block.class  |= if-block | for-block | def-block | with-block | match-block
 
 xi-inline = element xi:include {
                 xinclude.include.attlist,

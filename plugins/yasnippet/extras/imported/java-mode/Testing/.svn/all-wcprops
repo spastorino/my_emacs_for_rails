@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Testing
+END
+import junit_framework_TestCase;.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Testing/import%20junit_framework_TestCase%3B.yasnippet
+END
+test case.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Testing/test%20case.yasnippet
+END
+test.yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/488/trunk/extras/imported/java-mode/Testing/test.yasnippet
+END

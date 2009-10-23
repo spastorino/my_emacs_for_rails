@@ -146,7 +146,7 @@ Your current nXhtml dir will be renamed by adding '-old' to the name."))
 
 (defun udev-nxhtml-buffer-name (mode)
   "Return a name for current compilation buffer ignoring MODE."
-  (udev-buffer-name " *Updating/installing nXhtml %s*" udev-nxhtml-update-buffer mode))
+  (udev-buffer-name "*Updating/installing nXhtml %s*" udev-nxhtml-update-buffer mode))
 
 (defvar udev-nxhtml-first-fetch-steps
   '(

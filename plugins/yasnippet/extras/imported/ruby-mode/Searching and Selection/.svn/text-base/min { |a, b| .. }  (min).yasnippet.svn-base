@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: min
+# contributor: Translated from TextMate Snippet
+# name: min { |a, b| .. }
+## condition: "source.ruby"
+# --
+min { |a, b| $0 }

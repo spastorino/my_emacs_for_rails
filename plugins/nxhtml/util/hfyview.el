@@ -3,9 +3,9 @@
 ;; Copyright (C) 2005, 2006, 2007 by Lennart Borgman
 
 ;; Author: Lennart Borgman
-;; Created: Fri Oct 21 00:11:07 2005
-;; Version: 0.63
-;; Last-Updated: 2008-03-20T19:36:39+0100 Thu
+;; Created: Fri Oct 21 2005
+(defconst hfyview:version "0.63") ;; Version:
+;; Last-Updated: 2009-08-04 Tue
 ;; Keywords: printing
 ;; URL: http://OurComments.org/Emacs/DL/elisp/hfyview.el
 ;; Compatibility:
@@ -13,7 +13,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;;   `easymenu', `htmlfontify'.
+;; `easymenu'.
 ;;
 ;;
 ;; You can find htmlfontify.el at
@@ -139,11 +139,13 @@ at any time."
           (htmlfontify-buffer))
       (htmlfontify-buffer))))
 
-(defun hfyview-buffer-1(start end)
+(defun hfyview-buffer-1(start end show-source)
   (let ((hbuf (hfyview-fontify-region start end)))
     (with-current-buffer hbuf
       (setq buffer-file-name nil)
-      (browse-url-of-buffer))))
+      (browse-url-of-buffer))
+    (when show-source (switch-to-buffer-other-window hbuf))
+    hbuf))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -202,24 +204,49 @@ the Quick Print entry."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;; Interactive commands
 
-(defun hfyview-buffer (&optional region-only)
-  "Convert buffer to html preserving faces and show in web browser."
-  (interactive)
-  (hfyview-buffer-1 nil nil))
+;;;###autoload
+(defun hfyview-buffer (arg)
+  "Convert buffer to html preserving faces and show in web browser.
+With command prefix also show created HTML source in other window."
+  (interactive "P")
+  (hfyview-buffer-1 nil nil arg))
 
-(defun hfyview-region ()
-  "Convert region to html preserving faces and show in web browser."
-  (interactive)
-  (hfyview-buffer-1 (region-beginning) (region-end)))
+;;;###autoload
+(defun hfyview-region (arg)
+  "Convert region to html preserving faces and show in web browser.
+With command prefix also show created HTML source in other window."
+  (interactive "P")
+  (hfyview-buffer-1 (region-beginning) (region-end) arg))
 
-(defun hfyview-window ()
-  "Convert window to html preserving faces and show in web browser."
-  (interactive)
-  (hfyview-buffer-1 (window-start) (window-end)))
+;;;###autoload
+(defun hfyview-window (arg)
+  "Convert window to html preserving faces and show in web browser.
+With command prefix also show created HTML source in other window."
+  (interactive "P")
+  (hfyview-buffer-1 (window-start) (window-end) arg))
+
+;;;###autoload
+(defun hfyview-frame (whole-buffers)
+  "Convert frame to html preserving faces and show in web browser.
+Make an XHTML view of the current Emacs frame. Put it in a buffer
+named *hfyview-frame* and show that buffer in a web browser.
+
+If WHOLE-BUFFERS is non-nil then the whole content of the buffers
+is shown in the XHTML page, otherwise just the part that is
+visible currently on the frame.
+
+With command prefix also show created HTML source in other window."
+  (interactive (list (y-or-n-p "Enter y for whole buffers, n for only visible part: ")))
+  (let ((title "Emacs - Frame Dump")
+        buf)
+    (setq title (frame-parameter (selected-frame) 'name))
+    (setq buf (hfyview-frame-1 whole-buffers title))
+    (when current-prefix-arg
+      (switch-to-buffer-other-window buf))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;; Interactive commands
+;;;;;; Internal commands
 
 (defconst hfyview-modline-format
   ;; There seems to be a bug in Firefox that prevents this from
@@ -546,20 +573,8 @@ body { font-family: outline-courier new;  font-stretch: normal;  font-weight: 50
               "</tr>\n"
               "</table>\n"
               hfyview-xhtml-footer)
-      (browse-url-of-buffer))))
-
-(defun hfyview-frame (whole-buffers)
-  "Convert frame to html preserving faces and show in web browser.
-Make an XHTML view of the current Emacs frame. Put it in a buffer
-named *hfyview-frame* and show that buffer in a web browser.
-
-If WHOLE-BUFFERS is non-nil then the whole content of the buffers
-is shown in the XHTML page, otherwise just the part that is
-visible currently on the frame."
-  (interactive (list (y-or-n-p "Enter y for whole buffers, n for only visible part: ")))
-  (let ((title "Emacs - Frame Dump"))
-    (setq title (frame-parameter (selected-frame) 'name))
-    (hfyview-frame-1 whole-buffers title)))
+      (browse-url-of-buffer)
+      outbuf)))
 
 ;; (global-set-key [f7] '(lambda () (interactive) (message "grabbed=%s" hfy-grabbed-minibuffer-content)))
 ;; (global-set-key [f7] '(lambda () (interactive) (message "grabbed cm=%s" hfy-grabbed-echo-content)))

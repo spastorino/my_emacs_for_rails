@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/520/trunk/extras/imported/ruby-mode/Blocks
+END
+lambda { |args| .. }  (lam).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/!svn/ver/520/trunk/extras/imported/ruby-mode/Blocks/lambda%20%7B%20%7Cargs%7C%20..%20%7D%20%20(lam).yasnippet
+END
+do |obj| .. end (doo).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/520/trunk/extras/imported/ruby-mode/Blocks/do%20%7Cobj%7C%20..%20end%20(doo).yasnippet
+END
+open yield block ({).yasnippet
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/520/trunk/extras/imported/ruby-mode/Blocks/open%20yield%20block%20(%7B).yasnippet
+END

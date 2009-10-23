@@ -49,8 +49,13 @@
 (require 'hl-line)
 (require 'vline nil t)
 
+(defgroup hl-needed nil
+  "Customization group for `hl-needed-mode'."
+  :group 'convenience)
+
 (defcustom hl-needed-always nil
-  "Highlight always."
+  "Highlight always.
+This is similar to turning on `vline-mode' and `hl-line-mode'"
   :type 'boolean
   :group 'hl-needed)
 
@@ -108,10 +113,11 @@ If nil do not turn on `hl-line-mode' when Emacs is idle."
   :type 'boolean
   :group 'hl-needed)
 
-(defcustom hl-needed-flash 0.8
+(defcustom hl-needed-flash 1.2
   "Turn off highlighting after this number of second.
 Highlighting is turned off only if it was turned on because of
-some change. It will not turned off because Emacs was idle.
+some change. It will not be turned off if it was turned on
+because Emacs was idle for more than `hl-needed-idle-time'.
 
 The default time is choosen to not disturb too much. I believe
 human short attention may often be of this time. \(Compare eye
@@ -176,7 +182,8 @@ otherwise."
   "Turn on with special error handling.
 Erros may go unnoticed in timers.  This should prevent it."
   (condition-case err
-      (hl-needed-show)
+      (save-match-data ;; runs in timer
+        (hl-needed-show))
     (error
      (lwarn 'hl-needed-show
             :error "%s" (error-message-string err)))))
@@ -300,15 +307,17 @@ Erros may go unnoticed in timers.  This should prevent it."
     (define-key map [(control ?c) ?+] 'hl-needed-show)
     map))
 
+;;;###autoload
 (define-minor-mode hl-needed-mode
   "Try to highlight current line and column when needed.
-This can operate in some different ways:
+This is a global minor mode.  It can operate in some different
+ways:
 
 - Highlighting can be on always, see `hl-needed-always'.
 
 Or, it can be turned on depending on some conditions.  In this
-case it highlighting is turned off before each command and turned
-it on again in the current window when either:
+case highlighting is turned off after each command and turned on
+again in the current window when either:
 
 - A new window was selected, see `hl-needed-on-new-window'.
 - A new buffer was selected, see `hl-needed-on-new-buffer'.
@@ -316,8 +325,8 @@ it on again in the current window when either:
 - Buffer was scrolled see `hl-needed-on-scrolling'.
 - A window was clicked with the mouse, see `hl-needed-on-mouse'.
 
-In this case highlighting may be turned off again, normally after
-a short delay, see `hl-needed-flash'.
+After this highlighting may be turned off again, normally after a
+short delay, see `hl-needed-flash'.
 
 If either highlighting was not turned on or was turned off again
 it will be turned on when

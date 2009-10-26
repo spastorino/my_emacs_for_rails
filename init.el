@@ -474,6 +474,36 @@ makes)."
 (setq rinari-tags-file-name "TAGS")
 
 
+;; yasnippet
+(add-to-list 'load-path "~/.emacs.d/plugins/yasnippet")
+(require 'yasnippet)
+(yas/initialize)
+(yas/load-directory "~/.emacs.d/plugins/yasnippet/snippets")
+(setq require-final-newline nil)
+
+;; yasnippet rails
+(load "~/.emacs.d/plugins/yasnippets-rails/setup.el")
+
+
+(add-hook 'rhtml-mode
+          (let ((original-command (lookup-key rhtml-mode-map [tab])))
+            `(lambda ()
+               (setq yas/fallback-behavior
+                     '(apply ,original-command))
+               (local-set-key [tab] 'yas/expand))))
+
+
+(add-to-list 'load-path "~/.emacs.d/plugins/autotest")
+(require 'autotest)
+
+
+;; rhtml-mode
+(add-to-list 'load-path "~/.emacs.d/plugins/rhtml")
+(require 'rhtml-mode)
+(add-hook 'rhtml-mode-hook
+  (lambda () (rinari-launch)))
+
+
 (add-to-list 'load-path "~/.emacs.d/plugins/auto-complete")
  (when (require 'auto-complete nil t)
    (require 'auto-complete-yasnippet)
@@ -508,36 +538,6 @@ makes)."
    (add-hook 'ruby-mode-hook
              (lambda ()
                (setq ac-omni-completion-sources '(("\\.\\=" ac-source-rcodetools))))))
-
-
-;; rhtml-mode
-(add-to-list 'load-path "~/.emacs.d/plugins/rhtml")
-(require 'rhtml-mode)
-(add-hook 'rhtml-mode-hook
-  (lambda () (rinari-launch)))
-
-
-;; yasnippet
-(add-to-list 'load-path "~/.emacs.d/plugins/yasnippet")
-(require 'yasnippet)
-(yas/initialize)
-(yas/load-directory "~/.emacs.d/plugins/yasnippet/snippets")
-(setq require-final-newline nil)
-
-;; yasnippet rails
-(load "~/.emacs.d/plugins/yasnippets-rails/setup.el")
-
-
-(add-hook 'rhtml-mode
-          (let ((original-command (lookup-key rhtml-mode-map [tab])))
-            `(lambda ()
-               (setq yas/fallback-behavior
-                     '(apply ,original-command))
-               (local-set-key [tab] 'yas/expand))))
-
-
-(add-to-list 'load-path "~/.emacs.d/plugins/autotest")
-(require 'autotest)
 
 
 ;; ri

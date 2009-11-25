@@ -17,7 +17,7 @@
 (setq font-lock-maximum-decoration t)
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq require-final-newline t)
-(setq default-major-mode 'text-mode)
+(setq major-mode 'text-mode)
 
 ;; turn on paren matching
 (show-paren-mode t)
@@ -35,6 +35,8 @@
 (global-font-lock-mode t t)
 (setq font-lock-maximum-decoration t)
 
+;(setq default-directory "~/Documentos/WyeWorks/Proys/")
+(setq default-directory "~/")
 
 ;; Get rid of toolbar, scrollbar, menubar
 (progn
@@ -504,19 +506,32 @@ makes)."
 
 
 (add-to-list 'load-path "~/.emacs.d/plugins/auto-complete")
- (when (require 'auto-complete nil t)
-   (require 'auto-complete-yasnippet)
-   (require 'auto-complete-ruby)
-   (require 'auto-complete-css)
+(require 'auto-complete-config)
+;(global-auto-complete-mode t)
+;(define-key ac-complete-mode-map "\C-n" 'ac-next)
+;(define-key ac-complete-mode-map "\C-p" 'ac-previous)
+;;     ;; start completion when entered 3 characters
+;(setq ac-auto-start 2)
+;; Add following code to your .emacs.
+;;
+;(define-key ac-complete-mode-map "\t" 'ac-complete)
+;(define-key ac-complete-mode-map "\r" nil)
+
+
+;(add-to-list 'load-path "~/.emacs.d/plugins/auto-complete")
+; (when (require 'auto-complete nil t)
+;   (require 'auto-complete-yasnippet)
+;   (require 'auto-complete-ruby)
+;   (require 'auto-complete-css)
 
    (global-auto-complete-mode t)           ;enable global-mode
    (setq ac-auto-start t)                  ;automatically start
    (setq ac-dwim 3)                        ;Do what i mean
    (setq ac-override-local-map nil)        ;don't override local map
-;   (define-key ac-complete-mode-map "\t" 'ac-expand)
-;   (define-key ac-complete-mode-map "\r" 'ac-complete)
-;   (define-key ac-complete-mode-map "\M-n" 'ac-next)
-;   (define-key ac-complete-mode-map "\M-p" 'ac-previous)
+;;   (define-key ac-complete-mode-map "\t" 'ac-expand)
+;;   (define-key ac-complete-mode-map "\r" 'ac-complete)
+;;   (define-key ac-complete-mode-map "\M-n" 'ac-next)
+;;   (define-key ac-complete-mode-map "\M-p" 'ac-previous)
    (set-default 'ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-words-in-buffer))
 
    (setq ac-modes
@@ -536,7 +551,7 @@ makes)."
 
    (add-hook 'ruby-mode-hook
              (lambda ()
-               (setq ac-omni-completion-sources '(("\\.\\=" ac-source-rcodetools))))))
+               (setq ac-omni-completion-sources '(("\\.\\=" ac-source-rcodetools)))));)
 
 
 ;; ri

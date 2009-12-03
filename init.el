@@ -35,7 +35,8 @@
 ;(global-font-lock-mode t t)
 (setq font-lock-maximum-decoration t)
 
-(setq default-directory "~/Documentos/WyeWorks/Proys/")
+;(setq default-directory "~/Documentos/WyeWorks/Proys/")
+(setq default-directory "~/")
 
 ;; Get rid of toolbar, scrollbar, menubar
 (progn

@@ -32,11 +32,10 @@
 ;; Get back font antialiasing
 (push '(font-backend xft x) default-frame-alist)
 
-(global-font-lock-mode t t)
+;(global-font-lock-mode t t)
 (setq font-lock-maximum-decoration t)
 
-;(setq default-directory "~/Documentos/WyeWorks/Proys/")
-(setq default-directory "~/")
+(setq default-directory "~/Documentos/WyeWorks/Proys/")
 
 ;; Get rid of toolbar, scrollbar, menubar
 (progn
